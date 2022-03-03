@@ -1,0 +1,55 @@
+version: "3.7"
+
+services:
+  httpd:
+    image: in2code/httpd:2.4-alpine
+    environment:
+      WEB_DOCUMENT_ROOT: /app/${WEBROOT}
+      VIRTUAL_HOST: ${WEB_HOST}
+      VIRTUAL_PORT: 443
+      VIRTUAL_PROTO: https
+    volumes:
+      - ./:/app/:cached
+      - typo3var:/app/.Build/${TYPO3_CACHE_DIR}/:nocopy
+    networks:
+      default:
+        aliases:
+          - ${WEB_HOST}
+
+  php:
+    build:
+      context: .project/docker/php/
+      dockerfile: Dockerfile
+    volumes:
+      - ./:/app/:cached
+      - typo3var:/app/.Build/${TYPO3_CACHE_DIR}/:nocopy
+      - $HOME/.composer/auth.json:/tmp/composer/auth.json
+      - $HOME/.composer/cache/:/tmp/composer/cache/
+      - $HOME/.phive/:/tmp/phive/
+      - $SSH_AUTH_SOCK:$SSH_AUTH_SOCK
+    env_file:
+      - .env
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    environment:
+      SSH_AUTH_SOCK: /run/host-services/ssh-auth.sock
+    working_dir: /app/
+
+  mysql:
+    image: in2code/mysql:5.7
+    env_file:
+      - .env
+    volumes:
+      - mysql:/var/lib/mysql/
+      - ${SQLDUMPSDIR}:/${SQLDUMPSDIR}
+    ports:
+      - ${SQLPORT}:3306
+
+  mail:
+    image: mailhog/mailhog
+    environment:
+      VIRTUAL_HOST: ${MAIL_HOST}
+      VIRTUAL_PORT: 8025
+
+volumes:
+  mysql:
