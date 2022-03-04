@@ -66,8 +66,10 @@ class GenerateKeysUpgradeWizard implements UpgradeWizardInterface
     public function updateNecessary(): bool
     {
         $extConf = GeneralUtility::makeInstance(ExtensionConfiguration::class)->get('caretaker_instance');
-        return true;
-        return !isset($extConf['crypto']['instance']['publicKey']) && !isset($extConf['crypto']['instance']['privateKey']);
+        return !isset($extConf['crypto']['instance']['publicKey'])
+            || !isset($extConf['crypto']['instance']['privateKey'])
+            || !strlen($extConf['crypto']['instance']['publicKey'])
+            || !strlen($extConf['crypto']['instance']['privateKey']);
     }
 
     /**
