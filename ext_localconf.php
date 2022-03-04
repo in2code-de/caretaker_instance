@@ -37,6 +37,10 @@ if (!defined('TYPO3_MODE')) {
     die('Access denied.');
 }
 
+// Register UpgradeWizard for generating keys
+$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/install']['update']['caretakerInstanceGenerateKeys']
+    = \Caretaker\CaretakerInstance\UpgradeWizards\GenerateKeysUpgradeWizard::class;
+
 // Add eID script for caretaker instance frontend service
 $GLOBALS['TYPO3_CONF_VARS']['FE']['eID_include']['tx_caretakerinstance'] = \Caretaker\CaretakerInstance\Controller\EidController::class . '::execute';
 
