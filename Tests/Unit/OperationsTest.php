@@ -66,25 +66,20 @@ class OperationsTest extends UnitTestCase
 
     public function testOperation_GetFilesystemChecksumReturnsCorrectChecksumForFile()
     {
-        $this->markTestSkipped();
-
         $operation = new \tx_caretakerinstance_Operation_GetFilesystemChecksum();
 
         $result = $operation->execute(array('path' => 'EXT:caretaker_instance/Tests/Unit/Fixtures/Operation_GetFilesystemChecksum.txt'));
 
-        var_dump($result);
         $this->assertTrue($result->isSuccessful());
         $value = $result->getValue();
-        $this->assertInternalType('array', $value);
-        $this->assertEquals('0', count($value['singleChecksums']));
-        $this->assertInternalType('string', $value['checksum']);
+        $this->assertIsArray($value);
+        $this->assertEquals('0', count($value['singleChecksums'] ?: []));
+        $this->assertIsString($value['checksum']);
         $this->assertEquals('23d35ef1a611fc75561b0d71d8b3234b', $value['checksum']);
     }
 
     public function testOperation_GetFilesystemChecksumReturnsExtendedResultForFolder()
     {
-        $this->markTestSkipped();
-
         $operation = new \tx_caretakerinstance_Operation_GetFilesystemChecksum();
 
         $result = $operation->execute(array(
@@ -95,17 +90,14 @@ class OperationsTest extends UnitTestCase
         $this->assertTrue($result->isSuccessful());
         $value = $result->getValue();
 
-        $this->assertInternalType('array', $value);
-        $this->assertInternalType('array', $value['singleChecksums']);
-        $this->assertInternalType('string', $value['checksum']);
+        $this->assertIsArray($value);
+        $this->assertIsArray($value['singleChecksums']);
+        $this->assertIsString($value['checksum']);
         $this->assertEquals(32, strlen($value['checksum']));
     }
 
     public function testOperation_GetFilesystemChecksumFailsIfPathIsNotAllowed()
     {
-        $this->markTestSkipped();
-
-        $this->fail('test runs indefinitely');
         $operation = new \tx_caretakerinstance_Operation_GetFilesystemChecksum();
 
         $result = $operation->execute(array('path' => Environment::getPublicPath() . '/../../'));
@@ -141,8 +133,6 @@ class OperationsTest extends UnitTestCase
 
     public function testOperation_GetExtensionVersionReturnsExtensionVersionForInstalledExtension()
     {
-        $this->markTestSkipped();
-
         $operation = new \tx_caretakerinstance_Operation_GetExtensionVersion();
 
         $result = $operation->execute(array('extensionKey' => 'caretaker_instance'));
@@ -150,7 +140,7 @@ class OperationsTest extends UnitTestCase
         $this->assertTrue($result->isSuccessful());
 
         // TODO This depends on the current caretaker_instance extension version! Better mock this up.
-        $this->assertEquals('0.3.3', $result->getValue());
+        $this->assertEquals('3.0.3', $result->getValue());
     }
 
     public function testOperation_GetExtensionVersionReturnsFailureForNotLoadedExtension()
