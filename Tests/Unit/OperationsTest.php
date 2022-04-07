@@ -250,8 +250,6 @@ class OperationsTest extends UnitTestCase
 
     public function testOperation_CheckPathExistsReturnsTrueIfPathExists()
     {
-        $this->markTestSkipped();
-
         $operation = new \tx_caretakerinstance_Operation_CheckPathExists();
 
         $result = $operation->execute('EXT:caretaker_instance/Tests/Unit/Fixtures/Operation_CheckPathExists.txt');
@@ -261,8 +259,6 @@ class OperationsTest extends UnitTestCase
 
     public function testOperation_CheckPathExistsReturnsFalseIfPathNotExists()
     {
-        $this->markTestSkipped();
-
         $operation = new \tx_caretakerinstance_Operation_CheckPathExists();
 
         $result = $operation->execute('EXT:caretaker_instance/Tests/Unit/Fixtures/Operation_CheckPathExists_notExisting.txt');
