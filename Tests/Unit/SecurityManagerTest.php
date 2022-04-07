@@ -152,11 +152,6 @@ class SecurityManagerTest extends UnitTestCase
         $this->assertTrue($this->securityManager->validateRequest($this->commandRequest));
     }
 
-    /**
-     * @expectedException \tx_caretakerinstance_SessionTokenException
-     *@expectedExceptionMessage Session token expired
-     * @expectedExceptionCode 1500062206
-     */
     public function testValidateExpiredRequest()
     {
         $this->cryptoManager->expects($this->once())
@@ -168,14 +163,10 @@ class SecurityManagerTest extends UnitTestCase
             ->method('verifySignature')
             ->will($this->returnValue(true));
 
+        $this->expectException('\tx_caretakerinstance_SessionTokenException');
         $this->securityManager->validateRequest($this->commandRequest);
     }
 
-    /**
-     * @expectedException \tx_caretakerinstance_ClientHostAddressRestrictionException
-     * @expectedExceptionMessage Client IP address is not allowed
-     * @expectedExceptionCode 1500062384
-     */
     public function testClientRestrictionForRequestValidation()
     {
         $this->securityManager->setClientHostAddressRestriction('192.168.10.200');
@@ -188,6 +179,7 @@ class SecurityManagerTest extends UnitTestCase
             ->method('verifySignature')
             ->will($this->returnValue(true));
 
+        $this->expectException('\tx_caretakerinstance_ClientHostAddressRestrictionException');
         $this->securityManager->validateRequest($this->commandRequest);
     }
 
@@ -210,11 +202,6 @@ class SecurityManagerTest extends UnitTestCase
         $this->assertTrue($this->securityManager->validateRequest($this->commandRequest));
     }
 
-    /**
-     * @expectedException \tx_caretakerinstance_SignaturValidationException
-     * @expectedExceptionMessage Signature didn't verify
-     * @expectedExceptionCode 1500062398
-     */
     public function testWrongSignatureDoesntValidate()
     {
         $this->cryptoManager->expects($this->any())
@@ -225,6 +212,7 @@ class SecurityManagerTest extends UnitTestCase
             ->method('verifySignature')
             ->will($this->returnValue(false));
 
+        $this->expectException('\tx_caretakerinstance_SignaturValidationException');
         $this->securityManager->validateRequest($this->commandRequest);
     }
 
