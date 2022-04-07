@@ -61,7 +61,7 @@ class SecurityManagerTest extends UnitTestCase
      */
     protected $commandRequest;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->cryptoManager = $this->getMockBuilder('tx_caretakerinstance_ICryptoManager')
             ->getMock();

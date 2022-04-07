@@ -61,7 +61,7 @@ class CryptoManagerTest extends UnitTestCase
      */
     protected $publicKey;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->cryptoManager = new \tx_caretakerinstance_OpenSSLCryptoManager();
 
