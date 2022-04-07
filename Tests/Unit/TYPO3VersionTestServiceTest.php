@@ -41,7 +41,7 @@ class TYPO3VersionTestServiceTest extends UnitTestCase
 {
     public function testVersionWithAlphaIsHigherThanLowerVersions()
     {
-        $this->markTestSkipped();
+        $this->markTestSkipped('Accesses tx_caretaker classes, which cant be found');
 
         $service = new \tx_caretakerinstance_TYPO3VersionTestService();
         $result = $service->checkVersionRange(
