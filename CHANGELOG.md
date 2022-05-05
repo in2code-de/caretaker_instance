@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [4.0.0] - 2022-05-04
+
+### Changed
+- TYPO3 11.5 compatibility. Warning this version is compatible only with 11.5
+
 ## [3.0.3] - 2020-08-04
 
 ### Changed
@@ -65,6 +70,7 @@ All notable changes to this project will be documented in this file.
 [3.0.1]: https://github.com/TYPO3-Caretaker/caretaker_instance/compare/3.0.0...3.0.1
 [3.0.2]: https://github.com/TYPO3-Caretaker/caretaker_instance/compare/3.0.1...3.0.2
 [3.0.3]: https://github.com/TYPO3-Caretaker/caretaker_instance/compare/3.0.2...3.0.3
+[4.0.0]: https://github.com/TYPO3-Caretaker/caretaker_instance/compare/3.0.3...4.0.0
 
 [#58]: https://github.com/TYPO3-Caretaker/caretaker_instance/issues/58
 [#68]: https://github.com/TYPO3-Caretaker/caretaker_instance/issues/68
