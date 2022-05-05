@@ -45,14 +45,14 @@ class RemoteTestServiceBaseTest extends UnitTestCase
      */
     protected $rts;
 
-    public function setUp()
+    public function setUp(): void
     {
         //        $this->rts = new RemoteTestServiceTestBaseImpl();
     }
 
     public function testCheckVersionRangeOk()
     {
-        $this->markTestSkipped();
+        $this->markTestSkipped('Accesses tx_caretaker classes, which cant be found');
 
         $this->assertTrue(
             $this->rts->checkVersionRange(
@@ -65,7 +65,7 @@ class RemoteTestServiceBaseTest extends UnitTestCase
 
     public function testCheckVersionRangeOkExactMin()
     {
-        $this->markTestSkipped();
+        $this->markTestSkipped('Accesses tx_caretaker classes, which cant be found');
 
         $this->assertTrue(
             $this->rts->checkVersionRange(
@@ -78,7 +78,7 @@ class RemoteTestServiceBaseTest extends UnitTestCase
 
     public function testCheckVersionRangeOkExactMax()
     {
-        $this->markTestSkipped();
+        $this->markTestSkipped('Accesses tx_caretaker classes, which cant be found');
 
         $this->assertTrue(
             $this->rts->checkVersionRange(
@@ -91,7 +91,7 @@ class RemoteTestServiceBaseTest extends UnitTestCase
 
     public function testCheckVersionRangeMaxDoesNotMatch()
     {
-        $this->markTestSkipped();
+        $this->markTestSkipped('Accesses tx_caretaker classes, which cant be found');
 
         $this->assertFalse(
             $this->rts->checkVersionRange(
@@ -104,7 +104,7 @@ class RemoteTestServiceBaseTest extends UnitTestCase
 
     public function testCheckVersionRangeMinDoesNotMatch()
     {
-        $this->markTestSkipped();
+        $this->markTestSkipped('Accesses tx_caretaker classes, which cant be found');
 
         $this->assertFalse(
             $this->rts->checkVersionRange(
@@ -117,7 +117,7 @@ class RemoteTestServiceBaseTest extends UnitTestCase
 
     public function testCheckVersionRangeTypeAlpha()
     {
-        $this->markTestSkipped();
+        $this->markTestSkipped('Accesses tx_caretaker classes, which cant be found');
 
         $this->assertTrue(
             $this->rts->checkVersionRange(
@@ -155,7 +155,7 @@ class RemoteTestServiceBaseTest extends UnitTestCase
 
     public function testCheckVersionRangeTypeAlphaBeta()
     {
-        $this->markTestSkipped();
+        $this->markTestSkipped('Accesses tx_caretaker classes, which cant be found');
 
         $this->assertFalse(
             $this->rts->checkVersionRange(
@@ -177,7 +177,7 @@ class RemoteTestServiceBaseTest extends UnitTestCase
 
     public function testCheckVersionRangeTypeRc()
     {
-        $this->markTestSkipped();
+        $this->markTestSkipped('Accesses tx_caretaker classes, which cant be found');
 
         $this->assertTrue(
             $this->rts->checkVersionRange(

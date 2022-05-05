@@ -116,7 +116,7 @@ class ServiceFactoryTest extends UnitTestCase
         $this->assertInstanceOf('\tx_caretakerinstance_RemoteCommandConnector', $connector);
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         // Destroy Service Factory singleton after each test
         \tx_caretakerinstance_ServiceFactory::destroy();

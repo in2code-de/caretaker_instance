@@ -92,6 +92,8 @@ class tx_caretakerinstance_Operation_GetFilesystemChecksum implements tx_caretak
      */
     protected function getPath($path)
     {
+        $path = GeneralUtility::getFileAbsFileName($path);
+
         if (substr($path, -1) === '/') {
             $path = substr($path, 0, -1);
         }
@@ -103,7 +105,6 @@ class tx_caretakerinstance_Operation_GetFilesystemChecksum implements tx_caretak
         }
 
         // getFileAbsFileName can't handle directory path with trailing / correctly
-        $path = GeneralUtility::getFileAbsFileName($path);
         if (GeneralUtility::isAllowedAbsPath($path)) {
             return $path;
         }
