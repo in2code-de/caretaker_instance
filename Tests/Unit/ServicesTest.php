@@ -47,7 +47,8 @@ class ServicesTest extends UnitTestCase
 {
     public function testFindInsecureExtensionCommand()
     {
-        $this->markTestSkipped();
+        $this->markTestSkipped('Accesses tx_caretaker classes, which cant be found');
+
         $stub = $this->getMockBuilder('tx_caretakerinstance_FindInsecureExtensionTestService')
             ->setMethods(array('getLocationList', 'executeRemoteOperations', 'checkExtension'))
             ->getMock();
@@ -109,7 +110,7 @@ class ServicesTest extends UnitTestCase
      */
     public function testFindInsecureExtensionGetLocationList($input, $output)
     {
-        $this->markTestSkipped();
+        $this->markTestSkipped('Accesses tx_caretaker classes, which cant be found');
 
         $stub = $this->getMockBuilder('tx_caretakerinstance_FindInsecureExtensionTestService')
             ->setMethods(array('getConfigValue'))

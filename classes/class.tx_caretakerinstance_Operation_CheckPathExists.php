@@ -83,6 +83,8 @@ class tx_caretakerinstance_Operation_CheckPathExists implements tx_caretakerinst
      */
     protected function getPath($path)
     {
+        $path = \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName($path);
+
         // getFileAbsFileName can't handle directory path with trailing / correctly
         if (substr($path, -1) === '/') {
             $path = substr($path, 0, -1);
@@ -94,7 +96,6 @@ class tx_caretakerinstance_Operation_CheckPathExists implements tx_caretakerinst
             return $path;
         }
 
-        $path = \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName($path);
         if (\TYPO3\CMS\Core\Utility\GeneralUtility::isAllowedAbsPath($path)) {
             return $path;
         }
