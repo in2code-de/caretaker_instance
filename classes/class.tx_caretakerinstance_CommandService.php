@@ -89,7 +89,7 @@ class tx_caretakerinstance_CommandService
 
                     $results = array();
                     foreach ($operations as $operation) {
-                        $results[] = $this->operationManager->executeOperation($operation[0], $operation[1]);
+                        $results[] = $this->operationManager->executeOperation($operation[0], $operation[1] ?? []);
                     }
 
                     return new tx_caretakerinstance_CommandResult(tx_caretakerinstance_CommandResult::status_ok, $results);
