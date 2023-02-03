@@ -47,7 +47,6 @@
     "typo3-ter/caretaker_instance": "self.version"
   },
   "config": {
-    "minimum-stability": "dev",
     "vendor-dir": ".Build/vendor",
     "allow-plugins": {
       "typo3/cms-composer-installers": true,
