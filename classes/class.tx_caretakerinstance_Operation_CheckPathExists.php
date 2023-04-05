@@ -53,24 +53,26 @@ class tx_caretakerinstance_Operation_CheckPathExists implements tx_caretakerinst
     public function execute($parameter = null)
     {
         $path = $this->getPath($parameter);
-        list($path) = glob($path);
+        $matchingPaths = glob($path);
+        if (is_array($matchingPaths) && !empty($matchingPaths)) {
+            $path = $matchingPaths[0];
+            if (is_file($path)) {
+                //if file exists, get the tstamp
+                $time = filemtime($path);
+                $size = filesize($path);
 
-        if (is_file($path)) {
-            //if file exists, get the tstamp
-            $time = filemtime($path);
-            $size = filesize($path);
-
-            return new tx_caretakerinstance_OperationResult(true, array(
-                'type' => 'file',
-                'path' => $parameter,
-                'time' => $time,
-                'size' => $size,
-            ));
-        } elseif (is_dir($path)) {
-            return new tx_caretakerinstance_OperationResult(true, array(
-                'type' => 'folder',
-                'path' => $parameter,
-            ));
+                return new tx_caretakerinstance_OperationResult(true, array(
+                    'type' => 'file',
+                    'path' => $parameter,
+                    'time' => $time,
+                    'size' => $size,
+                ));
+            } elseif (is_dir($path)) {
+                return new tx_caretakerinstance_OperationResult(true, array(
+                    'type' => 'folder',
+                    'path' => $parameter,
+                ));
+            }
         }
         return new tx_caretakerinstance_OperationResult(false, array('path' => $parameter));
     }
