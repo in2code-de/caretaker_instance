@@ -51,16 +51,12 @@
   "autoload": {
     "psr-4": {
       "Caretaker\\CaretakerInstance\\": "Classes"
-    },
-    "classmap": [
-      "classes/",
-      "services/"
-    ]
+    }
   },
   "autoload-dev": {
     "psr-4": {
       "Caretaker\\CaretakerInstance\\Tests\\": "Tests/"
-    }
+    }∆
   },
   "replace": {
     "typo3-ter/caretaker_instance": "self.version"
