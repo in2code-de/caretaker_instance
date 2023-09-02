@@ -1,4 +1,10 @@
 <?php
+
+namespace Caretaker\CaretakerInstance\Service\Test;
+
+use Caretaker\Caretaker\Constants;
+use Caretaker\Caretaker\Entity\Result\TestResult;
+
 /***************************************************************
  * Copyright notice
  *
@@ -43,7 +49,7 @@
  * @author Tobias Liebig <liebig@networkteam.com>
  *
  */
-class tx_caretakerinstance_BackendUserTestService extends tx_caretakerinstance_RemoteTestServiceBase
+class BackendUserTestService extends RemoteTestServiceBase
 {
     /**
      * Value Description
@@ -67,7 +73,7 @@ class tx_caretakerinstance_BackendUserTestService extends tx_caretakerinstance_R
     protected $configurationInfoTemplate = 'LLL:EXT:caretaker_instance/locallang.xml:backend_user_test_configuration';
 
     /**
-     * @return tx_caretaker_TestResult
+     * @return TestResult
      */
     public function runTest()
     {
@@ -111,9 +117,9 @@ class tx_caretakerinstance_BackendUserTestService extends tx_caretakerinstance_R
             }
         }
         if (count($blacklistedUsernamesFound) > 0) {
-            return tx_caretaker_TestResult::create(tx_caretaker_Constants::state_error, 0, 'Users [' . implode(',', $blacklistedUsernamesFound) . '] are blacklisted and should not be active.');
+            return TestResult::create(Constants::state_error, 0, 'Users [' . implode(',', $blacklistedUsernamesFound) . '] are blacklisted and should not be active.');
         }
 
-        return tx_caretaker_TestResult::create(tx_caretaker_Constants::state_ok, 0, '');
+        return TestResult::create(Constants::state_ok, 0, '');
     }
 }

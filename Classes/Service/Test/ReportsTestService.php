@@ -1,18 +1,22 @@
 <?php
 
+namespace Caretaker\CaretakerInstance\Service\Test;
+
+use Caretaker\Caretaker\Constants;
+use Caretaker\Caretaker\Entity\Result\TestResult;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Reports\Status;
 
-class tx_caretakerinstance_ReportsTestService extends tx_caretakerinstance_RemoteTestServiceBase
+class ReportsTestService extends RemoteTestServiceBase
 {
     /**
-     * @return tx_caretaker_TestResult
+     * @return TestResult
      */
     public function runTest()
     {
         if (!ExtensionManagementUtility::isLoaded('reports')) {
-            return tx_caretaker_TestResult::create(tx_caretaker_Constants::state_undefined, 0, 'Missing SYSEXT reports!');
+            return TestResult::create(Constants::state_undefined, 0, 'Missing SYSEXT reports!');
         }
         /** @var \TYPO3\CMS\Reports\Report\Status\Status $statusReport */
         $statusReport = GeneralUtility::makeInstance(\TYPO3\CMS\Reports\Report\Status\Status::class);
@@ -29,7 +33,7 @@ class tx_caretakerinstance_ReportsTestService extends tx_caretakerinstance_Remot
                 }
             }
             if (isset($systemIssues)) {
-                return tx_caretaker_TestResult::create(
+                return TestResult::create(
                     ($highestSeverity == Status::WARNING) ? (int) $this->getConfigValue('status_of_reports') : $highestSeverity,
                     0,
                     CRLF . str_replace(
@@ -41,6 +45,6 @@ class tx_caretakerinstance_ReportsTestService extends tx_caretakerinstance_Remot
             }
         }
 
-        return tx_caretaker_TestResult::create(tx_caretaker_Constants::state_ok, 0, 'OK!');
+        return TestResult::create(Constants::state_ok, 0, 'OK!');
     }
 }

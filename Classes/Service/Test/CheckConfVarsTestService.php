@@ -1,4 +1,10 @@
 <?php
+
+namespace Caretaker\CaretakerInstance\Service\Test;
+
+use Caretaker\Caretaker\Constants;
+use Caretaker\Caretaker\Entity\Result\TestResult;
+
 /***************************************************************
  * Copyright notice
  *
@@ -43,7 +49,7 @@
  * @author Tobias Liebig <liebig@networkteam.com>
  *
  */
-class tx_caretakerinstance_CheckConfVarsTestService extends tx_caretakerinstance_RemoteTestServiceBase
+class CheckConfVarsTestService extends RemoteTestServiceBase
 {
     /**
      * Value Description
@@ -127,7 +133,7 @@ class tx_caretakerinstance_CheckConfVarsTestService extends tx_caretakerinstance
         }
 
         if (count($operations) == 0) {
-            return tx_caretaker_TestResult::create(tx_caretaker_Constants::state_warning, 0, 'No conditions found');
+            return TestResult::create(Constants::state_warning, 0, 'No conditions found');
         }
 
         $commandResult = $this->executeRemoteOperations($operations);
@@ -166,17 +172,17 @@ class tx_caretakerinstance_CheckConfVarsTestService extends tx_caretakerinstance
         $resultNoMatch = $this->getConfigValue('resultNoMatch');
 
         if ($resultMatch == null) {
-            $resultMatch = tx_caretaker_Constants::state_error;
+            $resultMatch = Constants::state_error;
         }
         if ($resultNoMatch == null) {
-            $resultNoMatch = tx_caretaker_Constants::state_ok;
+            $resultNoMatch = Constants::state_ok;
         }
 
         if (count($failures)) {
             $msg_failures .= chr(10) . 'Not Matched Conditions: ' . chr(10) . implode(chr(10), $failures);
 
-            return tx_caretaker_TestResult::create(intval($resultNoMatch), 0, $msg_failures . chr(10) . $msg_success);
+            return TestResult::create(intval($resultNoMatch), 0, $msg_failures . chr(10) . $msg_success);
         }
-        return tx_caretaker_TestResult::create(intval($resultMatch), 0, $msg_success);
+        return TestResult::create(intval($resultMatch), 0, $msg_success);
     }
 }

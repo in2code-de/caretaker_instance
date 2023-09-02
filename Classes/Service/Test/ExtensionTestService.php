@@ -1,4 +1,10 @@
 <?php
+
+namespace Caretaker\CaretakerInstance\Service\Test;
+
+use Caretaker\Caretaker\Constants;
+use Caretaker\Caretaker\Entity\Result\TestResult;
+
 /***************************************************************
  * Copyright notice
  *
@@ -43,7 +49,7 @@
  * @author Tobias Liebig <liebig@networkteam.com>
  *
  */
-class tx_caretakerinstance_ExtensionTestService extends tx_caretakerinstance_RemoteTestServiceBase
+class ExtensionTestService extends RemoteTestServiceBase
 {
     /**
      * Value Description
@@ -74,7 +80,7 @@ class tx_caretakerinstance_ExtensionTestService extends tx_caretakerinstance_Rem
         $maxVersion = $this->getConfigValue('max_version');
 
         if (!$extensionKey) {
-            return tx_caretaker_TestResult::create(tx_caretaker_Constants::state_undefined, 0, 'Cannot execute extension test without extension key');
+            return TestResult::create(Constants::state_undefined, 0, 'Cannot execute extension test without extension key');
         }
 
         $operation = array('GetExtensionVersion', array('extensionKey' => $extensionKey));
@@ -103,7 +109,7 @@ class tx_caretakerinstance_ExtensionTestService extends tx_caretakerinstance_Rem
 
         if ($checkResult) {
             $message = 'Extension "' . $extensionKey . '" version ' . $extensionVersion . ' is ' . ($extensionVersion === false ? 'not ' : '') . 'installed';
-            $testResult = tx_caretaker_TestResult::create(tx_caretaker_Constants::state_ok, 0, $message);
+            $testResult = TestResult::create(Constants::state_ok, 0, $message);
         } else {
             $message = 'Extension "' . $extensionKey . '" version ' . $extensionVersion . ' is ' . ($extensionVersion === false ? 'not ' : '') . 'installed, but ';
             if ($minVersion) {
@@ -113,7 +119,7 @@ class tx_caretakerinstance_ExtensionTestService extends tx_caretakerinstance_Rem
                 $message .= ' <= ' . $maxVersion;
             }
             $message .= ' expected';
-            $testResult = tx_caretaker_TestResult::create(tx_caretaker_Constants::state_error, 0, $message);
+            $testResult = TestResult::create(Constants::state_error, 0, $message);
         }
 
         return $testResult;
@@ -124,7 +130,7 @@ class tx_caretakerinstance_ExtensionTestService extends tx_caretakerinstance_Rem
      * @param string $requirement
      * @param string $minVersion
      * @param string $maxVersion
-     * @throws Exception
+     * @throws \Exception
      * @return bool
      */
     public function checkVersionForRequirementAndVersionRange($actualValue, $requirement, $minVersion, $maxVersion)

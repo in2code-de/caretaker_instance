@@ -1,4 +1,10 @@
 <?php
+
+namespace Caretaker\CaretakerInstance\Service\Test;
+
+use Caretaker\Caretaker\Constants;
+use Caretaker\Caretaker\Entity\Result\TestResult;
+
 /***************************************************************
  * Copyright notice
  *
@@ -40,10 +46,10 @@
  * @author Tobias Liebig <tobias.liebig@typo3.org>
  *
  */
-class tx_caretakerinstance_DiskSpaceTestService extends tx_caretakerinstance_RemoteTestServiceBase
+class DiskSpaceTestService extends RemoteTestServiceBase
 {
     /**
-     * @return tx_caretaker_TestResult
+     * @return TestResult
      */
     public function runTest()
     {
@@ -84,13 +90,13 @@ class tx_caretakerinstance_DiskSpaceTestService extends tx_caretakerinstance_Rem
             if ($diskSpace['free'] <= $minFreeAbsolute) {
                 $message = 'Not enough free disk space ' . $info;
 
-                return tx_caretaker_TestResult::create(tx_caretaker_Constants::state_error, 0, $message);
+                return TestResult::create(Constants::state_error, 0, $message);
             }
         }
 
         $message = 'Disk space test successful ' . $info;
 
-        return tx_caretaker_TestResult::create(tx_caretaker_Constants::state_ok, 0, $message);
+        return TestResult::create(Constants::state_ok, 0, $message);
     }
 
     /**
@@ -103,7 +109,8 @@ class tx_caretakerinstance_DiskSpaceTestService extends tx_caretakerinstance_Rem
         $size = array('B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB');
         $factor = (int)floor((strlen($bytes) - 1) / 3);
 
-        return sprintf("%.{$dec}f", $bytes / pow(1024, $factor)) . @$size[$factor];
+        return sprintf("%.{$dec}f",
+                $bytes / pow(1024, $factor)) . @$size[$factor];
     }
 
     /**

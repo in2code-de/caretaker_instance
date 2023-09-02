@@ -1,4 +1,11 @@
 <?php
+
+namespace Caretaker\CaretakerInstance\Service\Test;
+
+use Caretaker\Caretaker\Constants;
+use Caretaker\Caretaker\Entity\Result\ResultMessage;
+use Caretaker\Caretaker\Entity\Result\TestResult;
+
 /***************************************************************
  * Copyright notice
  *
@@ -43,7 +50,7 @@
  * @author Tobias Liebig <liebig@networkteam.com>
  *
  */
-class tx_caretakerinstance_FindExtensionUpdatesTestService extends tx_caretakerinstance_RemoteTestServiceBase
+class FindExtensionUpdatesTestService extends RemoteTestServiceBase
 {
     /**
      * Value Description
@@ -69,7 +76,7 @@ class tx_caretakerinstance_FindExtensionUpdatesTestService extends tx_caretakeri
     /**
      * Execute the find insecure extension test
      *
-     * @return tx_caretaker_TestResult
+     * @return TestResult
      */
     public function runTest()
     {
@@ -88,7 +95,7 @@ class tx_caretakerinstance_FindExtensionUpdatesTestService extends tx_caretakeri
         $extensionListResult = $results[0];
 
         if (!$extensionListResult->isSuccessful()) {
-            return tx_caretaker_TestResult::create(tx_caretaker_Constants::state_error, 0, 'Remote operation failed: ' . $extensionListResult->getValue());
+            return TestResult::create(Constants::state_error, 0, 'Remote operation failed: ' . $extensionListResult->getValue());
         }
 
         $extensionList = $extensionListResult->getValue();
@@ -98,7 +105,7 @@ class tx_caretakerinstance_FindExtensionUpdatesTestService extends tx_caretakeri
             $typo3VersionResult = $results[1];
 
             if (!$typo3VersionResult->isSuccessful()) {
-                return tx_caretaker_TestResult::create(tx_caretaker_Constants::state_error, 0, 'Remote operation failed: ' . $typo3VersionResult->getValue());
+                return TestResult::create(Constants::state_error, 0, 'Remote operation failed: ' . $typo3VersionResult->getValue());
             }
 
             $typo3Version = $typo3VersionResult->getValue();
@@ -122,49 +129,49 @@ class tx_caretakerinstance_FindExtensionUpdatesTestService extends tx_caretakeri
 
         // add error submessages
         if ($num_errors > 0) {
-            $submessages[] = new tx_caretaker_ResultMessage('LLL:EXT:caretaker_instance/locallang.xml:find_extension_updates_test_detail_error');
+            $submessages[] = new ResultMessage('LLL:EXT:caretaker_instance/locallang.xml:find_extension_updates_test_detail_error');
             foreach ($errors as $error) {
-                $submessages[] = new tx_caretaker_ResultMessage($error['message'], $error['values']);
+                $submessages[] = new ResultMessage($error['message'], $error['values']);
             }
         }
 
         // add warning submessages
         if ($num_warnings > 0) {
-            $submessages[] = new tx_caretaker_ResultMessage('LLL:EXT:caretaker_instance/locallang.xml:find_extension_updates_test_detail_warning');
+            $submessages[] = new ResultMessage('LLL:EXT:caretaker_instance/locallang.xml:find_extension_updates_test_detail_warning');
             foreach ($warnings as $warning) {
-                $submessages[] = new tx_caretaker_ResultMessage($warning['message'], $warning['values']);
+                $submessages[] = new ResultMessage($warning['message'], $warning['values']);
             }
         }
 
         // add ok submessages
         if ($num_oks > 0) {
-            $submessages[] = new tx_caretaker_ResultMessage('LLL:EXT:caretaker_instance/locallang.xml:find_extension_updates_test_detail_ok');
+            $submessages[] = new ResultMessage('LLL:EXT:caretaker_instance/locallang.xml:find_extension_updates_test_detail_ok');
             foreach ($oks as $ok) {
-                $submessages[] = new tx_caretaker_ResultMessage($ok['message'], $ok['values']);
+                $submessages[] = new ResultMessage($ok['message'], $ok['values']);
             }
         }
 
         // return error
         if ($num_errors > 0) {
             $value = (count($errors) + count($warnings));
-            $message = new tx_caretaker_ResultMessage('LLL:EXT:caretaker_instance/locallang.xml:insecure_extension_test_problems', $values);
+            $message = new ResultMessage('LLL:EXT:caretaker_instance/locallang.xml:insecure_extension_test_problems', $values);
 
-            return tx_caretaker_TestResult::create(tx_caretaker_Constants::state_error, $value, $message, $submessages);
+            return TestResult::create(Constants::state_error, $value, $message, $submessages);
         }
 
         // return warning
         if ($num_warnings > 0) {
             $value = count($warnings);
-            $message = new tx_caretaker_ResultMessage('LLL:EXT:caretaker_instance/locallang.xml:insecure_extension_test_problems', $values);
+            $message = new ResultMessage('LLL:EXT:caretaker_instance/locallang.xml:insecure_extension_test_problems', $values);
 
-            return tx_caretaker_TestResult::create(tx_caretaker_Constants::state_warning, $value, $message, $submessages);
+            return TestResult::create(Constants::state_warning, $value, $message, $submessages);
         }
 
         // return ok
         $value = 0;
-        $message = new tx_caretaker_ResultMessage('LLL:EXT:caretaker_instance/locallang.xml:insecure_extension_test_ok', $values);
+        $message = new ResultMessage('LLL:EXT:caretaker_instance/locallang.xml:insecure_extension_test_ok', $values);
 
-        return tx_caretaker_TestResult::create(tx_caretaker_Constants::state_ok, $value, $message, $submessages);
+        return TestResult::create(Constants::state_ok, $value, $message, $submessages);
     }
 
     /**
@@ -273,7 +280,7 @@ class tx_caretakerinstance_FindExtensionUpdatesTestService extends tx_caretakeri
     {
         $objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
 
-        /** @var TYPO3\CMS\Extensionmanager\Domain\Repository\ExtensionRepository $repo */
+        /** @var \TYPO3\CMS\Extensionmanager\Domain\Repository\ExtensionRepository $repo */
         $repo = $objectManager->get('TYPO3\\CMS\\Extensionmanager\\Domain\\Repository\\ExtensionRepository');
         $repo->initializeObject();
 
@@ -299,9 +306,9 @@ class tx_caretakerinstance_FindExtensionUpdatesTestService extends tx_caretakeri
             }
 
             // find last highest version for running TYPO3 version
-            /** @var TYPO3\CMS\Extensionmanager\Domain\Model\Extension $extension */
+            /** @var \TYPO3\CMS\Extensionmanager\Domain\Model\Extension $extension */
             foreach ($extensionAllVersions as $extensionVersion) {
-                /** @var TYPO3\CMS\Extensionmanager\Domain\Model\Dependency $dependency */
+                /** @var \TYPO3\CMS\Extensionmanager\Domain\Model\Dependency $dependency */
                 $compatible = true;
                 foreach ($extensionVersion->getDependencies() as $dependency) {
                     if ($dependency->getIdentifier() == 'typo3') {

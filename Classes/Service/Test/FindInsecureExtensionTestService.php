@@ -1,4 +1,11 @@
 <?php
+
+namespace Caretaker\CaretakerInstance\Service\Test;
+
+use Caretaker\Caretaker\Constants;
+use Caretaker\Caretaker\Entity\Result\ResultMessage;
+use Caretaker\Caretaker\Entity\Result\TestResult;
+
 /***************************************************************
  * Copyright notice
  *
@@ -43,7 +50,7 @@
  * @author Tobias Liebig <liebig@networkteam.com>
  *
  */
-class tx_caretakerinstance_FindInsecureExtensionTestService extends tx_caretakerinstance_RemoteTestServiceBase
+class FindInsecureExtensionTestService extends RemoteTestServiceBase
 {
     /**
      * Value Description
@@ -69,7 +76,7 @@ class tx_caretakerinstance_FindInsecureExtensionTestService extends tx_caretaker
     /**
      * Execute the find insecure extension test
      *
-     * @return tx_caretaker_TestResult
+     * @return TestResult
      */
     public function runTest()
     {
@@ -87,7 +94,7 @@ class tx_caretakerinstance_FindInsecureExtensionTestService extends tx_caretaker
         $operationResult = $results[0];
 
         if (!$operationResult->isSuccessful()) {
-            return tx_caretaker_TestResult::create(tx_caretaker_Constants::state_error, 0, 'Remote operation failed: ' . $operationResult->getValue());
+            return TestResult::create(Constants::state_error, 0, 'Remote operation failed: ' . $operationResult->getValue());
         }
 
         $extensionList = $operationResult->getValue();
@@ -102,7 +109,7 @@ class tx_caretakerinstance_FindInsecureExtensionTestService extends tx_caretaker
         $seperator = chr(10) . ' - ';
 
         if (count($errors) == 0 && count($warnings) == 0) {
-            return tx_caretaker_TestResult::create(tx_caretaker_Constants::state_ok, 0, 'LLL:EXT:caretaker_instance/locallang.xml:insecure_extension_test_ok');
+            return TestResult::create(Constants::state_ok, 0, 'LLL:EXT:caretaker_instance/locallang.xml:insecure_extension_test_ok');
         }
 
         $num_errors = count($errors);
@@ -113,34 +120,34 @@ class tx_caretakerinstance_FindInsecureExtensionTestService extends tx_caretaker
 
         // add error submessages
         if ($num_errors > 0) {
-            $submessages[] = new tx_caretaker_ResultMessage('LLL:EXT:caretaker_instance/locallang.xml:insecure_extension_test_errors');
+            $submessages[] = new ResultMessage('LLL:EXT:caretaker_instance/locallang.xml:insecure_extension_test_errors');
             foreach ($errors as $error) {
-                $submessages[] = new tx_caretaker_ResultMessage($error['message'], $error['values']);
+                $submessages[] = new ResultMessage($error['message'], $error['values']);
             }
         }
 
         // add warning submessages
         if ($num_warnings > 0) {
-            $submessages[] = new tx_caretaker_ResultMessage('LLL:EXT:caretaker_instance/locallang.xml:insecure_extension_test_warnings');
+            $submessages[] = new ResultMessage('LLL:EXT:caretaker_instance/locallang.xml:insecure_extension_test_warnings');
             foreach ($warnings as $warning) {
-                $submessages[] = new tx_caretaker_ResultMessage($warning['message'], $warning['values']);
+                $submessages[] = new ResultMessage($warning['message'], $warning['values']);
             }
         }
 
         // return error
         if ($num_errors > 0) {
             $value = (count($errors) + count($warnings));
-            $message = new tx_caretaker_ResultMessage('LLL:EXT:caretaker_instance/locallang.xml:insecure_extension_test_problems', $values);
+            $message = new ResultMessage('LLL:EXT:caretaker_instance/locallang.xml:insecure_extension_test_problems', $values);
 
-            return tx_caretaker_TestResult::create(tx_caretaker_Constants::state_error, $value, $message, $submessages);
+            return TestResult::create(Constants::state_error, $value, $message, $submessages);
         }
 
         // return results
         if ($num_warnings > 0) {
             $value = count($warnings);
-            $message = new tx_caretaker_ResultMessage('LLL:EXT:caretaker_instance/locallang.xml:insecure_extension_test_problems', $values);
+            $message = new ResultMessage('LLL:EXT:caretaker_instance/locallang.xml:insecure_extension_test_problems', $values);
 
-            return tx_caretaker_TestResult::create(tx_caretaker_Constants::state_warning, $value, $message, $submessages);
+            return TestResult::create(Constants::state_warning, $value, $message, $submessages);
         }
     }
 
@@ -182,7 +189,7 @@ class tx_caretakerinstance_FindInsecureExtensionTestService extends tx_caretaker
         // Check whitelist
         $ext_whitelist = $this->getCustomExtensionWhitelist();
         if (in_array($ext_key, $ext_whitelist)) {
-            return;
+            return null;
         }
 
         // Check blacklist
@@ -200,7 +207,7 @@ class tx_caretakerinstance_FindInsecureExtensionTestService extends tx_caretaker
                 );
             }
 
-            return;
+            return null;
         }
 
         // Find extension in TER
@@ -222,15 +229,15 @@ class tx_caretakerinstance_FindInsecureExtensionTestService extends tx_caretaker
                     case 1:
                         $warnings[] = array('message' => $message, 'values' => $extension);
 
-                        return;
+                        return null;
                     // Error
                     case 2:
                         $errors[] = array('message' => $message, 'values' => $extension);
 
-                        return;
+                        return null;
                     // Ignore
                     default:
-                        return;
+                        return null;
                 }
             } // Ext is not installed
             else {
@@ -241,15 +248,15 @@ class tx_caretakerinstance_FindInsecureExtensionTestService extends tx_caretaker
                     case 1:
                         $warnings[] = array('message' => $message, 'values' => $extension);
 
-                        return;
+                        return null;
                     // Error
                     case 2:
                         $errors[] = array('message' => $message, 'values' => $extension);
 
-                        return;
+                        return null;
                     // Ignore
                     default:
-                        return;
+                        return null;
                 }
             }
         } // Ext is not in TER
@@ -262,15 +269,15 @@ class tx_caretakerinstance_FindInsecureExtensionTestService extends tx_caretaker
                 case 1:
                     $warnings[] = array('message' => $message, 'values' => $extension);
 
-                    return;
+                    return null;
                 // Error
                 case 2:
                     $errors[] = array('message' => $message, 'values' => $extension);
 
-                    return;
+                    return null;
                 // Ignore
                 default:
-                    return;
+                    return null;
             }
         }
     }

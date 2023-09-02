@@ -1,9 +1,14 @@
 <?php
 
-class tx_caretakerinstance_BlacklistedRecordsTestService extends tx_caretakerinstance_RemoteTestServiceBase
+namespace Caretaker\CaretakerInstance\Service\Test;
+
+use Caretaker\Caretaker\Constants;
+use Caretaker\Caretaker\Entity\Result\TestResult;
+
+class BlacklistedRecordsTestService extends RemoteTestServiceBase
 {
     /**
-     * @return tx_caretaker_TestResult
+     * @return TestResult
      */
     public function runTest()
     {
@@ -49,9 +54,9 @@ class tx_caretakerinstance_BlacklistedRecordsTestService extends tx_caretakerins
             }
         }
         if (count($blacklistedValuesFound) > 0) {
-            return tx_caretaker_TestResult::create(tx_caretaker_Constants::state_error, 0, 'Values [' . implode(',', $blacklistedValuesFound) . '] in ' . $table . '.' . $field . ' are blacklisted and should not be active.');
+            return TestResult::create(Constants::state_error, 0, 'Values [' . implode(',', $blacklistedValuesFound) . '] in ' . $table . '.' . $field . ' are blacklisted and should not be active.');
         }
 
-        return tx_caretaker_TestResult::create(tx_caretaker_Constants::state_ok, 0, '');
+        return TestResult::create(Constants::state_ok, 0, '');
     }
 }

@@ -1,4 +1,10 @@
 <?php
+
+namespace Caretaker\CaretakerInstance\Service\Test;
+
+use Caretaker\Caretaker\Constants;
+use Caretaker\Caretaker\Entity\Result\TestResult;
+
 /***************************************************************
  * Copyright notice
  *
@@ -40,10 +46,10 @@
  * @author Felix Oertel <oertel@networkteam.com>
  *
  */
-class tx_caretakerinstance_CheckPathTestService extends tx_caretakerinstance_RemoteTestServiceBase
+class CheckPathTestService extends RemoteTestServiceBase
 {
     /**
-     * @return tx_caretaker_TestResult
+     * @return TestResult
      */
     public function runTest()
     {
@@ -56,7 +62,7 @@ class tx_caretakerinstance_CheckPathTestService extends tx_caretakerinstance_Rem
 
         // catch required fields
         if (!$paths) {
-            return tx_caretaker_TestResult::create(tx_caretaker_Constants::state_undefined, 0, 'Cannot test without path.');
+            return TestResult::create(Constants::state_undefined, 0, 'Cannot test without path.');
         }
 
         // prepare tests
@@ -79,41 +85,41 @@ class tx_caretakerinstance_CheckPathTestService extends tx_caretakerinstance_Rem
 
             if (!$result->isSuccessful() && !$inverse) {
                 $msg[] = $resValue['path'] . ' does not exist';
-                $resultState = tx_caretaker_Constants::state_error;
+                $resultState = Constants::state_error;
             } elseif ($result->isSuccessful() && $inverse) {
                 $msg[] = $resValue['path'] . ' does exist';
-                $resultState = tx_caretaker_Constants::state_error;
+                $resultState = Constants::state_error;
             } elseif ($result->isSuccessful() && $type && ($type != $resValue['type'])) {
                 $msg[] = $resValue['path'] . ' exists, but is a ' . $resValue['type'];
-                $resultState = tx_caretaker_Constants::state_error;
+                $resultState = Constants::state_error;
             }
 
             if ($fileAgeShouldBe != '' && $time != 0 && $result->isSuccessful()) {
                 if ($resValue['time'] == 0) {
                     $msg[] = 'Seems like the caretaker_instance can\'t report the file modification time.';
-                    $resultState = max($resultState, tx_caretaker_Constants::state_warning);
+                    $resultState = max($resultState, Constants::state_warning);
                 } else {
                     $fileIsYounger = ((time() - $resValue['time']) < $time);
                     if (($fileAgeShouldBe == 'younger' && $fileIsYounger)
                         || ($fileAgeShouldBe == 'older' && !$fileIsYounger)
                     ) {
-                        $resultState = tx_caretaker_Constants::state_error;
+                        $resultState = Constants::state_error;
                         $msg[] = $resValue['path'] . ' is ' . ($fileIsYounger ? 'younger' : 'older') . ' than ' . $time . ' seconds';
                     } elseif ($inverse) {
                         // if we do time checks, the file exists, but it should not ($inverse), it's only a warning
-                        $resultState = tx_caretaker_Constants::state_warning;
+                        $resultState = Constants::state_warning;
                     }
                 }
             }
         }
 
         if (is_array($msg)) {
-            return tx_caretaker_TestResult::create(
+            return TestResult::create(
                 $resultState,
                 0,
                 implode(chr(10), $msg)
             );
         }
-        return tx_caretaker_TestResult::create(tx_caretaker_Constants::state_ok, 1);
+        return TestResult::create(Constants::state_ok, 1);
     }
 }

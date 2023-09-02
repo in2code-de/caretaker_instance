@@ -1,4 +1,13 @@
 <?php
+
+namespace Caretaker\CaretakerInstance\Service\Test;
+
+use Caretaker\Caretaker\Constants;
+use Caretaker\Caretaker\Entity\Result\TestResult;
+use Caretaker\Caretaker\Service\Test\TestServiceBase;
+use Caretaker\CaretakerInstance\Entity\Command\CommandResult;
+use Caretaker\CaretakerInstance\Service\ServiceFactory;
+
 /***************************************************************
  * Copyright notice
  *
@@ -43,7 +52,7 @@
  * @author Tobias Liebig <liebig@networkteam.com>
  *
  */
-abstract class tx_caretakerinstance_RemoteTestServiceBase extends tx_caretaker_TestServiceBase
+abstract class RemoteTestServiceBase extends TestServiceBase
 {
     /**
      * Execute a list of operations on the configured instance.
@@ -54,11 +63,11 @@ abstract class tx_caretakerinstance_RemoteTestServiceBase extends tx_caretaker_T
      * </code>
      *
      * @param $operations Array of array of operations
-     * @return tx_caretakerinstance_CommandResult|bool
+     * @return CommandResult|bool
      */
     protected function executeRemoteOperations($operations)
     {
-        $factory = tx_caretakerinstance_ServiceFactory::getInstance();
+        $factory = ServiceFactory::getInstance();
         $connector = $factory->getRemoteCommandConnector();
         $connector->setInstance($this->instance);
 
@@ -68,26 +77,26 @@ abstract class tx_caretakerinstance_RemoteTestServiceBase extends tx_caretaker_T
     /**
      * Is the command result successful
      *
-     * @param tx_caretakerinstance_CommandResult $commandResult
+     * @param CommandResult $commandResult
      * @return bool
      */
     protected function isCommandResultSuccessful($commandResult)
     {
-        return $commandResult instanceof tx_caretakerinstance_CommandResult && $commandResult->isSuccessful();
+        return $commandResult instanceof CommandResult && $commandResult->isSuccessful();
     }
 
     /**
      * Get the test result for a failed command result
      *
-     * @param tx_caretakerinstance_CommandResult $commandResult
-     * @return tx_caretaker_TestResult
+     * @param CommandResult $commandResult
+     * @return TestResult
      */
     protected function getFailedCommandResultTestResult($commandResult)
     {
-        return tx_caretaker_TestResult::create(
-            ($commandResult instanceof tx_caretakerinstance_CommandResult ? $commandResult->getStatus() : tx_caretaker_Constants::state_error),
+        return TestResult::create(
+            ($commandResult instanceof CommandResult ? $commandResult->getStatus() : Constants::state_error),
             0,
-            'Command execution failed: ' . ($commandResult instanceof tx_caretakerinstance_CommandResult ? $commandResult->getMessage() : 'undefined')
+            'Command execution failed: ' . ($commandResult instanceof CommandResult ? $commandResult->getMessage() : 'undefined')
         );
     }
 
@@ -95,12 +104,12 @@ abstract class tx_caretakerinstance_RemoteTestServiceBase extends tx_caretaker_T
      * Get the test result for a failed operation result
      *
      * @param $operationResult
-     * @return tx_caretaker_TestResult
+     * @return TestResult
      */
     protected function getFailedOperationResultTestResult($operationResult)
     {
-        return tx_caretaker_TestResult::create(
-            tx_caretaker_Constants::state_error,
+        return TestResult::create(
+            Constants::state_error,
             0,
             'Operation execution failed: ' . $operationResult->getValue()
         );

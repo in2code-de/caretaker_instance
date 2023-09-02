@@ -1,4 +1,7 @@
 <?php
+
+namespace Caretaker\CaretakerInstance\Service\Test;
+
 /***************************************************************
  * Copyright notice
  *
@@ -23,6 +26,8 @@
  * This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use Caretaker\Caretaker\Constants;
+use Caretaker\Caretaker\Entity\Result\TestResult;
 use TYPO3\CMS\Core\Registry;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -46,10 +51,10 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  * @author Tobias Liebig <liebig@networkteam.com>
  *
  */
-class tx_caretakerinstance_TYPO3VersionTestService extends tx_caretakerinstance_RemoteTestServiceBase
+class TYPO3VersionTestService extends RemoteTestServiceBase
 {
     /**
-     * @return tx_caretaker_TestResult
+     * @return TestResult
      */
     public function runTest()
     {
@@ -57,11 +62,11 @@ class tx_caretakerinstance_TYPO3VersionTestService extends tx_caretakerinstance_
         $maxVersion = $this->checkForLatestVersion($this->getConfigValue('max_version'), $this->getConfigValue('allow_unstable'));
 
         if (!$minVersion && !$maxVersion) {
-            return tx_caretaker_TestResult::create(tx_caretaker_Constants::state_undefined, 0, 'Cannot execute TYPO3 version test without min and max version');
+            return TestResult::create(Constants::state_undefined, 0, 'Cannot execute TYPO3 version test without min and max version');
         }
 
         if ($maxVersion === false) {
-            return tx_caretaker_TestResult::create(tx_caretaker_Constants::state_undefined, 0, 'No TYPO3 version information available. Please add "TYPO3 Versionnumbers Update" to your scheduler queue.');
+            return TestResult::create(Constants::state_undefined, 0, 'No TYPO3 version information available. Please add "TYPO3 Versionnumbers Update" to your scheduler queue.');
         }
 
         $operation = array('GetTYPO3Version');
@@ -89,7 +94,7 @@ class tx_caretakerinstance_TYPO3VersionTestService extends tx_caretakerinstance_
 
         if ($checkResult) {
             $message = 'TYPO3 version ' . $version . ' is installed';
-            $testResult = tx_caretaker_TestResult::create(tx_caretaker_Constants::state_ok, 0, $message);
+            $testResult = TestResult::create(Constants::state_ok, 0, $message);
         } else {
             $message = 'TYPO3 version ' . $version . ' is installed, but';
             if ($minVersion) {
@@ -99,7 +104,7 @@ class tx_caretakerinstance_TYPO3VersionTestService extends tx_caretakerinstance_
                 $message .= ' <= ' . $maxVersion;
             }
             $message .= ' expected.';
-            $testResult = tx_caretaker_TestResult::create(tx_caretaker_Constants::state_error, 0, $message);
+            $testResult = TestResult::create(Constants::state_error, 0, $message);
         }
 
         return $testResult;

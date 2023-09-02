@@ -1,12 +1,18 @@
 <?php
 
-class tx_caretakerinstance_SchedulerFailuresTestService extends tx_caretakerinstance_RemoteTestServiceBase
+namespace Caretaker\CaretakerInstance\Service\Test;
+
+use Caretaker\Caretaker\Constants;
+use Caretaker\Caretaker\Entity\Result\TestResult;
+use Caretaker\CaretakerInstance\Entity\Operation\OperationResult;
+
+class SchedulerFailuresTestService extends RemoteTestServiceBase
 {
     /**
      * {@inheritDoc}
-     * @return tx_caretaker_TestResult
+     * @return TestResult
      */
-    public function runTest(): tx_caretaker_TestResult
+    public function runTest(): TestResult
     {
         $operations = array(
             array('GetScheduler', array()),
@@ -22,20 +28,20 @@ class tx_caretakerinstance_SchedulerFailuresTestService extends tx_caretakerinst
 
         $errors = array();
 
-        /** @var tx_caretakerinstance_OperationResult $operationResult */
+        /** @var OperationResult $operationResult */
         foreach ($results as $operationResult) {
             if (!$operationResult->isSuccessful()) {
                 $exceptions = $operationResult->getValue();
                 if (is_string($exceptions)) {
                     if ('Operation [GetScheduler] unknown' === $exceptions) {
-                        return tx_caretaker_TestResult::create(
-                            tx_caretaker_Constants::state_error,
+                        return TestResult::create(
+                            Constants::state_error,
                             0,
                             'The Instance does not support this Operation. Did you forget to install the additional extension?' . PHP_EOL . 'Original Exception: ' . $exceptions
                         );
                     }
-                    return tx_caretaker_TestResult::create(
-                        tx_caretaker_Constants::state_error,
+                    return TestResult::create(
+                        Constants::state_error,
                         0,
                         'Command execution failed: ' . $exceptions
                     );
@@ -54,13 +60,13 @@ class tx_caretakerinstance_SchedulerFailuresTestService extends tx_caretakerinst
         }
 
         if (!empty($errors)) {
-            return tx_caretaker_TestResult::create(
-                tx_caretaker_Constants::state_error,
+            return TestResult::create(
+                Constants::state_error,
                 0,
                 'Operation execution failed: ' . PHP_EOL . implode(PHP_EOL, $errors)
             );
         }
 
-        return tx_caretaker_TestResult::create(tx_caretaker_Constants::state_ok, 0, 'No Scheduler errors found');
+        return TestResult::create(Constants::state_ok, 0, 'No Scheduler errors found');
     }
 }
