@@ -1,4 +1,10 @@
 <?php
+
+namespace Caretaker\CaretakerInstance\Service;
+
+use Caretaker\CaretakerInstance\Entity\Command\CommandRequest;
+use Caretaker\CaretakerInstance\Exception\SecurityManagerException;
+
 /***************************************************************
  * Copyright notice
  *
@@ -43,22 +49,22 @@
  * @author Tobias Liebig <liebig@networkteam.com>
  *
  */
-interface tx_caretakerinstance_ISecurityManager
+interface ISecurityManager
 {
     /**
      * Decode a Command Request (decrypt, merge data)
      *
-     * @param tx_caretakerinstance_CommandRequest $commandRequest
+     * @param CommandRequest $commandRequest
      */
-    public function decodeRequest(tx_caretakerinstance_CommandRequest $commandRequest);
+    public function decodeRequest(CommandRequest $commandRequest);
 
     /**
      * Validate a Command Request (check session token, host address)
      *
-     * @param tx_caretakerinstance_CommandRequest $commandRequest
-     * @throws tx_caretakerinstance_SecurityManagerException
+     * @param CommandRequest $commandRequest
+     * @throws SecurityManagerException
      */
-    public function validateRequest(tx_caretakerinstance_CommandRequest $commandRequest);
+    public function validateRequest(CommandRequest $commandRequest);
 
     /**
      * Create a new session token for allowed hosts

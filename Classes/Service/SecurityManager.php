@@ -1,4 +1,15 @@
 <?php
+
+namespace Caretaker\CaretakerInstance\Service;
+
+use Caretaker\CaretakerInstance\Entity\Command\CommandRequest;
+use Caretaker\CaretakerInstance\Exception\ClientHostAddressRestrictionException;
+use Caretaker\CaretakerInstance\Exception\SecurityManagerException;
+use Caretaker\CaretakerInstance\Exception\SessionTokenException;
+use Caretaker\CaretakerInstance\Exception\SignatureValidationException;
+use Caretaker\CaretakerInstance\Service\Crypto\ICryptoManager;
+use Caretaker\CaretakerInstance\Service\Crypto\OpenSSLCryptoManager;
+
 /***************************************************************
  * Copyright notice
  *
@@ -43,7 +54,7 @@
  * @author Tobias Liebig <liebig@networkteam.com>
  *
  */
-class tx_caretakerinstance_SecurityManager implements tx_caretakerinstance_ISecurityManager
+class SecurityManager implements ISecurityManager
 {
     /**
      * Public key of this instance
@@ -81,16 +92,16 @@ class tx_caretakerinstance_SecurityManager implements tx_caretakerinstance_ISecu
     protected $clientHostAddressRestriction;
 
     /**
-     * @var tx_caretakerinstance_OpenSSLCryptoManager
+     * @var OpenSSLCryptoManager
      */
     protected $cryptoManager;
 
     /**
      * Constructor
      *
-     * @param tx_caretakerinstance_ICryptoManager $cryptoManager
+     * @param ICryptoManager $cryptoManager
      */
-    public function __construct(tx_caretakerinstance_ICryptoManager $cryptoManager)
+    public function __construct(ICryptoManager $cryptoManager)
     {
         $this->cryptoManager = $cryptoManager;
     }
@@ -102,18 +113,18 @@ class tx_caretakerinstance_SecurityManager implements tx_caretakerinstance_ISecu
      * - Client host address
      * - Encrypted data signature
      *
-     * @param tx_caretakerinstance_CommandRequest $commandRequest
-     * @throws tx_caretakerinstance_SecurityManagerException
+     * @param CommandRequest $commandRequest
+     * @throws SecurityManagerException
      * @return bool
      */
-    public function validateRequest(tx_caretakerinstance_CommandRequest $commandRequest)
+    public function validateRequest(CommandRequest $commandRequest)
     {
         $sessionToken = $commandRequest->getSessionToken();
         $timestamp = $this->cryptoManager->verifySessionToken($sessionToken, $this->privateKey);
         if ((time() - $timestamp) > $this->sessionTokenExpiration) {
-            throw new tx_caretakerinstance_SessionTokenException('Session token expired', 1500062206);
+            throw new SessionTokenException('Session token expired', 1500062206);
         } elseif (!$this->isClientHostAddressValid($commandRequest->getClientHostAddress())) {
-            throw new tx_caretakerinstance_ClientHostAddressRestrictionException('Client IP address is not allowed', 1500062384);
+            throw new ClientHostAddressRestrictionException('Client IP address is not allowed', 1500062384);
         } elseif (
             !$this->cryptoManager->verifySignature(
                 $commandRequest->getDataForSignature(),
@@ -121,7 +132,7 @@ class tx_caretakerinstance_SecurityManager implements tx_caretakerinstance_ISecu
                 $this->clientPublicKey
             )
         ) {
-            throw new tx_caretakerinstance_SignaturValidationException('Signature didn\'t verify', 1500062398);
+            throw new SignatureValidationException('Signature didn\'t verify', 1500062398);
         }
 
         return true;
@@ -130,10 +141,10 @@ class tx_caretakerinstance_SecurityManager implements tx_caretakerinstance_ISecu
     /**
      * Decrypt and merge encrypted data for the command request
      *
-     * @param tx_caretakerinstance_CommandRequest $commandRequest
+     * @param CommandRequest $commandRequest
      * @return bool TRUE if the command request could be decrypted
      */
-    public function decodeRequest(tx_caretakerinstance_CommandRequest $commandRequest)
+    public function decodeRequest(CommandRequest $commandRequest)
     {
         $data = json_decode($commandRequest->getRawData(), true);
         $commandRequest->mergeData($data);
