@@ -1,4 +1,7 @@
 <?php
+
+use Caretaker\Caretaker\Helper\ServiceHelper;
+
 /***************************************************************
  * Copyright notice
  *
@@ -39,16 +42,15 @@ if (!defined('TYPO3_MODE')) {
 
 // Register Caretaker Services
 if (\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('caretaker')) {
-    include_once(\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('caretaker_instance') . 'classes/class.tx_caretakerinstance_ServiceHelper.php');
-    tx_caretakerinstance_ServiceHelper::registerCaretakerTestService($_EXTKEY, 'services', 'tx_caretakerinstance_Extension', 'TYPO3 -> Extension', 'Check for a specific Extension');
-    tx_caretakerinstance_ServiceHelper::registerCaretakerTestService($_EXTKEY, 'services', 'tx_caretakerinstance_TYPO3Version', 'TYPO3 -> Version', 'Check for the TYPO3 version');
-    tx_caretakerinstance_ServiceHelper::registerCaretakerTestService($_EXTKEY, 'services', 'tx_caretakerinstance_FindInsecureExtension', 'TYPO3 -> Find insecure Extensions', 'Find Extensions wich are marked insecure in TER');
-    tx_caretakerinstance_ServiceHelper::registerCaretakerTestService($_EXTKEY, 'services', 'tx_caretakerinstance_FindExtensionUpdates', 'TYPO3 -> Find Extension Updates', 'Find available Updates for installed Extensions');
-    tx_caretakerinstance_ServiceHelper::registerCaretakerTestService($_EXTKEY, 'services', 'tx_caretakerinstance_BackendUser', 'TYPO3 -> Check backend user accounts', 'Find unwanted backend user accounts');
-    tx_caretakerinstance_ServiceHelper::registerCaretakerTestService($_EXTKEY, 'services', 'tx_caretakerinstance_CheckConfVars', 'TYPO3 -> Check TYPO3_CONF_VARS', 'Check Settings of TYPO3_CONF_VARS');
-    tx_caretakerinstance_ServiceHelper::registerCaretakerTestService($_EXTKEY, 'services', 'tx_caretakerinstance_CheckPath', 'FILE -> Check path', 'Checks for some path stats');
-    tx_caretakerinstance_ServiceHelper::registerCaretakerTestService($_EXTKEY, 'services', 'tx_caretakerinstance_DiskSpace', 'Disk Space', 'Check for disk space');
-    tx_caretakerinstance_ServiceHelper::registerCaretakerTestService($_EXTKEY, 'services', 'tx_caretakerinstance_Reports', 'TYPO3 -> Reports', 'Check for TYPO3 Reports');
-    tx_caretakerinstance_ServiceHelper::registerCaretakerTestService($_EXTKEY, 'services', 'tx_caretakerinstance_BlacklistedRecords', 'TYPO3 -> Check blacklisted records', 'Find unwanted records');
-    tx_caretakerinstance_ServiceHelper::registerCaretakerTestService($_EXTKEY, 'services', 'tx_caretakerinstance_SchedulerFailures', 'TYPO3 -> Check scheduler failures', 'Scan for recent failures of scheduler tasks');
+    ServiceHelper::registerCaretakerTestService('caretaker_instance', 'services', 'tx_caretakerinstance_Extension', 'TYPO3 -> Extension', 'Check for a specific Extension');
+    ServiceHelper::registerCaretakerTestService('caretaker_instance', 'services', 'tx_caretakerinstance_TYPO3Version', 'TYPO3 -> Version', 'Check for the TYPO3 version');
+    ServiceHelper::registerCaretakerTestService('caretaker_instance', 'services', 'tx_caretakerinstance_FindInsecureExtension', 'TYPO3 -> Find insecure Extensions', 'Find Extensions wich are marked insecure in TER');
+    ServiceHelper::registerCaretakerTestService('caretaker_instance', 'services', 'tx_caretakerinstance_FindExtensionUpdates', 'TYPO3 -> Find Extension Updates', 'Find available Updates for installed Extensions');
+    ServiceHelper::registerCaretakerTestService('caretaker_instance', 'services', 'tx_caretakerinstance_BackendUser', 'TYPO3 -> Check backend user accounts', 'Find unwanted backend user accounts');
+    ServiceHelper::registerCaretakerTestService('caretaker_instance', 'services', 'tx_caretakerinstance_CheckConfVars', 'TYPO3 -> Check TYPO3_CONF_VARS', 'Check Settings of TYPO3_CONF_VARS');
+    ServiceHelper::registerCaretakerTestService('caretaker_instance', 'services', 'tx_caretakerinstance_CheckPath', 'FILE -> Check path', 'Checks for some path stats');
+    ServiceHelper::registerCaretakerTestService('caretaker_instance', 'services', 'tx_caretakerinstance_DiskSpace', 'Disk Space', 'Check for disk space');
+    ServiceHelper::registerCaretakerTestService('caretaker_instance', 'services', 'tx_caretakerinstance_Reports', 'TYPO3 -> Reports', 'Check for TYPO3 Reports');
+    ServiceHelper::registerCaretakerTestService('caretaker_instance', 'services', 'tx_caretakerinstance_BlacklistedRecords', 'TYPO3 -> Check blacklisted records', 'Find unwanted records');
+    ServiceHelper::registerCaretakerTestService('caretaker_instance', 'services', 'tx_caretakerinstance_SchedulerFailures', 'TYPO3 -> Check scheduler failures', 'Scan for recent failures of scheduler tasks');
 }
