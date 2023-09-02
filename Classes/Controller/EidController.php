@@ -1,6 +1,9 @@
 <?php
 namespace Caretaker\CaretakerInstance\Controller;
 
+use Caretaker\CaretakerInstance\Entity\Command\CommandRequest;
+use Caretaker\CaretakerInstance\Entity\Command\CommandResult;
+use Caretaker\CaretakerInstance\Service\ServiceFactory;
 use Psr\Http\Message\ServerRequestInterface;
 
 class EidController
@@ -8,7 +11,7 @@ class EidController
     public function execute(ServerRequestInterface $request)
     {
         try {
-            $factory = \tx_caretakerinstance_ServiceFactory::getInstance();
+            $factory = ServiceFactory::getInstance();
             $commandService = $factory->getCommandService();
 
             $remoteAddress = $_SERVER['REMOTE_ADDR'];
@@ -35,7 +38,7 @@ class EidController
                 } else {
                     header('HTTP/1.0 500 Invalid request');
                 }
-                $request = new \tx_caretakerinstance_CommandRequest(
+                $request = new CommandRequest(
                     array(
                         'session_token' => $sessionToken,
                         'client_info' => array(
@@ -55,7 +58,7 @@ class EidController
             }
         } catch (\Exception $exception) {
             echo json_encode(array(
-                'status' => \tx_caretakerinstance_CommandResult::status_undefined,
+                'status' => CommandResult::status_undefined,
                 'exception' => array(
                     'code' => $exception->getCode(),
                 ),
