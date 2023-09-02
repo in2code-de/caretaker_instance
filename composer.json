@@ -56,7 +56,7 @@
   "autoload-dev": {
     "psr-4": {
       "Caretaker\\CaretakerInstance\\Tests\\": "Tests/"
-    }∆
+    }
   },
   "replace": {
     "typo3-ter/caretaker_instance": "self.version"
