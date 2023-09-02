@@ -1,4 +1,7 @@
 <?php
+
+namespace Caretaker\CaretakerInstance\Service\Crypto;
+
 /***************************************************************
  * Copyright notice
  *
@@ -43,7 +46,7 @@
  * @author Tobias Liebig <liebig@networkteam.com>
  *
  */
-class tx_caretakerinstance_OpenSSLCryptoManager extends tx_caretakerinstance_AbstractCryptoManager
+class OpenSSLCryptoManager extends AbstractCryptoManager
 {
     /**
      * Constructor
@@ -51,7 +54,7 @@ class tx_caretakerinstance_OpenSSLCryptoManager extends tx_caretakerinstance_Abs
     public function __construct()
     {
         if (!extension_loaded('openssl')) {
-            throw new Exception('OpenSSL PHP extension is required for Caretaker OpenSSLCryptoManager', 1298644422);
+            throw new \Exception('OpenSSL PHP extension is required for Caretaker OpenSSLCryptoManager', 1298644422);
         }
     }
 
@@ -61,7 +64,7 @@ class tx_caretakerinstance_OpenSSLCryptoManager extends tx_caretakerinstance_Abs
      *
      * @param $data string The data to encrypt
      * @param $publicKey string The public key for encryption (as PEM formatted string)
-     * @throws Exception
+     * @throws \Exception
      * @return string The encrypted data
      */
     public function encrypt($data, $publicKey)
@@ -85,7 +88,7 @@ class tx_caretakerinstance_OpenSSLCryptoManager extends tx_caretakerinstance_Abs
      *
      * @param $data string The data to decrypt
      * @param string $privateKey The private key for decryption (as PEM formatted string)
-     * @throws Exception
+     * @throws \Exception
      * @return string The decrypted data
      */
     public function decrypt($data, $privateKey)
@@ -110,7 +113,7 @@ class tx_caretakerinstance_OpenSSLCryptoManager extends tx_caretakerinstance_Abs
      *
      * @param string $data
      * @param string $privateKey The private key in PEM form
-     * @throws Exception
+     * @throws \Exception
      * @return string
      */
     public function createSignature($data, $privateKey)
@@ -132,7 +135,7 @@ class tx_caretakerinstance_OpenSSLCryptoManager extends tx_caretakerinstance_Abs
      * @param string $data
      * @param string $signature
      * @param string $publicKey The private key in PEM form
-     * @throws Exception
+     * @throws \Exception
      * @return string
      */
     public function verifySignature($data, $signature, $publicKey)
@@ -151,7 +154,7 @@ class tx_caretakerinstance_OpenSSLCryptoManager extends tx_caretakerinstance_Abs
     /**
      * Generate a new key pair
      *
-     * @throws Exception
+     * @throws \Exception
      * @return array Public and private key as string
      */
     public function generateKeyPair()
@@ -159,7 +162,7 @@ class tx_caretakerinstance_OpenSSLCryptoManager extends tx_caretakerinstance_Abs
         $keyPair = openssl_pkey_new();
 
         if (!$keyPair) {
-            throw new Exception('Cant create OpenSSL private key.');
+            throw new \Exception('Cant create OpenSSL private key.');
         }
 
         openssl_pkey_export($keyPair, $privateKey);

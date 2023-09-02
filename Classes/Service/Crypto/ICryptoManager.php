@@ -1,4 +1,7 @@
 <?php
+
+namespace Caretaker\CaretakerInstance\Service\Crypto;
+
 /***************************************************************
  * Copyright notice
  *
@@ -35,7 +38,7 @@
  */
 
 /**
- * An abstract base Crypto Manager implementation
+ * The Crypto Manager encrypts, decrypts and verifies data
  *
  * @author Martin Ficzel <martin@work.de>
  * @author Thomas Hempel <thomas@work.de>
@@ -43,7 +46,7 @@
  * @author Tobias Liebig <liebig@networkteam.com>
  *
  */
-abstract class tx_caretakerinstance_AbstractCryptoManager implements tx_caretakerinstance_ICryptoManager
+interface ICryptoManager
 {
     /**
      * Create a session token that can be verified with the given secret
@@ -52,14 +55,7 @@ abstract class tx_caretakerinstance_AbstractCryptoManager implements tx_caretake
      * @param string $secret
      * @return string
      */
-    public function createSessionToken($data, $secret)
-    {
-        // Salted MD5 hash for verification and randomness
-        $salt = substr(md5(rand()), 0, 12);
-        $token = $data . ':' . $salt . md5($secret . ':' . $data . ':' . $salt);
-
-        return $token;
-    }
+    public function createSessionToken($data, $secret);
 
     /**
      * Verify that the given token was created with the given secret
@@ -68,14 +64,49 @@ abstract class tx_caretakerinstance_AbstractCryptoManager implements tx_caretake
      * @param string $secret
      * @return bool
      */
-    public function verifySessionToken($token, $secret)
-    {
-        list($data, $hash) = explode(':', $token, 2);
-        $salt = substr($hash, 0, 12);
+    public function verifySessionToken($token, $secret);
 
-        if ($token == $data . ':' . $salt . md5($secret . ':' . $data . ':' . $salt)) {
-            return $data;
-        }
-        return false;
-    }
+    /**
+     * Sign the data with the given private key
+     *
+     * @param string $data
+     * @param string $privateKey The private key
+     * @return string
+     */
+    public function createSignature($data, $privateKey);
+
+    /**
+     * Verify the signature of data with the given public key
+     *
+     * @param string $data
+     * @param string $signature
+     * @param string $publicKey The private key
+     * @return string
+     */
+    public function verifySignature($data, $signature, $publicKey);
+
+    /**
+     * Encrypt data with the given public key
+     *
+     * @param $data string The data to encrypt
+     * @param $publicKey string The public key for encryption
+     * @return string The encrypted data
+     */
+    public function encrypt($data, $publicKey);
+
+    /**
+     * Decrypt data with the given private key
+     *
+     * @param $data string The data to decrypt
+     * @param $privateKey string The private key for decryption
+     * @return string The decrypted data
+     */
+    public function decrypt($data, $privateKey);
+
+    /**
+     * Generate a new key pair
+     *
+     * @return array Public and private key as string
+     */
+    public function generateKeyPair();
 }

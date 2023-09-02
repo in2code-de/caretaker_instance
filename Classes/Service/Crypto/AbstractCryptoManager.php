@@ -1,4 +1,7 @@
 <?php
+
+namespace Caretaker\CaretakerInstance\Service\Crypto;
+
 /***************************************************************
  * Copyright notice
  *
@@ -35,27 +38,26 @@
  */
 
 /**
- * A Bas64 based Crypto Manager implementation
- *
- * FIXME: Do *not* use Base64CryptoManager since the caretaker server cannot differentiate crypto implementations
- * of instances. This is for demonstration / debugging only!
+ * An abstract base Crypto Manager implementation
  *
  * @author Martin Ficzel <martin@work.de>
  * @author Thomas Hempel <thomas@work.de>
  * @author Christopher Hlubek <hlubek@networkteam.com>
  * @author Tobias Liebig <liebig@networkteam.com>
  *
- * @deprecated Use OpenSSLCryptoManager instead!
  */
-class tx_caretakerinstance_Base64CryptoManager implements tx_caretakerinstance_ICryptoManager
+abstract class AbstractCryptoManager implements ICryptoManager
 {
     /**
+     * Create a session token that can be verified with the given secret
+     *
      * @param string $data
      * @param string $secret
      * @return string
      */
     public function createSessionToken($data, $secret)
     {
+        // Salted MD5 hash for verification and randomness
         $salt = substr(md5(rand()), 0, 12);
         $token = $data . ':' . $salt . md5($secret . ':' . $data . ':' . $salt);
 
@@ -63,6 +65,8 @@ class tx_caretakerinstance_Base64CryptoManager implements tx_caretakerinstance_I
     }
 
     /**
+     * Verify that the given token was created with the given secret
+     *
      * @param string $token
      * @param string $secret
      * @return bool
@@ -76,54 +80,5 @@ class tx_caretakerinstance_Base64CryptoManager implements tx_caretakerinstance_I
             return $data;
         }
         return false;
-    }
-
-    /**
-     * @param string $data
-     * @param string $privateKey
-     * @return string
-     */
-    public function createSignature($data, $privateKey)
-    {
-        return md5($data);
-    }
-
-    /**
-     * @param string $data
-     * @param string $signature
-     * @param string $publicKey
-     * @return bool
-     */
-    public function verifySignature($data, $signature, $publicKey)
-    {
-        return md5($data) == $signature;
-    }
-
-    /**
-     * @param string $data
-     * @param $key
-     * @return string
-     */
-    public function encrypt($data, $key)
-    {
-        return base64_encode($data);
-    }
-
-    /**
-     * @param string $data
-     * @param $key
-     * @return string
-     */
-    public function decrypt($data, $key)
-    {
-        return base64_decode($data);
-    }
-
-    /**
-     * @return array
-     */
-    public function generateKeyPair()
-    {
-        return array('', '');
     }
 }

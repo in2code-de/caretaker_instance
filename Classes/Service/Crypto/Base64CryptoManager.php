@@ -1,4 +1,7 @@
 <?php
+
+namespace Caretaker\CaretakerInstance\Service\Crypto;
+
 /***************************************************************
  * Copyright notice
  *
@@ -35,75 +38,95 @@
  */
 
 /**
- * The Crypto Manager encrypts, decrypts and verifies data
+ * A Bas64 based Crypto Manager implementation
+ *
+ * FIXME: Do *not* use Base64CryptoManager since the caretaker server cannot differentiate crypto implementations
+ * of instances. This is for demonstration / debugging only!
  *
  * @author Martin Ficzel <martin@work.de>
  * @author Thomas Hempel <thomas@work.de>
  * @author Christopher Hlubek <hlubek@networkteam.com>
  * @author Tobias Liebig <liebig@networkteam.com>
  *
+ * @deprecated Use OpenSSLCryptoManager instead!
  */
-interface tx_caretakerinstance_ICryptoManager
+class Base64CryptoManager implements ICryptoManager
 {
     /**
-     * Create a session token that can be verified with the given secret
-     *
      * @param string $data
      * @param string $secret
      * @return string
      */
-    public function createSessionToken($data, $secret);
+    public function createSessionToken($data, $secret)
+    {
+        $salt = substr(md5(rand()), 0, 12);
+        $token = $data . ':' . $salt . md5($secret . ':' . $data . ':' . $salt);
+
+        return $token;
+    }
 
     /**
-     * Verify that the given token was created with the given secret
-     *
      * @param string $token
      * @param string $secret
      * @return bool
      */
-    public function verifySessionToken($token, $secret);
+    public function verifySessionToken($token, $secret)
+    {
+        list($data, $hash) = explode(':', $token, 2);
+        $salt = substr($hash, 0, 12);
+
+        if ($token == $data . ':' . $salt . md5($secret . ':' . $data . ':' . $salt)) {
+            return $data;
+        }
+        return false;
+    }
 
     /**
-     * Sign the data with the given private key
-     *
      * @param string $data
-     * @param string $privateKey The private key
+     * @param string $privateKey
      * @return string
      */
-    public function createSignature($data, $privateKey);
+    public function createSignature($data, $privateKey)
+    {
+        return md5($data);
+    }
 
     /**
-     * Verify the signature of data with the given public key
-     *
      * @param string $data
      * @param string $signature
-     * @param string $publicKey The private key
+     * @param string $publicKey
+     * @return bool
+     */
+    public function verifySignature($data, $signature, $publicKey)
+    {
+        return md5($data) == $signature;
+    }
+
+    /**
+     * @param string $data
+     * @param $key
      * @return string
      */
-    public function verifySignature($data, $signature, $publicKey);
+    public function encrypt($data, $key)
+    {
+        return base64_encode($data);
+    }
 
     /**
-     * Encrypt data with the given public key
-     *
-     * @param $data string The data to encrypt
-     * @param $publicKey string The public key for encryption
-     * @return string The encrypted data
+     * @param string $data
+     * @param $key
+     * @return string
      */
-    public function encrypt($data, $publicKey);
+    public function decrypt($data, $key)
+    {
+        return base64_decode($data);
+    }
 
     /**
-     * Decrypt data with the given private key
-     *
-     * @param $data string The data to decrypt
-     * @param $privateKey string The private key for decryption
-     * @return string The decrypted data
+     * @return array
      */
-    public function decrypt($data, $privateKey);
-
-    /**
-     * Generate a new key pair
-     *
-     * @return array Public and private key as string
-     */
-    public function generateKeyPair();
+    public function generateKeyPair()
+    {
+        return array('', '');
+    }
 }
