@@ -1,4 +1,7 @@
 <?php
+
+namespace Caretaker\CaretakerInstance\Entity\Operation;
+
 /***************************************************************
  * Copyright notice
  *
@@ -35,17 +38,8 @@
  */
 
 /**
- * An Operation is an atomic, executable and SAFE action with optional parameters that returns a value
- * wrapped in the Operation Result.
- * A Command can combine several Operations with different parameters.
- *
- * Operations should be as modular as possible, as they are the basic building blocks of
- * Checks on the caretaker server. Operations are executed on remote hosts via the caretaker
- * instance and should NEVER modify any data or allow for remote execution of arbitrary code.
- *
- * An example operation execution could be:
- *
- * "GetPHPVersion" returns OperationResult("5.2.0")
+ * An Operation Result encapsulates the result of
+ * an Operation execution.
  *
  * @author Martin Ficzel <martin@work.de>
  * @author Thomas Hempel <thomas@work.de>
@@ -53,16 +47,51 @@
  * @author Tobias Liebig <liebig@networkteam.com>
  *
  */
-interface tx_caretakerinstance_IOperation
+class OperationResult
 {
     /**
-     * Execute this Operation. The execution should not rely
-     * on the execution of previous Operations. The execution
-     * of the Operation MUST NOT modify any data (database, file)
-     * on the instance.
-     *
-     * @param array $parameter Parameters for the operation
-     * @return tx_caretakerinstance_OperationResult The operation result
+     * @var bool
      */
-    public function execute($parameter = array());
+    protected $status;
+
+    /**
+     * @var array|string
+     */
+    protected $value;
+
+    /**
+     * Construct a new operation result
+     *
+     * @param bool $status
+     * @param mixed $value
+     */
+    public function __construct($status, $value)
+    {
+        $this->status = $status;
+        $this->value = $value;
+    }
+
+    /**
+     * @return bool If the operation was executed successful
+     */
+    public function isSuccessful()
+    {
+        return $this->status;
+    }
+
+    /**
+     * @return array|string The operation value
+     */
+    public function getValue()
+    {
+        return $this->value;
+    }
+
+    /**
+     * @return array The Operation Result as an array
+     */
+    public function toArray()
+    {
+        return array('status' => $this->status, 'value' => $this->value);
+    }
 }
