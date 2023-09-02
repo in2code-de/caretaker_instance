@@ -1,4 +1,7 @@
 <?php
+
+namespace Caretaker\CaretakerInstance\Helper;
+
 /***************************************************************
  * Copyright notice
  *
@@ -44,7 +47,7 @@
  * @author Tobias Liebig <liebig@networkteam.com>
  *
  */
-class tx_caretakerinstance_ServiceHelper
+class ServiceHelper
 {
     public static $deferredTestServicesToRegister = array();
 
@@ -71,6 +74,6 @@ class tx_caretakerinstance_ServiceHelper
 
             return;
         }
-        tx_caretaker_ServiceHelper::registerCaretakerTestService($extKey, $path, $key, $title, $description);
+        \Caretaker\Caretaker\Helper\ServiceHelper::registerCaretakerTestService($extKey, $path, $key, $title, $description);
     }
 }

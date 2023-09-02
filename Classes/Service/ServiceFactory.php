@@ -1,4 +1,10 @@
 <?php
+
+namespace Caretaker\CaretakerInstance\Service;
+
+use Caretaker\CaretakerInstance\Service\Crypto\OpenSSLCryptoManager;
+use Caretaker\CaretakerInstance\Service\Operation\IOperation;
+
 /***************************************************************
  * Copyright notice
  *
@@ -43,35 +49,35 @@
  * @author Tobias Liebig <liebig@networkteam.com>
  *
  */
-class tx_caretakerinstance_ServiceFactory
+class ServiceFactory
 {
     /**
-     * @var tx_caretakerinstance_ServiceFactory
+     * @var ServiceFactory
      */
     protected static $instance;
 
     /**
-     * @var tx_caretakerinstance_CommandService
+     * @var CommandService
      */
     protected $commandService;
 
     /**
-     * @var tx_caretakerinstance_SecurityManager
+     * @var SecurityManager
      */
     protected $securityManager;
 
     /**
-     * @var tx_caretakerinstance_OperationManager
+     * @var OperationManager
      */
     protected $operationManager;
 
     /**
-     * @var tx_caretakerinstance_OpenSSLCryptoManager
+     * @var OpenSSLCryptoManager
      */
     protected $cryptoManager;
 
     /**
-     * @var tx_caretakerinstance_RemoteCommandConnector
+     * @var RemoteCommandConnector
      */
     protected $remoteCommandConnector;
 
@@ -85,7 +91,7 @@ class tx_caretakerinstance_ServiceFactory
 
     /**
      * @static
-     * @return tx_caretakerinstance_ServiceFactory
+     * @return ServiceFactory
      */
     public static function getInstance()
     {
@@ -97,12 +103,12 @@ class tx_caretakerinstance_ServiceFactory
     }
 
     /**
-     * @return tx_caretakerinstance_CommandService
+     * @return CommandService
      */
     public function getCommandService()
     {
         if ($this->commandService == null) {
-            $this->commandService = new tx_caretakerinstance_CommandService(
+            $this->commandService = new CommandService(
                 $this->getOperationManager(),
                 $this->getSecurityManager()
             );
@@ -112,12 +118,12 @@ class tx_caretakerinstance_ServiceFactory
     }
 
     /**
-     * @return tx_caretakerinstance_SecurityManager
+     * @return SecurityManager
      */
     public function getSecurityManager()
     {
         if ($this->securityManager == null) {
-            $this->securityManager = new tx_caretakerinstance_SecurityManager($this->getCryptoManager());
+            $this->securityManager = new SecurityManager($this->getCryptoManager());
             $this->securityManager->setPublicKey($this->extConf['crypto']['instance']['publicKey']);
             $this->securityManager->setPrivateKey($this->extConf['crypto']['instance']['privateKey']);
             $this->securityManager->setClientPublicKey($this->extConf['crypto']['client']['publicKey']);
@@ -128,18 +134,18 @@ class tx_caretakerinstance_ServiceFactory
     }
 
     /**
-     * @return tx_caretakerinstance_OperationManager
+     * @return OperationManager
      */
     public function getOperationManager()
     {
         if ($this->operationManager == null) {
-            $this->operationManager = new tx_caretakerinstance_OperationManager();
+            $this->operationManager = new OperationManager();
 
             if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['caretaker_instance']['operations'])) {
                 foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['caretaker_instance']['operations'] as $key => $operationRef) {
                     if (is_string($operationRef)) {
                         $operation = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance($operationRef);
-                    } elseif ($operationRef instanceof tx_caretakerinstance_IOperation) {
+                    } elseif ($operationRef instanceof IOperation) {
                         $operation = $operationRef;
                     }
                     // TODO log error if some strange value is registered
@@ -152,24 +158,24 @@ class tx_caretakerinstance_ServiceFactory
     }
 
     /**
-     * @return tx_caretakerinstance_OpenSSLCryptoManager
+     * @return OpenSSLCryptoManager
      */
     public function getCryptoManager()
     {
         if ($this->cryptoManager == null) {
-            $this->cryptoManager = new tx_caretakerinstance_OpenSSLCryptoManager();
+            $this->cryptoManager = new OpenSSLCryptoManager();
         }
 
         return $this->cryptoManager;
     }
 
     /**
-     * @return tx_caretakerinstance_RemoteCommandConnector
+     * @return RemoteCommandConnector
      */
     public function getRemoteCommandConnector()
     {
         if ($this->remoteCommandConnector == null) {
-            $this->remoteCommandConnector = new tx_caretakerinstance_RemoteCommandConnector(
+            $this->remoteCommandConnector = new RemoteCommandConnector(
                 $this->getCryptoManager(),
                 $this->getSecurityManager()
             );
