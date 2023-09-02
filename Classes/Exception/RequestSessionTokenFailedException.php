@@ -1,4 +1,7 @@
 <?php
+
+namespace Caretaker\CaretakerInstance\Exception;
+
 /***************************************************************
  * Copyright notice
  *
@@ -43,6 +46,6 @@
  * @author Tobias Liebig <liebig@networkteam.com>
  *
  */
-class tx_caretakerinstance_RequestSessionTokenFailedException extends Exception
+class RequestSessionTokenFailedException extends \Exception
 {
 }

@@ -1,4 +1,7 @@
 <?php
+
+namespace Caretaker\CaretakerInstance\Exception;
+
 /***************************************************************
  * Copyright notice
  *
@@ -37,6 +40,6 @@
 /**
  * Exception for failing request of Session Token
  */
-class tx_caretakerinstance_SessionTokenException extends tx_caretakerinstance_SecurityManagerException
+class SessionTokenException extends SecurityManagerException
 {
 }

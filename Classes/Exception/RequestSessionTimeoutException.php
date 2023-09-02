@@ -1,4 +1,7 @@
 <?php
+
+namespace Caretaker\CaretakerInstance\Exception;
+
 /***************************************************************
  * Copyright notice
  *
@@ -31,12 +34,18 @@
  * n@work GmbH - http://www.work.de
  * networkteam GmbH - http://www.networkteam.com/
  *
- * $Id$
+ * $Id: class.tx_caretakerinstance_RequestSessionTokenFailedException.php 43024 2011-02-03 11:58:50Z matrikz $
  */
 
 /**
- * Exception for failing request of Session Token
+ * Exception for request timeout
+ *
+ * @author Martin Ficzel <martin@work.de>
+ * @author Thomas Hempel <thomas@work.de>
+ * @author Christopher Hlubek <hlubek@networkteam.com>
+ * @author Tobias Liebig <liebig@networkteam.com>
+ *
  */
-class tx_caretakerinstance_ClientHostAddressRestrictionException extends tx_caretakerinstance_SecurityManagerException
+class RequestSessionTimeoutException extends \Exception
 {
 }
