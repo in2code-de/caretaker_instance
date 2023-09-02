@@ -1,4 +1,9 @@
 <?php
+
+namespace Caretaker\CaretakerInstance\Entity\Command;
+
+use Caretaker\CaretakerInstance\Entity\Operation\OperationResult;
+
 /***************************************************************
  * Copyright notice
  *
@@ -43,7 +48,7 @@
  * @author Tobias Liebig <liebig@networkteam.com>
  *
  */
-class tx_caretakerinstance_CommandResult
+class CommandResult
 {
     /**
      * @const int
@@ -56,7 +61,7 @@ class tx_caretakerinstance_CommandResult
 
     /**
      * @var int Status of the Command execution
-     * @see tx_caretakerinstance_CommandResult::status_ok
+     * @see CommandResult::status_ok
      */
     protected $status;
 
@@ -129,7 +134,7 @@ class tx_caretakerinstance_CommandResult
     {
         $results = array();
         if (is_array($this->operationResults)) {
-            /** @var tx_caretakerinstance_OperationResult $result */
+            /** @var OperationResult $result */
             foreach ($this->operationResults as $result) {
                 $results[] = $result->toArray();
             }
@@ -148,7 +153,7 @@ class tx_caretakerinstance_CommandResult
      * create a new CommandResult from a Json-String (e.g. receive by http-call)
      *
      * @param $json string
-     * @return tx_caretakerinstance_CommandResult
+     * @return CommandResult
      */
     public static function fromJson($json)
     {
@@ -157,7 +162,7 @@ class tx_caretakerinstance_CommandResult
         if (is_array($data)) {
             $results = array();
             foreach ($data['results'] as $key => $result) {
-                $results[] = new tx_caretakerinstance_OperationResult($result['status'], $result['value']);
+                $results[] = new OperationResult($result['status'], $result['value']);
             }
 
             return new self($data['status'], $results, $data['message']);

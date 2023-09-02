@@ -1,4 +1,7 @@
 <?php
+
+namespace Caretaker\CaretakerInstance\Entity\Command;
+
 /***************************************************************
  * Copyright notice
  *
@@ -49,7 +52,7 @@
  * @author Tobias Liebig <liebig@networkteam.com>
  *
  */
-class tx_caretakerinstance_CommandRequest
+class CommandRequest
 {
     /**
      * @var string The client public key when receiving a command
