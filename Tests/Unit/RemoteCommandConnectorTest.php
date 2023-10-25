@@ -77,13 +77,13 @@ class RemoteCommandConnectorTest extends UnitTestCase
         $this->publicKey = 'YTozOntpOjA7czo4OiLphXB4HJXTjyI7aToxO3M6MzoiAQABIjtpOjI7czo2OiJwdWJsaWMiO30=';
     }
 
-    public function testExecuteOperationsReturnsValidCommandResult()
+    public function testExecuteOperationsReturnsValidCommandResult(): void
     {
         $this->markTestSkipped('Accesses tx_caretaker classes, which cant be found');
 
         /** @var \PHPUnit_Framework_MockObject_MockObject|\tx_caretaker_InstanceNode $instance */
         $instance = $this->getMockBuilder('tx_caretaker_InstanceNode')
-            ->setMethods(array('getUrl', 'getPublicKey'))
+            ->setMethods(['getUrl', 'getPublicKey'])
             ->disableOriginalConstructor()
             ->getMock();
         $instance->expects($this->atLeastOnce())->method('getUrl')->will($this->returnValue('http:://foo.bar/'));
@@ -92,14 +92,14 @@ class RemoteCommandConnectorTest extends UnitTestCase
         // Mock the http/curl request
         /** @var \PHPUnit_Framework_MockObject_MockObject|\tx_caretakerinstance_RemoteCommandConnector $connector */
         $connector = $this->getMockBuilder('tx_caretakerinstance_RemoteCommandConnector')
-            ->setMethods(array('requestSessionToken', 'buildCommandRequest', 'executeRequest'))
-            ->setConstructorArgs(array($this->cryptoManager, $this->securityManager))
+            ->setMethods(['requestSessionToken', 'buildCommandRequest', 'executeRequest'])
+            ->setConstructorArgs([$this->cryptoManager, $this->securityManager])
             ->getMock();
         $request = $this->getMockBuilder('tx_caretakerinstance_CommandRequest')
-            ->setMethods(array('setSignature'))
-            ->setConstructorArgs(array(array()))
+            ->setMethods(['setSignature'])
+            ->setConstructorArgs([[]])
             ->getMock();
-        $exceptedResult = new \tx_caretakerinstance_CommandResult(true, array('foo' => 'bar'), 'foobar');
+        $exceptedResult = new \tx_caretakerinstance_CommandResult(true, ['foo' => 'bar'], 'foobar');
 
         $connector->expects($this->once())->method('requestSessionToken')->will($this->returnValue('SessionToken'));
         $connector->expects($this->once())->method('buildCommandRequest')->will($this->returnValue($request));
@@ -107,14 +107,14 @@ class RemoteCommandConnectorTest extends UnitTestCase
         $request->expects($this->once())->method('setSignature');
 
         $connector->setInstance($instance);
-        $result = $connector->executeOperations(array('foo' => 'bar'));
+        $result = $connector->executeOperations(['foo' => 'bar']);
 
         $this->assertInstanceOf('\tx_caretakerinstance_CommandResult', $result);
         $this->assertTrue($result->isSuccessful());
         $this->assertEquals($exceptedResult, $result);
     }
 
-    public function testExecuteOperationsReturnsFalseResultIfSessionTokenIsInvalid()
+    public function testExecuteOperationsReturnsFalseResultIfSessionTokenIsInvalid(): void
     {
         $this->markTestSkipped('Accesses tx_caretaker classes, which cant be found');
 
@@ -125,21 +125,21 @@ class RemoteCommandConnectorTest extends UnitTestCase
 
         // Mock the http/curl request
         $connector = $this->getMockBuilder('tx_caretakerinstance_RemoteCommandConnector')
-            ->setMethods(array('requestSessionToken', 'executeRequest'))
-            ->setConstructorArgs(array($this->cryptoManager, $this->securityManager))
+            ->setMethods(['requestSessionToken', 'executeRequest'])
+            ->setConstructorArgs([$this->cryptoManager, $this->securityManager])
             ->getMock();
 
         $connector->setInstance($instance);
         $connector->expects($this->once())->method('requestSessionToken')->will($this->throwException(new \tx_caretakerinstance_RequestSessionTokenFailedException()));
         $connector->expects($this->never())->method('executeRequest');
 
-        $result = $connector->executeOperations(array('foo' => 'bar'));
+        $result = $connector->executeOperations(['foo' => 'bar']);
 
         $this->assertInstanceOf('\tx_caretakerinstance_CommandResult', $result);
         $this->assertFalse($result->isSuccessful());
     }
 
-    public function testExecuteOperationsReturnsFalseResultIfURLMissing()
+    public function testExecuteOperationsReturnsFalseResultIfURLMissing(): void
     {
         $this->markTestSkipped('Accesses tx_caretaker classes, which cant be found');
 
@@ -151,13 +151,13 @@ class RemoteCommandConnectorTest extends UnitTestCase
         $connector = new \tx_caretakerinstance_RemoteCommandConnector($this->cryptoManager, $this->securityManager);
         $connector->setInstance($instance);
 
-        $result = $connector->executeOperations(array('foo' => 'bar'));
+        $result = $connector->executeOperations(['foo' => 'bar']);
 
         $this->assertInstanceOf('\tx_caretakerinstance_CommandResult', $result);
         $this->assertFalse($result->isSuccessful());
     }
 
-    public function testGetCommandRequestCreatesValidEncryptedCommandRequest()
+    public function testGetCommandRequestCreatesValidEncryptedCommandRequest(): void
     {
         $this->markTestSkipped('Accesses tx_caretaker classes, which cant be found');
 
@@ -175,7 +175,7 @@ class RemoteCommandConnectorTest extends UnitTestCase
         $this->assertEquals('{"encrypted":"encryptedString"}', $request->getData());
     }
 
-    public function testRequestSessionTokenReturnsValidToken()
+    public function testRequestSessionTokenReturnsValidToken(): void
     {
         $this->markTestSkipped('Accesses tx_caretaker classes, which cant be found');
 
@@ -188,14 +188,14 @@ class RemoteCommandConnectorTest extends UnitTestCase
         $instance->expects($this->any())->method('getPublicKey')->will($this->returnValue('publicKey'));
 
         $connector = $this->getMockBuilder('tx_caretakerinstance_RemoteCommandConnector')
-            ->setMethods(array('executeHttpRequest'))
-            ->setConstructorArgs(array($this->cryptoManager, $this->securityManager))
+            ->setMethods(['executeHttpRequest'])
+            ->setConstructorArgs([$this->cryptoManager, $this->securityManager])
             ->getMock();
 
         $connector->expects($this->once())->method('executeHttpRequest')
             ->with($this->equalTo($url . '?eID=\tx_caretakerinstance&rst=1'))
             ->will(
-                $this->returnValue(array('response' => $fakeSessionToken, 'info' => array('http_code' => 200)))
+                $this->returnValue(['response' => $fakeSessionToken, 'info' => ['http_code' => 200]])
             );
 
         $connector->setInstance($instance);
@@ -204,7 +204,7 @@ class RemoteCommandConnectorTest extends UnitTestCase
         $this->assertEquals($fakeSessionToken, $sessionToken);
     }
 
-    public function testRequestSessionTokenThrowsExceptionWithInvalidToken()
+    public function testRequestSessionTokenThrowsExceptionWithInvalidToken(): void
     {
         $this->markTestSkipped('Accesses tx_caretaker classes, which cant be found');
 
@@ -217,15 +217,15 @@ class RemoteCommandConnectorTest extends UnitTestCase
         $instance->expects($this->any())->method('getPublicKey')->will($this->returnValue('publicKey'));
 
         $connector = $this->getMockBuilder('tx_caretakerinstance_RemoteCommandConnector')
-            ->setMethods(array('executeHttpRequest'))
-            ->setConstructorArgs(array($this->cryptoManager, $this->securityManager))
+            ->setMethods(['executeHttpRequest'])
+            ->setConstructorArgs([$this->cryptoManager, $this->securityManager])
             ->getMock();
 
         $connector->expects($this->once())
             ->method('executeHttpRequest')
             ->with($this->equalTo($url . '?eID=\tx_caretakerinstance&rst=1'))
             ->will(
-                $this->returnValue(array('response' => $fakeSessionToken, 'info' => array('http_code' => 200)))
+                $this->returnValue(['response' => $fakeSessionToken, 'info' => ['http_code' => 200]])
             );
 
         $connector->setInstance($instance);
@@ -233,14 +233,14 @@ class RemoteCommandConnectorTest extends UnitTestCase
         try {
             $connector->requestSessionToken();
             $this->fail("requestSessionToken should throw an \tx_caretakerinstance_RequestSessionTokenFailedException exception");
-        } catch (\tx_caretakerinstance_RequestSessionTokenFailedException $e) {
+        } catch (\tx_caretakerinstance_RequestSessionTokenFailedException) {
             // ok
-        } catch (Exception $e) {
+        } catch (Exception) {
             $this->fail("requestSessionToken should throw an \tx_caretakerinstance_RequestSessionTokenFailedException exception");
         }
     }
 
-    public function testRequestSessionTokenThrowsExceptionIfHttpRequestFails()
+    public function testRequestSessionTokenThrowsExceptionIfHttpRequestFails(): void
     {
         $this->markTestSkipped('Accesses tx_caretaker classes, which cant be found');
 
@@ -253,14 +253,14 @@ class RemoteCommandConnectorTest extends UnitTestCase
         $instance->expects($this->any())->method('getPublicKey')->will($this->returnValue('publicKey'));
 
         $connector = $this->getMockBuilder('tx_caretakerinstance_RemoteCommandConnector')
-            ->setMethods(array('executeHttpRequest'))
-            ->setConstructorArgs(array($this->cryptoManager, $this->securityManager))
+            ->setMethods(['executeHttpRequest'])
+            ->setConstructorArgs([$this->cryptoManager, $this->securityManager])
             ->getMock();
 
         $connector->expects($this->once())->method('executeHttpRequest')
             ->with($this->equalTo($url . '?eID=\tx_caretakerinstance&rst=1'))
             ->will(
-                $this->returnValue(array('response' => $fakeSessionToken, 'info' => array('http_code' => 404)))
+                $this->returnValue(['response' => $fakeSessionToken, 'info' => ['http_code' => 404]])
             );
 
         $connector->setInstance($instance);
@@ -268,18 +268,18 @@ class RemoteCommandConnectorTest extends UnitTestCase
         try {
             $connector->requestSessionToken();
             $this->fail("requestSessionToken should throw an \tx_caretakerinstance_RequestSessionTokenFailedException exception");
-        } catch (\tx_caretakerinstance_RequestSessionTokenFailedException $e) {
+        } catch (\tx_caretakerinstance_RequestSessionTokenFailedException) {
             // ok
-        } catch (Exception $e) {
+        } catch (Exception) {
             $this->fail("requestSessionToken should throw an \tx_caretakerinstance_RequestSessionTokenFailedException exception");
         }
     }
 
-    public function testGetRequestSignature()
+    public function testGetRequestSignature(): void
     {
         $request = $this->getMockBuilder('tx_caretakerinstance_CommandResult')
-            ->setMethods(array('getDataForSignature'))
-            ->setConstructorArgs(array(array()))
+            ->setMethods(['getDataForSignature'])
+            ->setConstructorArgs([[]])
             ->getMock();
         // FIXME: interface for CommandResult?
 
@@ -293,13 +293,13 @@ class RemoteCommandConnectorTest extends UnitTestCase
         $this->assertEquals('==aSignature==', $signature);
     }
 
-    public function testExecuteRequestCreatesValidCommandResult()
+    public function testExecuteRequestCreatesValidCommandResult(): void
     {
         $url = 'http://foo.bar/';
 
         $request = $this->getMockBuilder('tx_caretakerinstance_CommandResult')
-            ->setMethods(array('getSessionToken', 'getData', 'getSignature', 'getServerUrl'))
-            ->setConstructorArgs(array(array()))
+            ->setMethods(['getSessionToken', 'getData', 'getSignature', 'getServerUrl'])
+            ->setConstructorArgs([[]])
             ->getMock();
 
         $request->expects($this->once())->method('getSessionToken')->will($this->returnValue('==sessionToken=='));
@@ -310,21 +310,17 @@ class RemoteCommandConnectorTest extends UnitTestCase
         $this->securityManager->expects($this->once())->method('decodeResult')->with($this->equalTo('==encryptedString=='))->will($this->returnValue('{"status":true,"results":[{"status":true,"value":"foo"},{"status":true,"value":false},{"status":true,"value":["foo","bar"]}],"message":"Test message"}'));
 
         $connector = $this->getMockBuilder('tx_caretakerinstance_RemoteCommandConnector')
-            ->setMethods(array('executeHttpRequest'))
-            ->setConstructorArgs(array($this->cryptoManager, $this->securityManager))
+            ->setMethods(['executeHttpRequest'])
+            ->setConstructorArgs([$this->cryptoManager, $this->securityManager])
             ->getMock();
 
         // Mock session token request
         $connector->expects($this->once())->method('executeHttpRequest')
             ->with(
                 $this->equalTo($url),
-                $this->equalTo(array(
-                    'd' => '==data==',
-                    'st' => '==sessionToken==',
-                    's' => '==Signature==',
-                ))
+                $this->equalTo(['d' => '==data==', 'st' => '==sessionToken==', 's' => '==Signature=='])
             )->will(
-                $this->returnValue(array('response' => '==encryptedString==', 'info' => array('http_code' => 200)))
+                $this->returnValue(['response' => '==encryptedString==', 'info' => ['http_code' => 200]])
             );
 
         $result = $connector->executeRequest($request);
@@ -332,20 +328,16 @@ class RemoteCommandConnectorTest extends UnitTestCase
         $this->assertInstanceOf('\tx_caretakerinstance_CommandResult', $result);
         $this->assertTrue($result->isSuccessful());
         $this->assertEquals('Test message', $result->getMessage());
-        $this->assertEquals(array(
-            new \tx_caretakerinstance_OperationResult(true, 'foo'),
-            new \tx_caretakerinstance_OperationResult(true, false),
-            new \tx_caretakerinstance_OperationResult(true, array('foo', 'bar')),
-        ), $result->getOperationResults());
+        $this->assertEquals([new \tx_caretakerinstance_OperationResult(true, 'foo'), new \tx_caretakerinstance_OperationResult(true, false), new \tx_caretakerinstance_OperationResult(true, ['foo', 'bar'])], $result->getOperationResults());
     }
 
-    public function testExecuteRequestReturnsFalseCommandResultOnFailure()
+    public function testExecuteRequestReturnsFalseCommandResultOnFailure(): void
     {
         $url = 'http://foo.bar/';
 
         $request = $this->getMockBuilder('tx_caretakerinstance_CommandResult')
-            ->setMethods(array('getSessionToken', 'getData', 'getSignature', 'getServerUrl'))
-            ->setConstructorArgs(array(array()))
+            ->setMethods(['getSessionToken', 'getData', 'getSignature', 'getServerUrl'])
+            ->setConstructorArgs([[]])
             ->getMock();
 
         $request->expects($this->once())->method('getSessionToken')->will($this->returnValue('==sessionToken=='));
@@ -354,21 +346,17 @@ class RemoteCommandConnectorTest extends UnitTestCase
         $request->expects($this->once())->method('getServerUrl')->will($this->returnValue($url));
 
         $connector = $this->getMockBuilder('tx_caretakerinstance_RemoteCommandConnector')
-            ->setMethods(array('executeHttpRequest'))
-            ->setConstructorArgs(array($this->cryptoManager, $this->securityManager))
+            ->setMethods(['executeHttpRequest'])
+            ->setConstructorArgs([$this->cryptoManager, $this->securityManager])
             ->getMock();
 
         // Mock session token request
         $connector->expects($this->once())->method('executeHttpRequest')
             ->with(
                 $this->equalTo($url),
-                $this->equalTo(array(
-                    'd' => '==data==',
-                    'st' => '==sessionToken==',
-                    's' => '==Signature==',
-                ))
+                $this->equalTo(['d' => '==data==', 'st' => '==sessionToken==', 's' => '==Signature=='])
             )->will(
-                $this->returnValue(array('response' => 'AnyStringButJson', 'info' => array('http_code' => 404)))
+                $this->returnValue(['response' => 'AnyStringButJson', 'info' => ['http_code' => 404]])
             );
 
         $result = $connector->executeRequest($request);

@@ -50,7 +50,7 @@ class RemoteTestServiceBaseTest extends UnitTestCase
         //        $this->rts = new RemoteTestServiceTestBaseImpl();
     }
 
-    public function testCheckVersionRangeOk()
+    public function testCheckVersionRangeOk(): void
     {
         $this->markTestSkipped('Accesses tx_caretaker classes, which cant be found');
 
@@ -63,7 +63,7 @@ class RemoteTestServiceBaseTest extends UnitTestCase
         );
     }
 
-    public function testCheckVersionRangeOkExactMin()
+    public function testCheckVersionRangeOkExactMin(): void
     {
         $this->markTestSkipped('Accesses tx_caretaker classes, which cant be found');
 
@@ -76,7 +76,7 @@ class RemoteTestServiceBaseTest extends UnitTestCase
         );
     }
 
-    public function testCheckVersionRangeOkExactMax()
+    public function testCheckVersionRangeOkExactMax(): void
     {
         $this->markTestSkipped('Accesses tx_caretaker classes, which cant be found');
 
@@ -89,7 +89,7 @@ class RemoteTestServiceBaseTest extends UnitTestCase
         );
     }
 
-    public function testCheckVersionRangeMaxDoesNotMatch()
+    public function testCheckVersionRangeMaxDoesNotMatch(): void
     {
         $this->markTestSkipped('Accesses tx_caretaker classes, which cant be found');
 
@@ -102,7 +102,7 @@ class RemoteTestServiceBaseTest extends UnitTestCase
         );
     }
 
-    public function testCheckVersionRangeMinDoesNotMatch()
+    public function testCheckVersionRangeMinDoesNotMatch(): void
     {
         $this->markTestSkipped('Accesses tx_caretaker classes, which cant be found');
 
@@ -115,7 +115,7 @@ class RemoteTestServiceBaseTest extends UnitTestCase
         );
     }
 
-    public function testCheckVersionRangeTypeAlpha()
+    public function testCheckVersionRangeTypeAlpha(): void
     {
         $this->markTestSkipped('Accesses tx_caretaker classes, which cant be found');
 
@@ -153,7 +153,7 @@ class RemoteTestServiceBaseTest extends UnitTestCase
         );
     }
 
-    public function testCheckVersionRangeTypeAlphaBeta()
+    public function testCheckVersionRangeTypeAlphaBeta(): void
     {
         $this->markTestSkipped('Accesses tx_caretaker classes, which cant be found');
 
@@ -175,7 +175,7 @@ class RemoteTestServiceBaseTest extends UnitTestCase
         );
     }
 
-    public function testCheckVersionRangeTypeRc()
+    public function testCheckVersionRangeTypeRc(): void
     {
         $this->markTestSkipped('Accesses tx_caretaker classes, which cant be found');
 

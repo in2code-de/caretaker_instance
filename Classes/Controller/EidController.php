@@ -5,7 +5,7 @@ use Psr\Http\Message\ServerRequestInterface;
 
 class EidController
 {
-    public function execute(ServerRequestInterface $request)
+    public function execute(ServerRequestInterface $request): void
     {
         try {
             $factory = \tx_caretakerinstance_ServiceFactory::getInstance();
@@ -16,7 +16,7 @@ class EidController
             if ($_SERVER['REQUEST_METHOD'] == 'GET') {
                 if (isset($_GET['rst'])) {
                     $token = $commandService->requestSessionToken($remoteAddress);
-                    if (!$token) {
+                    if ($token === '' || $token === '0') {
                         header('HTTP/1.0 403 Request not allowed');
                     } else {
                         echo $token;
@@ -35,16 +35,17 @@ class EidController
                 } else {
                     header('HTTP/1.0 500 Invalid request');
                 }
+
                 $request = new \tx_caretakerinstance_CommandRequest(
-                    array(
+                    [
                         'session_token' => $sessionToken,
-                        'client_info' => array(
+                        'client_info' => [
                             'host_address' => $remoteAddress,
-                        ),
-                        'data' => array(),
+                        ],
+                        'data' => [],
                         'raw' => $data,
                         'signature' => $signature,
-                    )
+                    ]
                 );
 
                 $result = $commandService->executeCommand($request);
@@ -54,13 +55,16 @@ class EidController
                 echo $commandService->wrapCommandResult($result);
             }
         } catch (\Exception $exception) {
-            echo json_encode(array(
-                'status' => \tx_caretakerinstance_CommandResult::status_undefined,
-                'exception' => array(
-                    'code' => $exception->getCode(),
-                ),
-                'message' => $exception->getMessage(),
-            ));
+            echo json_encode(
+                [
+                    'status' => \tx_caretakerinstance_CommandResult::status_undefined,
+                    'exception' => [
+                        'code' => $exception->getCode(),
+                    ],
+                    'message' => $exception->getMessage(),
+                ],
+                JSON_THROW_ON_ERROR
+            );
         }
 
         exit;

@@ -45,38 +45,38 @@ use Nimut\TestingFramework\TestCase\UnitTestCase;
  */
 class ServicesTest extends UnitTestCase
 {
-    public function testFindInsecureExtensionCommand()
+    public function testFindInsecureExtensionCommand(): void
     {
         $this->markTestSkipped('Accesses tx_caretaker classes, which cant be found');
 
         $stub = $this->getMockBuilder('tx_caretakerinstance_FindInsecureExtensionTestService')
-            ->setMethods(array('getLocationList', 'executeRemoteOperations', 'checkExtension'))
+            ->setMethods(['getLocationList', 'executeRemoteOperations', 'checkExtension'])
             ->getMock();
 
         $stub->expects($this->once())
             ->method('getLocationList')
             ->with()
-            ->will($this->returnValue(array('local')));
+            ->will($this->returnValue(['local']));
 
         $stub->expects($this->once())
             ->method('executeRemoteOperations')
-            ->with($this->equalTo(array(array('GetExtensionList', array('locations' => array('local'))))))
+            ->with($this->equalTo([['GetExtensionList', ['locations' => ['local']]]]))
             ->will(
                 $this->returnValue(
                     new \tx_caretakerinstance_CommandResult(
                         true,
-                        array(
+                        [
                             new \tx_caretakerinstance_OperationResult(
                                 true,
-                                array(
-                                    'tt_address' => array(
+                                [
+                                    'tt_address' => [
                                         'isInstalled' => true,
                                         'version' => '2.1.4',
-                                        'location' => array('local'),
-                                    ),
-                                )
+                                        'location' => ['local'],
+                                    ],
+                                ]
                             ),
-                        )
+                        ]
                     )
                 )
             );
@@ -92,28 +92,26 @@ class ServicesTest extends UnitTestCase
         $this->assertEquals(\tx_caretaker_Constants::state_ok, $result->getState());
     }
 
-    public function providerFindInsecureExtensionGetLocationList()
+    public function providerFindInsecureExtensionGetLocationList(): array
     {
-        return array(
-            array(1, array('system')),
-            array(2, array('global')),
-            array(4, array('local')),
-            array(3, array('system', 'global')),
-            array(6, array('global', 'local')),
-        );
+        return [
+            [1, ['system']],
+            [2, ['global']],
+            [4, ['local']],
+            [3, ['system', 'global']],
+            [6, ['global', 'local']],
+        ];
     }
 
     /**
      * @dataProvider providerFindInsecureExtensionGetLocationList
-     * @param mixed $input
-     * @param mixed $output
      */
-    public function testFindInsecureExtensionGetLocationList($input, $output)
+    public function testFindInsecureExtensionGetLocationList(mixed $input, mixed $output): void
     {
         $this->markTestSkipped('Accesses tx_caretaker classes, which cant be found');
 
         $stub = $this->getMockBuilder('tx_caretakerinstance_FindInsecureExtensionTestService')
-            ->setMethods(array('getConfigValue'))
+            ->setMethods(['getConfigValue'])
             ->getMock();
 
         $stub->expects($this->once())

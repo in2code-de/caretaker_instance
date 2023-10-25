@@ -58,12 +58,9 @@ class tx_caretakerinstance_Operation_GetRecord implements tx_caretakerinstance_I
      *
      * @var array
      */
-    protected $protectedFieldsByTable = array(
-        'be_users' => array('password', 'uc'),
-        'fe_users' => array('password'),
-    );
+    protected $protectedFieldsByTable = ['be_users' => ['password', 'uc'], 'fe_users' => ['password']];
 
-    protected $implicitFields = array('uid', 'pid', 'deleted', 'hidden');
+    protected $implicitFields = ['uid', 'pid', 'deleted', 'hidden'];
 
     /**
      * Get record data from the given table and uid
@@ -71,7 +68,7 @@ class tx_caretakerinstance_Operation_GetRecord implements tx_caretakerinstance_I
      * @param array $parameter A table 'table', field name 'field' and the value 'value' to find the record
      * @return tx_caretakerinstance_OperationResult The first found record as an array or FALSE if no record was found
      */
-    public function execute($parameter = array())
+    public function execute($parameter = []): \tx_caretakerinstance_OperationResult
     {
         $table = $parameter['table'];
         $field = $parameter['field'];
@@ -80,6 +77,7 @@ class tx_caretakerinstance_Operation_GetRecord implements tx_caretakerinstance_I
         if (!isset($GLOBALS['TCA'][$table])) {
             return new tx_caretakerinstance_OperationResult(false, 'Table [' . $table . '] not found in the TCA');
         }
+
         if (!isset($GLOBALS['TCA'][$table]['columns'][$field]) && !in_array($field, $this->implicitFields)) {
             return new tx_caretakerinstance_OperationResult(false, 'Field [' . $field . '] of table [' . $table . '] not found in the TCA');
         }
@@ -92,9 +90,7 @@ class tx_caretakerinstance_Operation_GetRecord implements tx_caretakerinstance_I
 
         /** @var Statement $statement */
         $statement = $queryBuilder->select('*')
-            ->from($table)
-            ->where($queryBuilder->expr()->eq($field, $queryBuilder->createNamedParameter($value)))
-            ->execute();
+            ->from($table)->where($queryBuilder->expr()->eq($field, $queryBuilder->createNamedParameter($value)))->executeQuery();
 
         if (!$statement->errorInfo() || $statement->errorCode() == '00000') {
             $record = $statement->fetch();
@@ -108,8 +104,10 @@ class tx_caretakerinstance_Operation_GetRecord implements tx_caretakerinstance_I
 
                 return new tx_caretakerinstance_OperationResult(true, $record);
             }
+
             return new tx_caretakerinstance_OperationResult(true, false);
         }
+
         return new tx_caretakerinstance_OperationResult(
             false,
             'Error when executing SQL: [' . $statement->errorInfo() . ']'

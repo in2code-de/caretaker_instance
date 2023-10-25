@@ -1,4 +1,7 @@
 <?php
+
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+
 /***************************************************************
  * Copyright notice
  *
@@ -22,7 +25,6 @@
  *
  * This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * This is a file of the caretaker project.
  * http://forge.typo3.org/projects/show/extension-caretaker
@@ -49,6 +51,8 @@ class tx_caretakerinstance_ServiceFactory
      * @var tx_caretakerinstance_ServiceFactory
      */
     protected static $instance;
+
+    public $extConf;
 
     /**
      * @var tx_caretakerinstance_CommandService
@@ -97,6 +101,14 @@ class tx_caretakerinstance_ServiceFactory
     }
 
     /**
+     * Destroy the factory instance
+     */
+    public static function destroy(): void
+    {
+        self::$instance = null;
+    }
+
+    /**
      * @return tx_caretakerinstance_CommandService
      */
     public function getCommandService()
@@ -109,6 +121,31 @@ class tx_caretakerinstance_ServiceFactory
         }
 
         return $this->commandService;
+    }
+
+    /**
+     * @return tx_caretakerinstance_OperationManager
+     */
+    public function getOperationManager()
+    {
+        if ($this->operationManager == null) {
+            $this->operationManager = new tx_caretakerinstance_OperationManager();
+
+            if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['caretaker_instance']['operations'])) {
+                foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['caretaker_instance']['operations'] as $key => $operationRef) {
+                    if (is_string($operationRef)) {
+                        $operation = GeneralUtility::makeInstance($operationRef);
+                    } elseif ($operationRef instanceof tx_caretakerinstance_IOperation) {
+                        $operation = $operationRef;
+                    }
+
+                    // TODO log error if some strange value is registered
+                    $this->operationManager->registerOperation($key, $operation);
+                }
+            }
+        }
+
+        return $this->operationManager;
     }
 
     /**
@@ -125,30 +162,6 @@ class tx_caretakerinstance_ServiceFactory
         }
 
         return $this->securityManager;
-    }
-
-    /**
-     * @return tx_caretakerinstance_OperationManager
-     */
-    public function getOperationManager()
-    {
-        if ($this->operationManager == null) {
-            $this->operationManager = new tx_caretakerinstance_OperationManager();
-
-            if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['caretaker_instance']['operations'])) {
-                foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['caretaker_instance']['operations'] as $key => $operationRef) {
-                    if (is_string($operationRef)) {
-                        $operation = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance($operationRef);
-                    } elseif ($operationRef instanceof tx_caretakerinstance_IOperation) {
-                        $operation = $operationRef;
-                    }
-                    // TODO log error if some strange value is registered
-                    $this->operationManager->registerOperation($key, $operation);
-                }
-            }
-        }
-
-        return $this->operationManager;
     }
 
     /**
@@ -176,13 +189,5 @@ class tx_caretakerinstance_ServiceFactory
         }
 
         return $this->remoteCommandConnector;
-    }
-
-    /**
-     * Destroy the factory instance
-     */
-    public static function destroy()
-    {
-        self::$instance = null;
     }
 }

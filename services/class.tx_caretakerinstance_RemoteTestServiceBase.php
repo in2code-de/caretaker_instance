@@ -45,6 +45,32 @@
  */
 abstract class tx_caretakerinstance_RemoteTestServiceBase extends tx_caretaker_TestServiceBase
 {
+    public $instance;
+
+    /**
+     * Check if the given version is within the minimum and maximum version
+     *
+     * @param string $actualVersion Version to compare to min and max
+     * @param string $minVersion Minimum version that is required.
+     *                              May be empty.
+     * @param string $maxVersion Maximum version that is required.
+     *                              May be empty.
+     *
+     * @return bool TRUE if the actual version is within min and max.
+     */
+    public function checkVersionRange($actualVersion, $minVersion, $maxVersion): bool
+    {
+        if ($minVersion != '' && !version_compare($actualVersion, $minVersion, '>=')) {
+            return false;
+        }
+
+        if ($maxVersion != '' && !version_compare($actualVersion, $maxVersion, '<=')) {
+            return false;
+        }
+
+        return true;
+    }
+
     /**
      * Execute a list of operations on the configured instance.
      *
@@ -56,7 +82,7 @@ abstract class tx_caretakerinstance_RemoteTestServiceBase extends tx_caretaker_T
      * @param $operations Array of array of operations
      * @return tx_caretakerinstance_CommandResult|bool
      */
-    protected function executeRemoteOperations($operations)
+    protected function executeRemoteOperations(array $operations)
     {
         $factory = tx_caretakerinstance_ServiceFactory::getInstance();
         $connector = $factory->getRemoteCommandConnector();
@@ -71,7 +97,7 @@ abstract class tx_caretakerinstance_RemoteTestServiceBase extends tx_caretaker_T
      * @param tx_caretakerinstance_CommandResult $commandResult
      * @return bool
      */
-    protected function isCommandResultSuccessful($commandResult)
+    protected function isCommandResultSuccessful($commandResult): bool
     {
         return $commandResult instanceof tx_caretakerinstance_CommandResult && $commandResult->isSuccessful();
     }
@@ -104,32 +130,5 @@ abstract class tx_caretakerinstance_RemoteTestServiceBase extends tx_caretaker_T
             0,
             'Operation execution failed: ' . $operationResult->getValue()
         );
-    }
-
-    /**
-     * Check if the given version is within the minimum and maximum version
-     *
-     * @param string $actualVersion Version to compare to min and max
-     * @param string $minVersion Minimum version that is required.
-     *                              May be empty.
-     * @param string $maxVersion Maximum version that is required.
-     *                              May be empty.
-     *
-     * @return bool TRUE if the actual version is within min and max.
-     */
-    public function checkVersionRange($actualVersion, $minVersion, $maxVersion)
-    {
-        if ($minVersion != '') {
-            if (!version_compare($actualVersion, $minVersion, '>=')) {
-                return false;
-            }
-        }
-        if ($maxVersion != '') {
-            if (!version_compare($actualVersion, $maxVersion, '<=')) {
-                return false;
-            }
-        }
-
-        return true;
     }
 }

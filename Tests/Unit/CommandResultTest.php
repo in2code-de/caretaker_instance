@@ -46,13 +46,10 @@ use Nimut\TestingFramework\TestCase\UnitTestCase;
  */
 class CommandResultTest extends UnitTestCase
 {
-    public function testCommandResultToJsonCreatesJson()
+    public function testCommandResultToJsonCreatesJson(): void
     {
-        $result = new \tx_caretakerinstance_CommandResult(true, array(
-            new \tx_caretakerinstance_OperationResult(true, 'foo'),
-            new \tx_caretakerinstance_OperationResult(true, false),
-            new \tx_caretakerinstance_OperationResult(true, array('foo', 'bar')),
-        ), 'Test message');
+        $result = new \tx_caretakerinstance_CommandResult(true, [new \tx_caretakerinstance_OperationResult(true, 'foo'), new \tx_caretakerinstance_OperationResult(true, false), new \tx_caretakerinstance_OperationResult(true, ['foo', 'bar'])],
+            'Test message');
 
         $json = $result->toJson();
 
@@ -62,7 +59,7 @@ class CommandResultTest extends UnitTestCase
         );
     }
 
-    public function testCommandResultFromJson()
+    public function testCommandResultFromJson(): void
     {
         $json = '{"status":0,"results":[{"status":true,"value":"foo"},{"status":true,"value":false},{"status":true,"value":["foo","bar"]}],"message":"Test message"}';
         $result = \tx_caretakerinstance_CommandResult::fromJson($json);
@@ -70,10 +67,6 @@ class CommandResultTest extends UnitTestCase
         $this->assertInstanceOf('\tx_caretakerinstance_CommandResult', $result);
         $this->assertEquals('Test message', $result->getMessage());
         $this->assertTrue($result->isSuccessful());
-        $this->assertEquals(array(
-            new \tx_caretakerinstance_OperationResult(true, 'foo'),
-            new \tx_caretakerinstance_OperationResult(true, false),
-            new \tx_caretakerinstance_OperationResult(true, array('foo', 'bar')),
-        ), $result->getOperationResults());
+        $this->assertEquals([new \tx_caretakerinstance_OperationResult(true, 'foo'), new \tx_caretakerinstance_OperationResult(true, false), new \tx_caretakerinstance_OperationResult(true, ['foo', 'bar'])], $result->getOperationResults());
     }
 }

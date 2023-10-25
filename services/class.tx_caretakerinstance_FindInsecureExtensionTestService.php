@@ -1,4 +1,9 @@
 <?php
+
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extensionmanager\Domain\Repository\ExtensionRepository;
+use TYPO3\CMS\Extensionmanager\Domain\Model\Extension;
+
 /***************************************************************
  * Copyright notice
  *
@@ -22,7 +27,6 @@
  *
  * This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * This is a file of the caretaker project.
  * http://forge.typo3.org/projects/show/extension-caretaker
@@ -75,8 +79,8 @@ class tx_caretakerinstance_FindInsecureExtensionTestService extends tx_caretaker
     {
         $location_list = $this->getLocationList();
 
-        $operation = array('GetExtensionList', array('locations' => $location_list));
-        $operations = array($operation);
+        $operation = ['GetExtensionList', ['locations' => $location_list]];
+        $operations = [$operation];
 
         $commandResult = $this->executeRemoteOperations($operations);
         if (!$this->isCommandResultSuccessful($commandResult)) {
@@ -92,8 +96,8 @@ class tx_caretakerinstance_FindInsecureExtensionTestService extends tx_caretaker
 
         $extensionList = $operationResult->getValue();
 
-        $errors = array();
-        $warnings = array();
+        $errors = [];
+        $warnings = [];
         foreach ($extensionList as $extension) {
             $this->checkExtension($extension, $errors, $warnings);
         }
@@ -101,15 +105,15 @@ class tx_caretakerinstance_FindInsecureExtensionTestService extends tx_caretaker
         // Return error if insecure extensions are installed
         $seperator = chr(10) . ' - ';
 
-        if (count($errors) == 0 && count($warnings) == 0) {
+        if ((is_countable($errors) ? count($errors) : 0) == 0 && (is_countable($warnings) ? count($warnings) : 0) == 0) {
             return tx_caretaker_TestResult::create(tx_caretaker_Constants::state_ok, 0, 'LLL:EXT:caretaker_instance/locallang.xml:insecure_extension_test_ok');
         }
 
-        $num_errors = count($errors);
-        $num_warnings = count($warnings);
+        $num_errors = is_countable($errors) ? count($errors) : 0;
+        $num_warnings = is_countable($warnings) ? count($warnings) : 0;
 
-        $submessages = array();
-        $values = array('num_errors' => $num_errors, 'num_warnings' => $num_warnings);
+        $submessages = [];
+        $values = ['num_errors' => $num_errors, 'num_warnings' => $num_warnings];
 
         // add error submessages
         if ($num_errors > 0) {
@@ -129,7 +133,7 @@ class tx_caretakerinstance_FindInsecureExtensionTestService extends tx_caretaker
 
         // return error
         if ($num_errors > 0) {
-            $value = (count($errors) + count($warnings));
+            $value = ((is_countable($errors) ? count($errors) : 0) + (is_countable($warnings) ? count($warnings) : 0));
             $message = new tx_caretaker_ResultMessage('LLL:EXT:caretaker_instance/locallang.xml:insecure_extension_test_problems', $values);
 
             return tx_caretaker_TestResult::create(tx_caretaker_Constants::state_error, $value, $message, $submessages);
@@ -137,7 +141,7 @@ class tx_caretakerinstance_FindInsecureExtensionTestService extends tx_caretaker
 
         // return results
         if ($num_warnings > 0) {
-            $value = count($warnings);
+            $value = is_countable($warnings) ? count($warnings) : 0;
             $message = new tx_caretaker_ResultMessage('LLL:EXT:caretaker_instance/locallang.xml:insecure_extension_test_problems', $values);
 
             return tx_caretaker_TestResult::create(tx_caretaker_Constants::state_warning, $value, $message, $submessages);
@@ -145,19 +149,21 @@ class tx_caretakerinstance_FindInsecureExtensionTestService extends tx_caretaker
     }
 
     /**
-     * @return array
+     * @return never[]|string[]
      */
-    public function getLocationList()
+    public function getLocationList(): array
     {
         $locationCode = (int)$this->getConfigValue('check_extension_locations');
-        $locationList = array();
-        if ($locationCode & 1) {
+        $locationList = [];
+        if (($locationCode & 1) !== 0) {
             $locationList[] = 'system';
         }
-        if ($locationCode & 2) {
+
+        if (($locationCode & 2) !== 0) {
             $locationList[] = 'global';
         }
-        if ($locationCode & 4) {
+
+        if (($locationCode & 4) !== 0) {
             $locationList[] = 'local';
         }
 
@@ -189,15 +195,9 @@ class tx_caretakerinstance_FindInsecureExtensionTestService extends tx_caretaker
         $ext_blacklist = $this->getCustomExtensionBlacklist();
         if (in_array($ext_key, $ext_blacklist)) {
             if ($ext_installed) {
-                $errors[] = array(
-                    'message' => 'LLL:EXT:caretaker_instance/locallang.xml:blacklisted_extension_installed',
-                    'values' => $extension,
-                );
+                $errors[] = ['message' => 'LLL:EXT:caretaker_instance/locallang.xml:blacklisted_extension_installed', 'values' => $extension];
             } else {
-                $errors[] = array(
-                    'message' => 'LLL:EXT:caretaker_instance/locallang.xml:blacklisted_extension_present',
-                    'values' => $extension,
-                );
+                $errors[] = ['message' => 'LLL:EXT:caretaker_instance/locallang.xml:blacklisted_extension_present', 'values' => $extension];
             }
 
             return;
@@ -210,7 +210,7 @@ class tx_caretakerinstance_FindInsecureExtensionTestService extends tx_caretaker
         if (is_array($ter_info)) {
             // Ext is reviewed as secure or not reviewed at all
             if ($ter_info['reviewstate'] != -1) {
-                return array(0, '');
+                return [0, ''];
             }
 
             // Ext is installed
@@ -220,12 +220,12 @@ class tx_caretakerinstance_FindInsecureExtensionTestService extends tx_caretaker
                 switch ($handling) {
                     // Warning
                     case 1:
-                        $warnings[] = array('message' => $message, 'values' => $extension);
+                        $warnings[] = ['message' => $message, 'values' => $extension];
 
                         return;
                     // Error
                     case 2:
-                        $errors[] = array('message' => $message, 'values' => $extension);
+                        $errors[] = ['message' => $message, 'values' => $extension];
 
                         return;
                     // Ignore
@@ -239,12 +239,12 @@ class tx_caretakerinstance_FindInsecureExtensionTestService extends tx_caretaker
                 switch ($handling) {
                     // Warning
                     case 1:
-                        $warnings[] = array('message' => $message, 'values' => $extension);
+                        $warnings[] = ['message' => $message, 'values' => $extension];
 
                         return;
                     // Error
                     case 2:
-                        $errors[] = array('message' => $message, 'values' => $extension);
+                        $errors[] = ['message' => $message, 'values' => $extension];
 
                         return;
                     // Ignore
@@ -260,12 +260,12 @@ class tx_caretakerinstance_FindInsecureExtensionTestService extends tx_caretaker
             switch ($handling) {
                 // Warning
                 case 1:
-                    $warnings[] = array('message' => $message, 'values' => $extension);
+                    $warnings[] = ['message' => $message, 'values' => $extension];
 
                     return;
                 // Error
                 case 2:
-                    $errors[] = array('message' => $message, 'values' => $extension);
+                    $errors[] = ['message' => $message, 'values' => $extension];
 
                     return;
                 // Ignore
@@ -276,73 +276,9 @@ class tx_caretakerinstance_FindInsecureExtensionTestService extends tx_caretaker
     }
 
     /**
-     * @param string $ext_key
-     * @param string $ext_version
-     * @return array|bool
-     */
-    public function getExtensionTerInfos($ext_key, $ext_version)
-    {
-        $objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
-        $repo = $objectManager->get('TYPO3\\CMS\\Extensionmanager\\Domain\\Repository\\ExtensionRepository');
-        $repo->initializeObject();
-
-        $extension = $repo->findOneByExtensionKeyAndVersion($ext_key, $ext_version);
-
-        if ($extension === null || !$extension instanceof \TYPO3\CMS\Extensionmanager\Domain\Model\Extension) {
-            return false;
-        }
-
-        return array(
-            'extkey' => $extension->getExtensionKey(),
-            'version' => $extension->getVersion(),
-            'reviewstate' => $extension->getReviewState(),
-        );
-    }
-
-    /**
-     * @return int
-     */
-    public function getInstalledExtensionErrorHandling()
-    {
-        return (int)$this->getConfigValue('status_of_installed_insecure_extensions');
-    }
-
-    /**
-     * @return int
-     */
-    public function getUninstalledExtensionErrorHandling()
-    {
-        return (int)$this->getConfigValue('status_of_uninstalled_insecure_extensions');
-    }
-
-    /**
-     * @return int
-     */
-    public function getCustomExtensionErrorHandling()
-    {
-        return (int)$this->getConfigValue('status_of_custom_extensions');
-    }
-
-    /**
-     * @return array
-     */
-    public function getCustomExtensionWhitelist()
-    {
-        return explode(chr(10), $this->getConfigValue('custom_extkey_whitlelist'));
-    }
-
-    /**
-     * @return array
-     */
-    public function getCustomExtensionBlacklist()
-    {
-        return explode(chr(10), $this->getConfigValue('custom_extkey_blacklist'));
-    }
-
-    /**
      * @return bool
      */
-    protected function isExtensionVersionSuffixIgnored()
+    protected function isExtensionVersionSuffixIgnored(): bool
     {
         return $this->getConfigValue('ignore_extension_version_suffix') == 1;
     }
@@ -353,11 +289,71 @@ class tx_caretakerinstance_FindInsecureExtensionTestService extends tx_caretaker
      */
     protected function clearExtensionVersionSuffix($extensionVersion)
     {
-        if (preg_match('/^([0-9]+\.[0-9]+\.[0-9]+)/', $extensionVersion, $matches)) {
+        if (preg_match('/^(\d+\.\d+\.\d+)/', (string)$extensionVersion, $matches)) {
             return $matches[1];
         }
 
         // If not matched, return given version
         return $extensionVersion;
+    }
+
+    /**
+     * @return array
+     */
+    public function getCustomExtensionWhitelist(): array
+    {
+        return explode(chr(10), (string)$this->getConfigValue('custom_extkey_whitlelist'));
+    }
+
+    /**
+     * @return array
+     */
+    public function getCustomExtensionBlacklist(): array
+    {
+        return explode(chr(10), (string)$this->getConfigValue('custom_extkey_blacklist'));
+    }
+
+    /**
+     * @param string $ext_key
+     * @param string $ext_version
+     * @return array|bool
+     */
+    public function getExtensionTerInfos($ext_key, $ext_version)
+    {
+        $objectManager = GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
+        $repo = $objectManager->get(ExtensionRepository::class);
+        $repo->initializeObject();
+
+        $extension = $repo->findOneByExtensionKeyAndVersion($ext_key, $ext_version);
+
+        if ($extension === null || !$extension instanceof Extension) {
+            return false;
+        }
+
+        return ['extkey' => $extension->getExtensionKey(), 'version' => $extension->getVersion(), 'reviewstate' => $extension->getReviewState()];
+    }
+
+    /**
+     * @return int
+     */
+    public function getInstalledExtensionErrorHandling(): int
+    {
+        return (int)$this->getConfigValue('status_of_installed_insecure_extensions');
+    }
+
+    /**
+     * @return int
+     */
+    public function getUninstalledExtensionErrorHandling(): int
+    {
+        return (int)$this->getConfigValue('status_of_uninstalled_insecure_extensions');
+    }
+
+    /**
+     * @return int
+     */
+    public function getCustomExtensionErrorHandling(): int
+    {
+        return (int)$this->getConfigValue('status_of_custom_extensions');
     }
 }

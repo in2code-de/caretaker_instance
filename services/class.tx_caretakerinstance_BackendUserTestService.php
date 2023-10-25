@@ -71,16 +71,21 @@ class tx_caretakerinstance_BackendUserTestService extends tx_caretakerinstance_R
      */
     public function runTest()
     {
-        $blacklistedUsernames = explode(chr(10), $this->getConfigValue('blacklist'));
+        $blacklistedUsernames = explode(chr(10), (string)$this->getConfigValue('blacklist'));
 
-        $operations = array();
+        $operations = [];
         foreach ($blacklistedUsernames as $username) {
             $username = trim($username);
-            if (strlen($username)) {
-                $operations[] = array(
+            if (strlen($username) !== 0) {
+                $operations[] = [
                     'GetRecord',
-                    array('table' => 'be_users', 'field' => 'username', 'value' => $username, 'checkEnableFields' => true),
-                );
+                    [
+                        'table' => 'be_users',
+                        'field' => 'username',
+                        'value' => $username,
+                        'checkEnableFields' => true,
+                    ],
+                ];
             }
         }
 
@@ -90,7 +95,7 @@ class tx_caretakerinstance_BackendUserTestService extends tx_caretakerinstance_R
             return $this->getFailedCommandResultTestResult($commandResult);
         }
 
-        $usernames = array();
+        $usernames = [];
 
         $results = $commandResult->getOperationResults();
         foreach ($results as $operationResult) {
@@ -104,13 +109,14 @@ class tx_caretakerinstance_BackendUserTestService extends tx_caretakerinstance_R
             }
         }
 
-        $blacklistedUsernamesFound = array();
+        $blacklistedUsernamesFound = [];
         foreach ($blacklistedUsernames as $username) {
             if (in_array($username, $usernames)) {
                 $blacklistedUsernamesFound[] = $username;
             }
         }
-        if (count($blacklistedUsernamesFound) > 0) {
+
+        if ($blacklistedUsernamesFound !== []) {
             return tx_caretaker_TestResult::create(tx_caretaker_Constants::state_error, 0, 'Users [' . implode(',', $blacklistedUsernamesFound) . '] are blacklisted and should not be active.');
         }
 

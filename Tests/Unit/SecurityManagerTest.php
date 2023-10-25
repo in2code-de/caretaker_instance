@@ -71,29 +71,27 @@ class SecurityManagerTest extends UnitTestCase
         $this->securityManager->setClientPublicKey('FakeClientPublicKey');
 
         $this->commandRequest = new \tx_caretakerinstance_CommandRequest(
-            array(
+            [
                 'session_token' => '12345:abcdefg',
-                'client_info' => array(
-                    'host_address' => '192.168.10.100',
-                ),
-                'data' => array(
+                'client_info' => ['host_address' => '192.168.10.100'],
+                'data' => [
                     // Unpacked from raw data.
-                    'operations' => array(
-                        array('mock', array('foo' => 'bar')),
-                        array('mock', array('foo' => 'bar')),
-                    ),
+                    'operations' => [
+                        ['mock', ['foo' => 'bar']],
+                        ['mock', ['foo' => 'bar']],
+                    ],
                     // Fake crypted JSON
                     'encrypted' => 'xxer4rt34x',
-                ),
+                ],
                 // Data in JSON raw (fake)
                 'raw' => '{"foo": "bar"}',
                 // Signature over raw data and session token sent from client
                 'signature' => 'abcdefg',
-            )
+            ]
         );
     }
 
-    public function testCreateSessionToken()
+    public function testCreateSessionToken(): void
     {
         $this->cryptoManager->expects($this->once())
             ->method('createSessionToken')
@@ -104,7 +102,7 @@ class SecurityManagerTest extends UnitTestCase
         $this->assertEquals('me_is_a_token', $token);
     }
 
-    public function testClientRestrictionForSessionTokenCreation()
+    public function testClientRestrictionForSessionTokenCreation(): void
     {
         $this->securityManager->setClientHostAddressRestriction('192.168.10.200');
 
@@ -115,7 +113,7 @@ class SecurityManagerTest extends UnitTestCase
         $this->assertFalse($token);
     }
 
-    public function testDecodeRequest()
+    public function testDecodeRequest(): void
     {
         $this->cryptoManager->expects($this->once())
             ->method('decrypt')
@@ -129,7 +127,7 @@ class SecurityManagerTest extends UnitTestCase
         $this->assertEquals($data['secret'], 'top-secret', 'Encrypted JSON data was decoded');
     }
 
-    public function testDecodeInvalidEncryptedRequest()
+    public function testDecodeInvalidEncryptedRequest(): void
     {
         $this->cryptoManager->expects($this->once())
             ->method('decrypt')
@@ -138,7 +136,7 @@ class SecurityManagerTest extends UnitTestCase
         $this->assertFalse($this->securityManager->decodeRequest($this->commandRequest));
     }
 
-    public function testValidateValidRequest()
+    public function testValidateValidRequest(): void
     {
         $this->cryptoManager->expects($this->once())
             ->method('verifySessionToken')
@@ -152,7 +150,7 @@ class SecurityManagerTest extends UnitTestCase
         $this->assertTrue($this->securityManager->validateRequest($this->commandRequest));
     }
 
-    public function testValidateExpiredRequest()
+    public function testValidateExpiredRequest(): void
     {
         $this->cryptoManager->expects($this->once())
             ->method('verifySessionToken')
@@ -167,7 +165,7 @@ class SecurityManagerTest extends UnitTestCase
         $this->securityManager->validateRequest($this->commandRequest);
     }
 
-    public function testClientRestrictionForRequestValidation()
+    public function testClientRestrictionForRequestValidation(): void
     {
         $this->securityManager->setClientHostAddressRestriction('192.168.10.200');
 
@@ -183,7 +181,7 @@ class SecurityManagerTest extends UnitTestCase
         $this->securityManager->validateRequest($this->commandRequest);
     }
 
-    public function testValidationVerifiesSignature()
+    public function testValidationVerifiesSignature(): void
     {
         $this->cryptoManager->expects($this->any())
             ->method('verifySessionToken')
@@ -202,7 +200,7 @@ class SecurityManagerTest extends UnitTestCase
         $this->assertTrue($this->securityManager->validateRequest($this->commandRequest));
     }
 
-    public function testWrongSignatureDoesntValidate()
+    public function testWrongSignatureDoesntValidate(): void
     {
         $this->cryptoManager->expects($this->any())
             ->method('verifySessionToken')
@@ -216,7 +214,7 @@ class SecurityManagerTest extends UnitTestCase
         $this->securityManager->validateRequest($this->commandRequest);
     }
 
-    public function testEncodeResultEncodesStringWithClientPublicKey()
+    public function testEncodeResultEncodesStringWithClientPublicKey(): void
     {
         $this->cryptoManager->expects($this->once())
             ->method('encrypt')
@@ -227,7 +225,7 @@ class SecurityManagerTest extends UnitTestCase
         $this->assertEquals('Encoded result', $encodedResult);
     }
 
-    public function testEncodeResultDecodesStringWithPrivateKey()
+    public function testEncodeResultDecodesStringWithPrivateKey(): void
     {
         $this->cryptoManager->expects($this->once())
             ->method('decrypt')

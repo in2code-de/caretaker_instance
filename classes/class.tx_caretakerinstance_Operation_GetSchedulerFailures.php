@@ -35,33 +35,37 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class tx_caretakerinstance_Operation_GetSchedulerFailures implements tx_caretakerinstance_IOperation, SingletonInterface
 {
-    public function execute($parameter = array()): tx_caretakerinstance_OperationResult
+    public function execute($parameter = []): tx_caretakerinstance_OperationResult
     {
-        $results = array();
+        $results = [];
 
         $connection = GeneralUtility::makeInstance(ConnectionPool::class);
         $query = $connection->getQueryBuilderForTable('tx_scheduler_task');
         $query->select('*')->from('tx_scheduler_task');
-        $statement = $query->execute();
+        $statement = $query->executeQuery();
         foreach ($statement as $row) {
             $taskUid = $row['uid'];
             if (empty($row['lastexecution_failure'])) {
                 continue;
             }
+
             try {
-                $exception = unserialize($row['lastexecution_failure'], array('allowed_classes' => false));
+                $exception = unserialize($row['lastexecution_failure'], ['allowed_classes' => false]);
             } catch (Throwable $exception) {
                 $results[$taskUid] = 'unserialize exception: ' . (string)$exception;
                 continue;
             }
-            $keepKeys = array('code', 'file', 'line', 'message');
+
+            $keepKeys = ['code', 'file', 'line', 'message'];
             foreach (array_keys($exception) as $key) {
                 if (!in_array($key, $keepKeys, true)) {
                     unset($exception[$key]);
                 }
             }
+
             $results[$taskUid] = $exception;
         }
-        return new tx_caretakerinstance_OperationResult(empty($results), $results);
+
+        return new tx_caretakerinstance_OperationResult($results === [], $results);
     }
 }

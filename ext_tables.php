@@ -1,4 +1,5 @@
 <?php
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 /***************************************************************
  * Copyright notice
  *
@@ -33,8 +34,8 @@
  *
  * $Id$
  */
-if (!defined('TYPO3_MODE')) {
+if (!defined('TYPO3')) {
     die('Access denied.');
 }
 
-require(\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('caretaker_instance') . 'ext_conf_include.php');
+require(ExtensionManagementUtility::extPath('caretaker_instance') . 'ext_conf_include.php');

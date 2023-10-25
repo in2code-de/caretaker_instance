@@ -8,9 +8,7 @@ class tx_caretakerinstance_SchedulerFailuresTestService extends tx_caretakerinst
      */
     public function runTest(): tx_caretaker_TestResult
     {
-        $operations = array(
-            array('GetScheduler', array()),
-        );
+        $operations = [['GetScheduler', []]];
 
         $commandResult = $this->executeRemoteOperations($operations);
 
@@ -20,7 +18,7 @@ class tx_caretakerinstance_SchedulerFailuresTestService extends tx_caretakerinst
 
         $results = $commandResult->getOperationResults();
 
-        $errors = array();
+        $errors = [];
 
         /** @var tx_caretakerinstance_OperationResult $operationResult */
         foreach ($results as $operationResult) {
@@ -34,12 +32,14 @@ class tx_caretakerinstance_SchedulerFailuresTestService extends tx_caretakerinst
                             'The Instance does not support this Operation. Did you forget to install the additional extension?' . PHP_EOL . 'Original Exception: ' . $exceptions
                         );
                     }
+
                     return tx_caretaker_TestResult::create(
                         tx_caretaker_Constants::state_error,
                         0,
                         'Command execution failed: ' . $exceptions
                     );
                 }
+
                 foreach ($exceptions as $taskUid => $exception) {
                     $errors[] = sprintf(
                         'Scheduler [%d] failed with message: Exception %d in %s line %d "%s"',
@@ -53,7 +53,7 @@ class tx_caretakerinstance_SchedulerFailuresTestService extends tx_caretakerinst
             }
         }
 
-        if (!empty($errors)) {
+        if ($errors !== []) {
             return tx_caretaker_TestResult::create(
                 tx_caretaker_Constants::state_error,
                 0,

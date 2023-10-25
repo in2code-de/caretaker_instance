@@ -51,6 +51,12 @@
  */
 class tx_caretakerinstance_CommandRequest
 {
+    public $sessionToken;
+
+    public $rawData;
+
+    public $signature;
+
     /**
      * @var string The client public key when receiving a command
      */
@@ -74,7 +80,7 @@ class tx_caretakerinstance_CommandRequest
     /**
      * @var array
      */
-    protected $data = array();
+    protected $data = [];
 
     /**
      * Create a new Command Request
@@ -110,14 +116,6 @@ class tx_caretakerinstance_CommandRequest
     }
 
     /**
-     * @return string The session token
-     */
-    public function getSessionToken()
-    {
-        return $this->sessionToken;
-    }
-
-    /**
      * @return string The client host address
      */
     public function getClientHostAddress()
@@ -142,14 +140,6 @@ class tx_caretakerinstance_CommandRequest
     }
 
     /**
-     * @return string The raw data (encrypted)
-     */
-    public function getRawData()
-    {
-        return $this->rawData;
-    }
-
-    /**
      * @return string The signature
      */
     public function getSignature()
@@ -161,7 +151,7 @@ class tx_caretakerinstance_CommandRequest
      * @param string $signature
      * @return void
      */
-    public function setSignature($signature)
+    public function setSignature($signature): void
     {
         $this->signature = $signature;
     }
@@ -175,6 +165,7 @@ class tx_caretakerinstance_CommandRequest
         if ($key != null) {
             return $this->data[$key];
         }
+
         return $this->data;
     }
 
@@ -184,7 +175,7 @@ class tx_caretakerinstance_CommandRequest
      * @param array $array
      * @return void
      */
-    public function mergeData(&$array)
+    public function mergeData(&$array): void
     {
         $this->data = array_merge($this->data, $array);
     }
@@ -192,8 +183,24 @@ class tx_caretakerinstance_CommandRequest
     /**
      * @return string The relevant data for signature verification
      */
-    public function getDataForSignature()
+    public function getDataForSignature(): string
     {
         return $this->getSessionToken() . '$' . $this->getRawData();
+    }
+
+    /**
+     * @return string The session token
+     */
+    public function getSessionToken()
+    {
+        return $this->sessionToken;
+    }
+
+    /**
+     * @return string The raw data (encrypted)
+     */
+    public function getRawData()
+    {
+        return $this->rawData;
     }
 }

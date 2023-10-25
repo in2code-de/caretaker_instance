@@ -53,18 +53,18 @@ class tx_caretakerinstance_Operation_GetExtensionList implements tx_caretakerins
     /**
      * @var array Available extension scopes
      */
-    protected $scopes = array('system', 'global', 'local');
+    protected $scopes = ['system', 'global', 'local'];
 
     /**
      *
      * @param array $parameter Array of extension locations as string (system, global, local)
      * @return tx_caretakerinstance_OperationResult The extension list
      */
-    public function execute($parameter = array())
+    public function execute($parameter = []): \tx_caretakerinstance_OperationResult
     {
         $locations = $parameter['locations'];
-        if (is_array($locations) && count($locations) > 0) {
-            $extensionList = array();
+        if (is_array($locations) && $locations !== []) {
+            $extensionList = [];
             foreach ($locations as $scope) {
                 if (in_array($scope, $this->scopes)) {
                     $extensionList = array_merge($extensionList, $this->getExtensionListForScope($scope));
@@ -73,43 +73,20 @@ class tx_caretakerinstance_Operation_GetExtensionList implements tx_caretakerins
 
             return new tx_caretakerinstance_OperationResult(true, $extensionList);
         }
+
         return new tx_caretakerinstance_OperationResult(false, 'No extension locations given');
-    }
-
-    /**
-     * Get the path for the given scope
-     *
-     * @param string $scope
-     * @return string
-     */
-    protected function getPathForScope($scope)
-    {
-        switch ($scope) {
-            case 'system':
-                $path = Environment::getPublicPath() . '/typo3/sysext/';
-                break;
-            case 'global':
-                $path = Environment::getPublicPath() . '/typo3/ext/';
-                break;
-            case 'local':
-            default:
-                $path = Environment::getPublicPath() . '/typo3conf/ext/';
-                break;
-        }
-
-        return $path;
     }
 
     /**
      * Get the list of extensions in the given scope
      *
      * @param string $scope
-     * @return bool
+     * @return array{ext_key: string, installed: bool}[]|array{ext_key: string, installed: bool, version: mixed, scope: array<string, mixed>&mixed[]}[]
      */
-    protected function getExtensionListForScope($scope)
+    protected function getExtensionListForScope($scope): array
     {
         $path = $this->getPathForScope($scope);
-        $extensionInfo = array();
+        $extensionInfo = [];
         if (@is_dir($path)) {
             $extensionFolders = GeneralUtility::get_dirs($path);
             if (is_array($extensionFolders)) {
@@ -134,5 +111,20 @@ class tx_caretakerinstance_Operation_GetExtensionList implements tx_caretakerins
         }
 
         return $extensionInfo;
+    }
+
+    /**
+     * Get the path for the given scope
+     *
+     * @param string $scope
+     * @return string
+     */
+    protected function getPathForScope($scope)
+    {
+        return match ($scope) {
+            'system' => Environment::getPublicPath() . '/typo3/sysext/',
+            'global' => Environment::getPublicPath() . '/typo3/ext/',
+            default => Environment::getPublicPath() . '/typo3conf/ext/',
+        };
     }
 }

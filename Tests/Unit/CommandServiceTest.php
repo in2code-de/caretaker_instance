@@ -69,7 +69,7 @@ class CommandServiceTest extends UnitTestCase
     public function setUp(): void
     {
         $this->operationManager = $this->getMockBuilder('tx_caretakerinstance_OperationManager')
-            ->setMethods(array('executeOperation'))
+            ->setMethods(['executeOperation'])
             ->getMock();
 
         $this->securityManager = $this->getMockBuilder('tx_caretakerinstance_ISecurityManager')
@@ -81,22 +81,28 @@ class CommandServiceTest extends UnitTestCase
         );
 
         $this->commandRequest = new \tx_caretakerinstance_CommandRequest(
-            array(
-                'data' => array(
-                    'operations' => array(
-                        array('mock', array('foo' => 'bar')),
-                        array('mock', array('foo' => 'bar')),
-                    ),
-                ),
-            )
+            [
+                'data' => [
+                    'operations' => [
+                        [
+                            'mock',
+                            ['foo' => 'bar'],
+                        ],
+                        [
+                            'mock',
+                            ['foo' => 'bar'],
+                        ],
+                    ],
+                ],
+            ]
         );
     }
 
-    public function testWrapCommandResultEncodesResult()
+    public function testWrapCommandResultEncodesResult(): void
     {
         $result = new \tx_caretakerinstance_CommandResult(
             true,
-            new \tx_caretakerinstance_OperationResult(true, array('foo' => 'bar'))
+            new \tx_caretakerinstance_OperationResult(true, ['foo' => 'bar'])
         );
 
         $data = $result->toJson();
@@ -111,7 +117,7 @@ class CommandServiceTest extends UnitTestCase
         $this->assertEquals('Encoded result data', $wrap);
     }
 
-    public function testExecuteCommandWithSecurity()
+    public function testExecuteCommandWithSecurity(): void
     {
         $this->securityManager->expects($this->once())
             ->method('validateRequest')
@@ -125,7 +131,7 @@ class CommandServiceTest extends UnitTestCase
 
         $this->operationManager->expects($this->exactly(2))
             ->method('executeOperation')
-            ->with($this->equalTo('mock'), $this->equalTo(array('foo' => 'bar')))
+            ->with($this->equalTo('mock'), $this->equalTo(['foo' => 'bar']))
             ->will($this->returnValue(new \tx_caretakerinstance_OperationResult(true, 'bar')));
 
         $result = $this->commandService->executeCommand($this->commandRequest);
@@ -142,7 +148,7 @@ class CommandServiceTest extends UnitTestCase
         }
     }
 
-    public function testExecuteCommandSecurityCheckFailed()
+    public function testExecuteCommandSecurityCheckFailed(): void
     {
         $this->securityManager->expects($this->once())
             ->method('validateRequest')
@@ -159,7 +165,7 @@ class CommandServiceTest extends UnitTestCase
         $this->assertEquals('The request could not be verified', $result->getMessage());
     }
 
-    public function testExecuteCommandDecryptionFailed()
+    public function testExecuteCommandDecryptionFailed(): void
     {
         $this->securityManager->expects($this->once())
             ->method('validateRequest')
@@ -179,7 +185,7 @@ class CommandServiceTest extends UnitTestCase
         $this->assertEquals('The request could not be decrypted', $result->getMessage());
     }
 
-    public function testRequestSessionToken()
+    public function testRequestSessionToken(): void
     {
         $this->securityManager->expects($this->once())
             ->method('createSessionToken')

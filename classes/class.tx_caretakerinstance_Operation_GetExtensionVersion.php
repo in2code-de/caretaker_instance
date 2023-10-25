@@ -54,8 +54,9 @@ class tx_caretakerinstance_Operation_GetExtensionVersion implements tx_caretaker
      * @param array $parameter None
      * @return tx_caretakerinstance_OperationResult The extension version
      */
-    public function execute($parameter = array())
+    public function execute($parameter = []): \tx_caretakerinstance_OperationResult
     {
+        $EM_CONF = [];
         $extensionKey = $parameter['extensionKey'];
 
         if (!ExtensionManagementUtility::isLoaded($extensionKey)) {
@@ -68,6 +69,7 @@ class tx_caretakerinstance_Operation_GetExtensionVersion implements tx_caretaker
         if (is_array($EM_CONF[$extensionKey])) {
             return new tx_caretakerinstance_OperationResult(true, $EM_CONF[$extensionKey]['version']);
         }
+
         return new tx_caretakerinstance_OperationResult(false, 'Cannot read EM_CONF for extension [' . $extensionKey . ']');
     }
 }

@@ -1,16 +1,3 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
-<!--
-/**
- * This is a file of the caretaker project.
- * Copyright 2008 by n@work Internet Informationssystem GmbH (www.work.de)
- *
- * @Author	Thomas Hempel 		<thomas@work.de>
- * @Author	Martin Ficzel		<martin@work.de>
- * @Author	Patrick Kollodzik	<patrick@work.de>
- *
- * $$Id$$
- */
--->
 <T3DataStructure>
     <meta>
         <langDisable>1</langDisable>
@@ -52,6 +39,7 @@
                     <label>Status of outdated extensions (newer version in TER)</label>
                     <config>
                         <type>select</type>
+                        <renderType>selectSingle</renderType>
                         <items>
                             <numIndex index="0">
                                 <numIndex index="0">OK</numIndex>

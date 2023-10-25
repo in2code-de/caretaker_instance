@@ -55,10 +55,9 @@ abstract class tx_caretakerinstance_AbstractCryptoManager implements tx_caretake
     public function createSessionToken($data, $secret)
     {
         // Salted MD5 hash for verification and randomness
-        $salt = substr(md5(rand()), 0, 12);
-        $token = $data . ':' . $salt . md5($secret . ':' . $data . ':' . $salt);
+        $salt = substr(md5(random_int(0, mt_getrandmax())), 0, 12);
 
-        return $token;
+        return $data . ':' . $salt . md5($secret . ':' . $data . ':' . $salt);
     }
 
     /**
@@ -70,12 +69,13 @@ abstract class tx_caretakerinstance_AbstractCryptoManager implements tx_caretake
      */
     public function verifySessionToken($token, $secret)
     {
-        list($data, $hash) = explode(':', $token, 2);
+        [$data, $hash] = explode(':', $token, 2);
         $salt = substr($hash, 0, 12);
 
         if ($token == $data . ':' . $salt . md5($secret . ':' . $data . ':' . $salt)) {
             return $data;
         }
+
         return false;
     }
 }

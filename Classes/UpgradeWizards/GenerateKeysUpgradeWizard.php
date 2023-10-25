@@ -51,9 +51,10 @@ class GenerateKeysUpgradeWizard implements UpgradeWizardInterface
             $extConf['crypto']['instance']['publicKey'] = $publicKey;
             $extConf['crypto']['instance']['privateKey'] = $privateKey;
             $extensionConfiguration->set('caretaker_instance', $extConf);
-        } catch (Exception $exception) {
+        } catch (Exception) {
             return false;
         }
+
         return true;
     }
 
@@ -68,8 +69,8 @@ class GenerateKeysUpgradeWizard implements UpgradeWizardInterface
         $extConf = GeneralUtility::makeInstance(ExtensionConfiguration::class)->get('caretaker_instance');
         return !isset($extConf['crypto']['instance']['publicKey'])
             || !isset($extConf['crypto']['instance']['privateKey'])
-            || !strlen($extConf['crypto']['instance']['publicKey'])
-            || !strlen($extConf['crypto']['instance']['privateKey']);
+            || !strlen((string)$extConf['crypto']['instance']['publicKey'])
+            || !strlen((string)$extConf['crypto']['instance']['privateKey']);
     }
 
     /**

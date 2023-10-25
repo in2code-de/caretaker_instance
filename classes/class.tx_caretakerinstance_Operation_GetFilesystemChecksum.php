@@ -55,7 +55,7 @@ class tx_caretakerinstance_Operation_GetFilesystemChecksum implements tx_caretak
      * @param array $parameter Path to a file or folder
      * @return tx_caretakerinstance_OperationResult The checksum of the given folder or file
      */
-    public function execute($parameter = array())
+    public function execute($parameter = []): \tx_caretakerinstance_OperationResult
     {
         $path = $this->getPath($parameter['path']);
         $getSingleChecksums = $this->getPath($parameter['getSingleChecksums']);
@@ -65,22 +65,22 @@ class tx_caretakerinstance_Operation_GetFilesystemChecksum implements tx_caretak
 
         if ($path !== false) {
             if (is_dir($path)) {
-                list($checksum, $md5s) = $this->getFolderChecksum($path);
+                [$checksum, $md5s] = $this->getFolderChecksum($path);
             } else {
                 $checksum = $this->getFileChecksum($path);
             }
         }
-        if (!empty($checksum)) {
-            $result = array(
-                'checksum' => $checksum,
-            );
+
+        if ($checksum !== '') {
+            $result = ['checksum' => $checksum];
             if ($getSingleChecksums) {
                 $result['singleChecksums'] = $md5s;
             }
 
             return new tx_caretakerinstance_OperationResult(true, $result);
         }
-        return new tx_caretakerinstance_OperationResult(false, 'Error: can\'t calculate checksum for file or folder');
+
+        return new tx_caretakerinstance_OperationResult(false, "Error: can't calculate checksum for file or folder");
     }
 
     /**
@@ -94,8 +94,8 @@ class tx_caretakerinstance_Operation_GetFilesystemChecksum implements tx_caretak
     {
         $path = GeneralUtility::getFileAbsFileName($path);
 
-        if (substr($path, -1) === '/') {
-            $path = substr($path, 0, -1);
+        if (str_ends_with((string)$path, '/')) {
+            $path = substr((string)$path, 0, -1);
         }
 
         // FIXME remove this hacky part
@@ -108,23 +108,8 @@ class tx_caretakerinstance_Operation_GetFilesystemChecksum implements tx_caretak
         if (GeneralUtility::isAllowedAbsPath($path)) {
             return $path;
         }
+
         return false;
-    }
-
-    /**
-     * Get a md5 checksum of a given file
-     *
-     * @param string $path file path
-     * @return string/bool FALSE if path is not a file or md5 checksum of given file
-     */
-    protected function getFileChecksum($path)
-    {
-        if (!is_file($path)) {
-            return false;
-        }
-        $md5 = md5_file($path);
-
-        return $md5;
     }
 
     /**
@@ -138,14 +123,16 @@ class tx_caretakerinstance_Operation_GetFilesystemChecksum implements tx_caretak
         if (!is_dir($path)) {
             return $this->getFileChecksum($path);
         }
-        $md5s = array();
+
+        $md5s = [];
         $d = dir($path);
         while (false !== ($entry = $d->read())) {
             if ($entry === '.' || $entry === '..' || $entry === '.svn' || $entry === '.git') {
                 continue;
             }
+
             if (is_dir($path . '/' . $entry)) {
-                list($checksum, $md5sOfSubfolder) = $this->getFolderChecksum($path . '/' . $entry);
+                [$checksum, $md5sOfSubfolder] = $this->getFolderChecksum($path . '/' . $entry);
                 $md5s = array_merge($md5s, $md5sOfSubfolder);
             } else {
                 $relPath = str_replace(Environment::getPublicPath() . '/', '', $path . '/' . $entry);
@@ -155,9 +142,21 @@ class tx_caretakerinstance_Operation_GetFilesystemChecksum implements tx_caretak
 
         asort($md5s);
 
-        return array(
-            md5(implode(',', $md5s)),
-            $md5s,
-        );
+        return [md5(implode(',', $md5s)), $md5s];
+    }
+
+    /**
+     * Get a md5 checksum of a given file
+     *
+     * @param string $path file path
+     * @return string/bool FALSE if path is not a file or md5 checksum of given file
+     */
+    protected function getFileChecksum($path)
+    {
+        if (!is_file($path)) {
+            return false;
+        }
+
+        return md5_file($path);
     }
 }

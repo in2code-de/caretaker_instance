@@ -48,13 +48,10 @@ class tx_caretakerinstance_Operation_GetDiskSpace implements tx_caretakerinstanc
      * @param array $parameter
      * @return tx_caretakerinstance_OperationResult
      */
-    public function execute($parameter = array())
+    public function execute($parameter = []): \tx_caretakerinstance_OperationResult
     {
-        $path = !empty($parameter['path']) ? $parameter['path'] : '/';
+        $path = empty($parameter['path']) ? '/' : $parameter['path'];
 
-        return new tx_caretakerinstance_OperationResult(true, array(
-            'total' => disk_total_space($path),
-            'free' => disk_free_space($path),
-        ));
+        return new tx_caretakerinstance_OperationResult(true, ['total' => disk_total_space($path), 'free' => disk_free_space($path)]);
     }
 }

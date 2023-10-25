@@ -77,8 +77,8 @@ class tx_caretakerinstance_ExtensionTestService extends tx_caretakerinstance_Rem
             return tx_caretaker_TestResult::create(tx_caretaker_Constants::state_undefined, 0, 'Cannot execute extension test without extension key');
         }
 
-        $operation = array('GetExtensionVersion', array('extensionKey' => $extensionKey));
-        $operations = array($operation);
+        $operation = ['GetExtensionVersion', ['extensionKey' => $extensionKey]];
+        $operations = [$operation];
 
         $commandResult = $this->executeRemoteOperations($operations);
 
@@ -88,11 +88,7 @@ class tx_caretakerinstance_ExtensionTestService extends tx_caretakerinstance_Rem
 
         $results = $commandResult->getOperationResults();
         $operationResult = $results[0];
-        if ($operationResult->isSuccessful()) {
-            $extensionVersion = $operationResult->getValue();
-        } else {
-            $extensionVersion = false;
-        }
+        $extensionVersion = $operationResult->isSuccessful() ? $operationResult->getValue() : false;
 
         $checkResult = $this->checkVersionForRequirementAndVersionRange(
             $extensionVersion,
@@ -109,9 +105,11 @@ class tx_caretakerinstance_ExtensionTestService extends tx_caretakerinstance_Rem
             if ($minVersion) {
                 $message .= ' >= ' . $minVersion;
             }
+
             if ($maxVersion) {
                 $message .= ' <= ' . $maxVersion;
             }
+
             $message .= ' expected';
             $testResult = tx_caretaker_TestResult::create(tx_caretaker_Constants::state_error, 0, $message);
         }
@@ -124,20 +122,22 @@ class tx_caretakerinstance_ExtensionTestService extends tx_caretakerinstance_Rem
      * @param string $requirement
      * @param string $minVersion
      * @param string $maxVersion
-     * @throws Exception
      * @return bool
+     * @throws Exception
      */
     public function checkVersionForRequirementAndVersionRange($actualValue, $requirement, $minVersion, $maxVersion)
     {
         if ($requirement == 'none') {
-            if ($actualValue) {
+            if ($actualValue !== '' && $actualValue !== '0') {
                 return $this->checkVersionRange($actualValue, $minVersion, $maxVersion);
             }
+
             return true;
         } elseif ($requirement == 'required') {
-            if (!$actualValue) {
+            if ($actualValue === '' || $actualValue === '0') {
                 return false;
             }
+
             return $this->checkVersionRange($actualValue, $minVersion, $maxVersion);
         } elseif ($requirement == 'forbidden') {
             return !$actualValue;

@@ -23,6 +23,7 @@
  * This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\SingletonInterface;
 
 /**
@@ -50,29 +51,22 @@ class tx_caretakerinstance_Operation_CheckPathExists implements tx_caretakerinst
      * @param array $parameter a path 'path' to a file or folder
      * @return tx_caretakerinstance_OperationResult 'file' if path is a file, 'directory' if it's a directory and false if it doesn't exist
      */
-    public function execute($parameter = null)
+    public function execute($parameter = null): \tx_caretakerinstance_OperationResult
     {
         $path = $this->getPath($parameter);
-        list($path) = glob($path);
+        [$path] = glob($path);
 
         if (is_file($path)) {
             //if file exists, get the tstamp
             $time = filemtime($path);
             $size = filesize($path);
 
-            return new tx_caretakerinstance_OperationResult(true, array(
-                'type' => 'file',
-                'path' => $parameter,
-                'time' => $time,
-                'size' => $size,
-            ));
+            return new tx_caretakerinstance_OperationResult(true, ['type' => 'file', 'path' => $parameter, 'time' => $time, 'size' => $size]);
         } elseif (is_dir($path)) {
-            return new tx_caretakerinstance_OperationResult(true, array(
-                'type' => 'folder',
-                'path' => $parameter,
-            ));
+            return new tx_caretakerinstance_OperationResult(true, ['type' => 'folder', 'path' => $parameter]);
         }
-        return new tx_caretakerinstance_OperationResult(false, array('path' => $parameter));
+
+        return new tx_caretakerinstance_OperationResult(false, ['path' => $parameter]);
     }
 
     /**
@@ -83,11 +77,11 @@ class tx_caretakerinstance_Operation_CheckPathExists implements tx_caretakerinst
      */
     protected function getPath($path)
     {
-        $path = \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName($path);
+        $path = GeneralUtility::getFileAbsFileName($path);
 
         // getFileAbsFileName can't handle directory path with trailing / correctly
-        if (substr($path, -1) === '/') {
-            $path = substr($path, 0, -1);
+        if (str_ends_with((string)$path, '/')) {
+            $path = substr((string)$path, 0, -1);
         }
 
         // FIXME remove this hacky part
@@ -96,9 +90,10 @@ class tx_caretakerinstance_Operation_CheckPathExists implements tx_caretakerinst
             return $path;
         }
 
-        if (\TYPO3\CMS\Core\Utility\GeneralUtility::isAllowedAbsPath($path)) {
+        if (GeneralUtility::isAllowedAbsPath($path)) {
             return $path;
         }
+
         return false;
     }
 }

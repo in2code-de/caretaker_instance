@@ -41,7 +41,7 @@ class DummyOperation implements \tx_caretakerinstance_IOperation
      * @param array $parameter
      * @return \tx_caretakerinstance_OperationResult
      */
-    public function execute($parameter = array())
+    public function execute($parameter = []): \tx_caretakerinstance_OperationResult
     {
         return new \tx_caretakerinstance_OperationResult(true, $parameter['foo']);
     }

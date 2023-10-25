@@ -47,11 +47,13 @@ class tx_caretakerinstance_CheckPathTestService extends tx_caretakerinstance_Rem
      */
     public function runTest()
     {
+        $msg = [];
+        $resultState = null;
         // fetch config values
         $paths = $this->getConfigValue('cppaths');
         $inverse = $this->getConfigValue('cpinverse');
         $type = $this->getConfigValue('cptype');
-        $time = intval($this->getConfigValue('cptime'));
+        $time = (int)$this->getConfigValue('cptime');
         $fileAgeShouldBe = $this->getConfigValue('cptimeflag');
 
         // catch required fields
@@ -60,10 +62,11 @@ class tx_caretakerinstance_CheckPathTestService extends tx_caretakerinstance_Rem
         }
 
         // prepare tests
-        $paths = explode(chr(10), $paths);
+        $paths = explode(chr(10), (string)$paths);
         foreach ($paths as $path) {
-            $operations[] = array('CheckPathExists', $path);
+            $operations[] = ['CheckPathExists', $path];
         }
+
         // run
         $commandResult = $this->executeRemoteOperations($operations);
 
@@ -90,7 +93,7 @@ class tx_caretakerinstance_CheckPathTestService extends tx_caretakerinstance_Rem
 
             if ($fileAgeShouldBe != '' && $time != 0 && $result->isSuccessful()) {
                 if ($resValue['time'] == 0) {
-                    $msg[] = 'Seems like the caretaker_instance can\'t report the file modification time.';
+                    $msg[] = "Seems like the caretaker_instance can't report the file modification time.";
                     $resultState = max($resultState, tx_caretaker_Constants::state_warning);
                 } else {
                     $fileIsYounger = ((time() - $resValue['time']) < $time);
@@ -114,6 +117,7 @@ class tx_caretakerinstance_CheckPathTestService extends tx_caretakerinstance_Rem
                 implode(chr(10), $msg)
             );
         }
+
         return tx_caretaker_TestResult::create(tx_caretaker_Constants::state_ok, 1);
     }
 }

@@ -47,15 +47,12 @@ interface tx_caretakerinstance_ISecurityManager
 {
     /**
      * Decode a Command Request (decrypt, merge data)
-     *
-     * @param tx_caretakerinstance_CommandRequest $commandRequest
      */
     public function decodeRequest(tx_caretakerinstance_CommandRequest $commandRequest);
 
     /**
      * Validate a Command Request (check session token, host address)
      *
-     * @param tx_caretakerinstance_CommandRequest $commandRequest
      * @throws tx_caretakerinstance_SecurityManagerException
      */
     public function validateRequest(tx_caretakerinstance_CommandRequest $commandRequest);

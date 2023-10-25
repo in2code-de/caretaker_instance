@@ -46,7 +46,7 @@ use Nimut\TestingFramework\TestCase\UnitTestCase;
  */
 class OperationManagerTest extends UnitTestCase
 {
-    public function testRegisterOperationAsClass()
+    public function testRegisterOperationAsClass(): void
     {
         $operationManager = new \tx_caretakerinstance_OperationManager();
         $operationManager->registerOperation(
@@ -57,7 +57,7 @@ class OperationManagerTest extends UnitTestCase
         $this->assertInstanceOf('\tx_caretakerinstance_Operation_GetPHPVersion', $operation);
     }
 
-    public function testRegisterOperationAsInstance()
+    public function testRegisterOperationAsInstance(): void
     {
         $operationManager = new \tx_caretakerinstance_OperationManager();
         $operationManager->registerOperation(
@@ -68,14 +68,14 @@ class OperationManagerTest extends UnitTestCase
         $this->assertInstanceOf('\tx_caretakerinstance_Operation_GetPHPVersion', $operation);
     }
 
-    public function testGetOperationForUnknownOperation()
+    public function testGetOperationForUnknownOperation(): void
     {
         $operationManager = new \tx_caretakerinstance_OperationManager();
         $operation = $operationManager->getOperation('me_no_operation');
         $this->assertFalse($operation);
     }
 
-    public function testExecuteUnknownOperation()
+    public function testExecuteUnknownOperation(): void
     {
         $operationManager = new \tx_caretakerinstance_OperationManager();
         $result = $operationManager->executeOperation('me_no_operation');
@@ -83,21 +83,21 @@ class OperationManagerTest extends UnitTestCase
         $this->assertEquals('Operation [me_no_operation] unknown', $result->getValue());
     }
 
-    public function testExecuteOperation()
+    public function testExecuteOperation(): void
     {
         $operationManager = new \tx_caretakerinstance_OperationManager();
 
         $operation = $this->getMockBuilder('tx_caretakerinstance_IOperation')
-            ->setMethods(array('execute'))
+            ->setMethods(['execute'])
             ->getMock();
         $operation->expects($this->once())
             ->method('execute')
-            ->with($this->equalTo(array('foo' => 'bar')))
+            ->with($this->equalTo(['foo' => 'bar']))
             ->will($this->returnValue(new \tx_caretakerinstance_OperationResult(true, 'bar')));
 
         $operationManager->registerOperation('mock', $operation);
 
-        $result = $operationManager->executeOperation('mock', array('foo' => 'bar'));
+        $result = $operationManager->executeOperation('mock', ['foo' => 'bar']);
         $this->assertTrue($result->isSuccessful());
         $this->assertEquals('bar', $result->getValue());
     }

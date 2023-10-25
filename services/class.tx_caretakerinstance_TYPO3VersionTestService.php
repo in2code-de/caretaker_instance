@@ -64,8 +64,8 @@ class tx_caretakerinstance_TYPO3VersionTestService extends tx_caretakerinstance_
             return tx_caretaker_TestResult::create(tx_caretaker_Constants::state_undefined, 0, 'No TYPO3 version information available. Please add "TYPO3 Versionnumbers Update" to your scheduler queue.');
         }
 
-        $operation = array('GetTYPO3Version');
-        $operations = array($operation);
+        $operation = ['GetTYPO3Version'];
+        $operations = [$operation];
 
         $commandResult = $this->executeRemoteOperations($operations);
 
@@ -95,9 +95,11 @@ class tx_caretakerinstance_TYPO3VersionTestService extends tx_caretakerinstance_
             if ($minVersion) {
                 $message .= ' >= ' . $minVersion;
             }
+
             if ($maxVersion) {
                 $message .= ' <= ' . $maxVersion;
             }
+
             $message .= ' expected.';
             $testResult = tx_caretaker_TestResult::create(tx_caretaker_Constants::state_error, 0, $message);
         }
@@ -112,7 +114,7 @@ class tx_caretakerinstance_TYPO3VersionTestService extends tx_caretakerinstance_
      */
     protected function checkForLatestVersion($versionString, $allowUnstable = false)
     {
-        if (strpos($versionString, '.latest') !== false) {
+        if (str_contains($versionString, '.latest')) {
             $versionDigits = explode('.', $versionString, 3);
             $latestVersions = GeneralUtility::makeInstance(Registry::class)->get('tx_caretaker', $allowUnstable ? 'TYPO3versions' : 'TYPO3versionsStable');
             $newVersionString = $latestVersions[$versionDigits[0] . '.' . $versionDigits[1]];

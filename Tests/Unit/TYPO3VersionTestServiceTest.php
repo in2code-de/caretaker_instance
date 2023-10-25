@@ -39,7 +39,7 @@ use Nimut\TestingFramework\TestCase\UnitTestCase;
  */
 class TYPO3VersionTestServiceTest extends UnitTestCase
 {
-    public function testVersionWithAlphaIsHigherThanLowerVersions()
+    public function testVersionWithAlphaIsHigherThanLowerVersions(): void
     {
         $this->markTestSkipped('Accesses tx_caretaker classes, which cant be found');
 

@@ -49,8 +49,8 @@ class tx_caretakerinstance_DiskSpaceTestService extends tx_caretakerinstance_Rem
     {
         $path = $this->getConfigValue('path');
 
-        $operation = array('GetDiskSpace', array('path' => $path));
-        $operations = array($operation);
+        $operation = ['GetDiskSpace', ['path' => $path]];
+        $operations = [$operation];
         $commandResult = $this->executeRemoteOperations($operations);
 
         if (!$this->isCommandResultSuccessful($commandResult)) {
@@ -71,21 +71,17 @@ class tx_caretakerinstance_DiskSpaceTestService extends tx_caretakerinstance_Rem
             $diskSpace
         );
 
-        $info = '(' .
-            'free: ' . $this->humanFilesize($diskSpace['free']) .
+        $info = '(free: ' . $this->humanFilesize($diskSpace['free']) .
             ' ; total: ' . $this->humanFilesize($diskSpace['total']) .
             (
-                $minFreeAbsolute > 0 ? (
-                    ' ; expected free: ' . $this->getConfigValue('min_free') . $this->getConfigValue('min_free_unit')
-                ) : ''
+            $minFreeAbsolute > 0 ? (
+                ' ; expected free: ' . $this->getConfigValue('min_free') . $this->getConfigValue('min_free_unit')
+            ) : ''
             ) . ')';
 
-        if (!empty($minFreeAbsolute)) {
-            if ($diskSpace['free'] <= $minFreeAbsolute) {
-                $message = 'Not enough free disk space ' . $info;
-
-                return tx_caretaker_TestResult::create(tx_caretaker_Constants::state_error, 0, $message);
-            }
+        if ($minFreeAbsolute !== 0 && $diskSpace['free'] <= $minFreeAbsolute) {
+            $message = 'Not enough free disk space ' . $info;
+            return tx_caretaker_TestResult::create(tx_caretaker_Constants::state_error, 0, $message);
         }
 
         $message = 'Disk space test successful ' . $info;
@@ -94,34 +90,35 @@ class tx_caretakerinstance_DiskSpaceTestService extends tx_caretakerinstance_Rem
     }
 
     /**
+     * @param int $value
+     * @param string $unit
+     * @return int
+     */
+    protected function getMinFreeAbsolute($value, $unit, mixed $diskSpace)
+    {
+        if ($value === 0) {
+            return 0;
+        }
+
+        if ($unit === '%') {
+            return (float)(ceil($diskSpace['total'] / 100 * $value));
+        }
+
+        $factor = array_search($unit, ['b', 'kB', 'MB', 'GB', 'TB'], true);
+
+        return $value * (1024 ** $factor);
+    }
+
+    /**
      * @param int $bytes
      * @param int $dec
      * @return string
      */
-    protected function humanFilesize($bytes, $dec = 2)
+    protected function humanFilesize($bytes, $dec = 2): string
     {
-        $size = array('B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB');
+        $size = ['B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
         $factor = (int)floor((strlen($bytes) - 1) / 3);
 
-        return sprintf("%.{$dec}f", $bytes / pow(1024, $factor)) . @$size[$factor];
-    }
-
-    /**
-     * @param int $value
-     * @param string $unit
-     * @param mixed $diskSpace
-     * @return int
-     */
-    protected function getMinFreeAbsolute($value, $unit, $diskSpace)
-    {
-        if (empty($value)) {
-            return 0;
-        }
-        if ($unit === '%') {
-            return (float)(ceil($diskSpace['total'] / 100 * $value));
-        }
-        $factor = array_search($unit, array('b', 'kB', 'MB', 'GB', 'TB'));
-
-        return $value * (pow(1024, $factor));
+        return sprintf(sprintf('%%.%df', $dec), $bytes / 1024 ** $factor) . @$size[$factor];
     }
 }

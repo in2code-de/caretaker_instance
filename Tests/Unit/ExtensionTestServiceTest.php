@@ -39,7 +39,7 @@ use Nimut\TestingFramework\TestCase\UnitTestCase;
  */
 class ExtensionTestServiceTest extends UnitTestCase
 {
-    public function testExtensionMustNotBeInstalledForRequirementNone()
+    public function testExtensionMustNotBeInstalledForRequirementNone(): void
     {
         $this->markTestSkipped();
 
@@ -53,7 +53,7 @@ class ExtensionTestServiceTest extends UnitTestCase
         $this->assertTrue($result);
     }
 
-    public function testExtensionVersionHasToBeInVersionRangeIfVersionGiven()
+    public function testExtensionVersionHasToBeInVersionRangeIfVersionGiven(): void
     {
         $this->markTestSkipped();
 
@@ -88,7 +88,7 @@ class ExtensionTestServiceTest extends UnitTestCase
             '1.2.5', // Minimal allowed version
             '' // Maximal allowed version
         );
-        $this->assertTrue($result !== true);
+        $this->assertTrue(!$result);
 
         $result = $service->checkVersionForRequirementAndVersionRange(
             '1.5.7', // Actual version
@@ -96,10 +96,10 @@ class ExtensionTestServiceTest extends UnitTestCase
             '1.2.8', // Minimal allowed version
             '1.4.18' // Maximal allowed version
         );
-        $this->assertTrue($result !== true);
+        $this->assertTrue(!$result);
     }
 
-    public function testActualExtensionVersionSuffixIsIgnored()
+    public function testActualExtensionVersionSuffixIsIgnored(): void
     {
         $this->markTestSkipped();
 
@@ -110,6 +110,6 @@ class ExtensionTestServiceTest extends UnitTestCase
             '1.5.8', // Minimal allowed version
             '1.6.0' // Maximal allowed version
         );
-        $this->assertTrue($result !== true);
+        $this->assertTrue(!$result);
     }
 }

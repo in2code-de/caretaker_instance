@@ -51,25 +51,10 @@
 class tx_caretakerinstance_CommandService
 {
     /**
-     * @var tx_caretakerinstance_ISecurityManager
-     */
-    protected $securityManager;
-
-    /**
-     * @var tx_caretakerinstance_OperationManager
-     */
-    protected $operationManager;
-
-    /**
      * Construct a new Command Service
-     *
-     * @param tx_caretakerinstance_OperationManager $operationManager
-     * @param tx_caretakerinstance_ISecurityManager $securityManager
      */
-    public function __construct(tx_caretakerinstance_OperationManager $operationManager, tx_caretakerinstance_ISecurityManager $securityManager)
+    public function __construct(protected tx_caretakerinstance_OperationManager $operationManager, protected tx_caretakerinstance_ISecurityManager $securityManager)
     {
-        $this->operationManager = $operationManager;
-        $this->securityManager = $securityManager;
     }
 
     /**
@@ -80,25 +65,28 @@ class tx_caretakerinstance_CommandService
      * @param tx_caretakerinstance_CommandRequest $commandRequest
      * @return tx_caretakerinstance_CommandResult The command result object
      */
-    public function executeCommand(tx_caretakerinstance_CommandRequest $commandRequest)
+    public function executeCommand(tx_caretakerinstance_CommandRequest $commandRequest): \tx_caretakerinstance_CommandResult
     {
         try {
             if ($this->securityManager->validateRequest($commandRequest)) {
                 if ($this->securityManager->decodeRequest($commandRequest)) {
                     $operations = $commandRequest->getData('operations');
 
-                    $results = array();
+                    $results = [];
                     foreach ($operations as $operation) {
                         $results[] = $this->operationManager->executeOperation($operation[0], $operation[1]);
                     }
 
                     return new tx_caretakerinstance_CommandResult(tx_caretakerinstance_CommandResult::status_ok, $results);
                 }
+
                 return new tx_caretakerinstance_CommandResult(tx_caretakerinstance_CommandResult::status_error, null, 'The request could not be decrypted');
             }
-        } catch (tx_caretakerinstance_SecurityManagerException $exception) {
-            return new tx_caretakerinstance_CommandResult(tx_caretakerinstance_CommandResult::status_error, null, 'The request could not be verified (' . $exception->getCode() . ': ' . $exception->getMessage() . ')');
+        } catch (tx_caretakerinstance_SecurityManagerException $txcaretakerinstanceSecurityManagerException) {
+            return new tx_caretakerinstance_CommandResult(tx_caretakerinstance_CommandResult::status_error, null,
+                'The request could not be verified (' . $txcaretakerinstanceSecurityManagerException->getCode() . ': ' . $txcaretakerinstanceSecurityManagerException->getMessage() . ')');
         }
+
         return new tx_caretakerinstance_CommandResult(tx_caretakerinstance_CommandResult::status_error, null, 'The request could not be verified');
     }
 
@@ -116,7 +104,6 @@ class tx_caretakerinstance_CommandService
     /**
      * Encode / encrypt the command result with the security manager
      *
-     * @param tx_caretakerinstance_CommandResult $commandResult
      * @return string
      */
     public function wrapCommandResult(tx_caretakerinstance_CommandResult $commandResult)

@@ -1,4 +1,11 @@
 <?php
+
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extensionmanager\Domain\Repository\ExtensionRepository;
+use TYPO3\CMS\Core\Utility\VersionNumberUtility;
+use TYPO3\CMS\Extensionmanager\Domain\Model\Extension;
+use TYPO3\CMS\Extensionmanager\Domain\Model\Dependency;
+
 /***************************************************************
  * Copyright notice
  *
@@ -22,7 +29,6 @@
  *
  * This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
 /**
  * This is a file of the caretaker project.
  * http://forge.typo3.org/projects/show/extension-caretaker
@@ -75,9 +81,9 @@ class tx_caretakerinstance_FindExtensionUpdatesTestService extends tx_caretakeri
     {
         $location_list = $this->getLocationList();
 
-        $operations = array();
-        $operations[] = array('GetExtensionList', array('locations' => $location_list));
-        $operations[] = array('GetTYPO3Version');
+        $operations = [];
+        $operations[] = ['GetExtensionList', ['locations' => $location_list]];
+        $operations[] = ['GetTYPO3Version'];
 
         $commandResult = $this->executeRemoteOperations($operations);
         if (!$this->isCommandResultSuccessful($commandResult)) {
@@ -104,21 +110,21 @@ class tx_caretakerinstance_FindExtensionUpdatesTestService extends tx_caretakeri
             $typo3Version = $typo3VersionResult->getValue();
         }
 
-        $errors = array();
-        $warnings = array();
-        $oks = array();
+        $errors = [];
+        $warnings = [];
+        $oks = [];
         foreach ($extensionList as $extension) {
             $this->checkExtension($extension, $errors, $warnings, $oks, $typo3Version);
         }
 
         // Return error if insecure extensions are installed
 
-        $num_errors = count($errors);
-        $num_warnings = count($warnings);
-        $num_oks = count($oks);
+        $num_errors = is_countable($errors) ? count($errors) : 0;
+        $num_warnings = is_countable($warnings) ? count($warnings) : 0;
+        $num_oks = is_countable($oks) ? count($oks) : 0;
 
-        $submessages = array();
-        $values = array('num_errors' => $num_errors, 'num_warnings' => $num_warnings);
+        $submessages = [];
+        $values = ['num_errors' => $num_errors, 'num_warnings' => $num_warnings];
 
         // add error submessages
         if ($num_errors > 0) {
@@ -146,7 +152,7 @@ class tx_caretakerinstance_FindExtensionUpdatesTestService extends tx_caretakeri
 
         // return error
         if ($num_errors > 0) {
-            $value = (count($errors) + count($warnings));
+            $value = ((is_countable($errors) ? count($errors) : 0) + (is_countable($warnings) ? count($warnings) : 0));
             $message = new tx_caretaker_ResultMessage('LLL:EXT:caretaker_instance/locallang.xml:insecure_extension_test_problems', $values);
 
             return tx_caretaker_TestResult::create(tx_caretaker_Constants::state_error, $value, $message, $submessages);
@@ -154,7 +160,7 @@ class tx_caretakerinstance_FindExtensionUpdatesTestService extends tx_caretakeri
 
         // return warning
         if ($num_warnings > 0) {
-            $value = count($warnings);
+            $value = is_countable($warnings) ? count($warnings) : 0;
             $message = new tx_caretaker_ResultMessage('LLL:EXT:caretaker_instance/locallang.xml:insecure_extension_test_problems', $values);
 
             return tx_caretaker_TestResult::create(tx_caretaker_Constants::state_warning, $value, $message, $submessages);
@@ -168,23 +174,33 @@ class tx_caretakerinstance_FindExtensionUpdatesTestService extends tx_caretakeri
     }
 
     /**
-     * @return array
+     * @return never[]|string[]
      */
-    public function getLocationList()
+    public function getLocationList(): array
     {
         $locationCode = (int)$this->getConfigValue('check_extension_locations');
-        $locationList = array();
-        if ($locationCode & 1) {
+        $locationList = [];
+        if (($locationCode & 1) !== 0) {
             $locationList[] = 'system';
         }
-        if ($locationCode & 2) {
+
+        if (($locationCode & 2) !== 0) {
             $locationList[] = 'global';
         }
-        if ($locationCode & 4) {
+
+        if (($locationCode & 4) !== 0) {
             $locationList[] = 'local';
         }
 
         return $locationList;
+    }
+
+    /**
+     * @return bool
+     */
+    protected function isTYPO3VersionIgnored(): bool
+    {
+        return $this->getConfigValue('only_for_running_typo3_version') != 1;
     }
 
     /**
@@ -194,7 +210,7 @@ class tx_caretakerinstance_FindExtensionUpdatesTestService extends tx_caretakeri
      * @param array $oks
      * @param string $typo3Version
      */
-    public function checkExtension($extension, &$errors, &$warnings, &$oks, $typo3Version = '')
+    public function checkExtension($extension, &$errors, &$warnings, &$oks, $typo3Version = ''): void
     {
         $ext_key = $extension['ext_key'];
         $ext_version = $extension['version'];
@@ -214,14 +230,10 @@ class tx_caretakerinstance_FindExtensionUpdatesTestService extends tx_caretakeri
         // Ext is in TER
         if ($ter_info) {
             $message = 'LLL:EXT:caretaker_instance/locallang.xml:find_extension_updates_test_detailinfo';
-            $value = array(
-                    'ext_key' => $extension['ext_key'],
-                    'ext_version' => $extension['version'],
-                    'ter_version' => $ter_info['version'],
-            );
+            $value = ['ext_key' => $extension['ext_key'], 'ext_version' => $extension['version'], 'ter_version' => $ter_info['version']];
 
             if ($this->checkVersionRange($ext_version, $ter_info['version'], '')) {
-                $oks[] = array('message' => $message, 'values' => $value);
+                $oks[] = ['message' => $message, 'values' => $value];
 
                 return;
             }
@@ -229,38 +241,57 @@ class tx_caretakerinstance_FindExtensionUpdatesTestService extends tx_caretakeri
             // Check whitelist
             $ext_whitelist = $this->getCustomExtensionWhitelist();
             if (in_array($ext_key, $ext_whitelist)) {
-                $oks[] = array('message' => $message, 'values' => $value);
+                $oks[] = ['message' => $message, 'values' => $value];
 
                 return;
             }
+
             // handle error
             $handling = $this->getStatusOfUpdatableExtensions();
             switch ($handling) {
-                    // Warning
-                    case 1:
-                        $warnings[] = array('message' => $message, 'values' => $value);
+                // Warning
+                case 1:
+                    $warnings[] = ['message' => $message, 'values' => $value];
 
-                        return;
-                    // Error
-                    case 2:
-                        $errors[] = array('message' => $message, 'values' => $value);
+                    return;
+                // Error
+                case 2:
+                    $errors[] = ['message' => $message, 'values' => $value];
 
-                        return;
-                    // OK
-                    default:
-                        $oks[] = array('message' => $message, 'values' => $value);
+                    return;
+                // OK
+                default:
+                    $oks[] = ['message' => $message, 'values' => $value];
 
-                        return;
-                }
+                    return;
+            }
         } else {
-            $value = array(
-                    'ext_key' => $extension['ext_key'],
-                    'ext_version' => $extension['version'],
-                    'ter_version' => 'unknown',
-            );
+            $value = ['ext_key' => $extension['ext_key'], 'ext_version' => $extension['version'], 'ter_version' => 'unknown'];
             $message = 'LLL:EXT:caretaker_instance/locallang.xml:find_extension_updates_test_detailinfo';
-            $oks[] = array('message' => $message, 'values' => $value);
+            $oks[] = ['message' => $message, 'values' => $value];
         }
+    }
+
+    /**
+     * @return bool
+     */
+    protected function isExtensionVersionSuffixIgnored(): bool
+    {
+        return $this->getConfigValue('ignore_extension_version_suffix') == 1;
+    }
+
+    /**
+     * @param $extensionVersion
+     * @return mixed
+     */
+    protected function clearExtensionVersionSuffix($extensionVersion)
+    {
+        if (preg_match('/^(\d+\.\d+\.\d+)/', (string)$extensionVersion, $matches)) {
+            return $matches[1];
+        }
+
+        // If not matched, return given version
+        return $extensionVersion;
     }
 
     /**
@@ -271,14 +302,15 @@ class tx_caretakerinstance_FindExtensionUpdatesTestService extends tx_caretakeri
      */
     public function getLatestExtensionTerInfos($ext_key, $ext_version, $typo3Version = '')
     {
-        $objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
+        $extension = null;
+        $objectManager = GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
 
-        /** @var TYPO3\CMS\Extensionmanager\Domain\Repository\ExtensionRepository $repo */
-        $repo = $objectManager->get('TYPO3\\CMS\\Extensionmanager\\Domain\\Repository\\ExtensionRepository');
+        /** @var ExtensionRepository $repo */
+        $repo = $objectManager->get(ExtensionRepository::class);
         $repo->initializeObject();
 
-        $highestVersion = \TYPO3\CMS\Core\Utility\VersionNumberUtility::convertVersionNumberToInteger(
-            \TYPO3\CMS\Core\Utility\VersionNumberUtility::raiseVersionNumber('main', $ext_version)
+        $highestVersion = VersionNumberUtility::convertVersionNumberToInteger(
+            VersionNumberUtility::raiseVersionNumber('main', $ext_version)
         );
 
         if ($this->isTYPO3VersionIgnored()) {
@@ -299,9 +331,9 @@ class tx_caretakerinstance_FindExtensionUpdatesTestService extends tx_caretakeri
             }
 
             // find last highest version for running TYPO3 version
-            /** @var TYPO3\CMS\Extensionmanager\Domain\Model\Extension $extension */
+            /** @var Extension $extension */
             foreach ($extensionAllVersions as $extensionVersion) {
-                /** @var TYPO3\CMS\Extensionmanager\Domain\Model\Dependency $dependency */
+                /** @var Dependency $dependency */
                 $compatible = true;
                 foreach ($extensionVersion->getDependencies() as $dependency) {
                     if ($dependency->getIdentifier() == 'typo3') {
@@ -309,6 +341,7 @@ class tx_caretakerinstance_FindExtensionUpdatesTestService extends tx_caretakeri
                         break;
                     }
                 }
+
                 if ($compatible) {
                     $extension = $extensionVersion;
                     break;
@@ -316,14 +349,11 @@ class tx_caretakerinstance_FindExtensionUpdatesTestService extends tx_caretakeri
             }
         }
 
-        if ($extension === null || !$extension instanceof \TYPO3\CMS\Extensionmanager\Domain\Model\Extension) {
+        if ($extension === null || !$extension instanceof Extension) {
             return false;
         }
 
-        $ext_infos = array(array(
-                'extkey' => $extension->getExtensionKey(),
-                'version' => $extension->getVersion(),
-        ));
+        $ext_infos = [['extkey' => $extension->getExtensionKey(), 'version' => $extension->getVersion()]];
 
         if (!is_array($ext_infos)) {
             return false;
@@ -333,7 +363,7 @@ class tx_caretakerinstance_FindExtensionUpdatesTestService extends tx_caretakeri
         $latestVersion = null;
         foreach ($ext_infos as $ext_info) {
             if ($latestVersion === null
-                    || version_compare($ext_info['version'], $latestVersion, '>')
+                || version_compare($ext_info['version'], $latestVersion, '>')
             ) {
                 $latestVersion = $ext_info['version'];
                 $result = $ext_info;
@@ -343,58 +373,12 @@ class tx_caretakerinstance_FindExtensionUpdatesTestService extends tx_caretakeri
         return $result;
     }
 
-    /***
-     * @return int
-     */
-    public function getStatusOfUpdatableExtensions()
-    {
-        return (int)$this->getConfigValue('status_of_updateable_extensions');
-    }
-
-    /**
-     * @return array
-     */
-    public function getCustomExtensionWhitelist()
-    {
-        return explode(chr(10), $this->getConfigValue('custom_extkey_whitlelist'));
-    }
-
     /**
      * @return bool
      */
-    protected function isExtensionVersionSuffixIgnored()
-    {
-        return $this->getConfigValue('ignore_extension_version_suffix') == 1;
-    }
-
-    /**
-     * @return bool
-     */
-    protected function isMajorVersionIgnored()
+    protected function isMajorVersionIgnored(): bool
     {
         return $this->getConfigValue('ignore_major_extension_version') == 1;
-    }
-
-    /**
-     * @return bool
-     */
-    protected function isTYPO3VersionIgnored()
-    {
-        return $this->getConfigValue('only_for_running_typo3_version') != 1;
-    }
-
-    /**
-     * @param $extensionVersion
-     * @return mixed
-     */
-    protected function clearExtensionVersionSuffix($extensionVersion)
-    {
-        if (preg_match('/^([0-9]+\.[0-9]+\.[0-9]+)/', $extensionVersion, $matches)) {
-            return $matches[1];
-        }
-
-        // If not matched, return given version
-        return $extensionVersion;
     }
 
     /**
@@ -408,19 +392,32 @@ class tx_caretakerinstance_FindExtensionUpdatesTestService extends tx_caretakeri
      *
      * @return bool TRUE if the actual version is within min and max.
      */
-    public function checkVersionRange($actualVersion, $minVersion, $maxVersion)
+    public function checkVersionRange($actualVersion, $minVersion, $maxVersion): bool
     {
-        if ($minVersion != '') {
-            if (!version_compare($actualVersion, $minVersion, '>=')) {
-                return false;
-            }
+        if ($minVersion != '' && !version_compare($actualVersion, $minVersion, '>=')) {
+            return false;
         }
-        if ($maxVersion != '') {
-            if (!version_compare($actualVersion, $maxVersion, '<=')) {
-                return false;
-            }
+
+        if ($maxVersion != '' && !version_compare($actualVersion, $maxVersion, '<=')) {
+            return false;
         }
 
         return true;
+    }
+
+    /**
+     * @return array
+     */
+    public function getCustomExtensionWhitelist(): array
+    {
+        return explode(chr(10), (string)$this->getConfigValue('custom_extkey_whitlelist'));
+    }
+
+    /***
+     * @return int
+     */
+    public function getStatusOfUpdatableExtensions(): int
+    {
+        return (int)$this->getConfigValue('status_of_updateable_extensions');
     }
 }

@@ -1,13 +1,3 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
-<!--
-/**
- * This is a file of the caretaker project.
- *
- * @author	Tobias Liebig <tobias.liebig@typo3.org>
- *
- * $$Id$$
- */
--->
 <T3DataStructure>
     <meta>
         <langDisable>1</langDisable>
@@ -44,6 +34,7 @@
                     <label>Unit</label>
                     <config>
                         <type>select</type>
+                        <renderType>selectSingle</renderType>
                         <items>
                             <numIndex index="0">
                                 <numIndex index="0">%</numIndex>

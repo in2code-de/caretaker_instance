@@ -52,7 +52,7 @@ class tx_caretakerinstance_OperationManager implements tx_caretakerinstance_IOpe
     /**
      * @var array of tx_caretakerinstance_IOperation
      */
-    protected $operations;
+    protected $operations = [];
 
     /**
      * Register a new operation
@@ -60,9 +60,26 @@ class tx_caretakerinstance_OperationManager implements tx_caretakerinstance_IOpe
      * @param string $operationKey The key of the operation (All lowercase, underscores)
      * @param string|object $operation Operation instance or class
      */
-    public function registerOperation($operationKey, $operation)
+    public function registerOperation($operationKey, $operation): void
     {
         $this->operations[$operationKey] = $operation;
+    }
+
+    /**
+     * Execute an Operation by key with optional parameters
+     *
+     * @param string $operationKey
+     * @param array $parameter
+     * @return tx_caretakerinstance_OperationResult
+     */
+    public function executeOperation($operationKey, $parameter = [])
+    {
+        $operation = $this->getOperation($operationKey);
+        if ($operation) {
+            return $operation->execute($parameter);
+        }
+
+        return new tx_caretakerinstance_OperationResult(false, 'Operation [' . $operationKey . '] unknown');
     }
 
     /**
@@ -78,22 +95,7 @@ class tx_caretakerinstance_OperationManager implements tx_caretakerinstance_IOpe
         } elseif (is_object($this->operations[$operationKey])) {
             return $this->operations[$operationKey];
         }
-        return false;
-    }
 
-    /**
-     * Execute an Operation by key with optional parameters
-     *
-     * @param string $operationKey
-     * @param array $parameter
-     * @return tx_caretakerinstance_OperationResult
-     */
-    public function executeOperation($operationKey, $parameter = array())
-    {
-        $operation = $this->getOperation($operationKey);
-        if ($operation) {
-            return $operation->execute($parameter);
-        }
-        return new tx_caretakerinstance_OperationResult(false, 'Operation [' . $operationKey . '] unknown');
+        return false;
     }
 }

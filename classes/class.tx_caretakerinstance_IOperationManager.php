@@ -70,5 +70,5 @@ interface tx_caretakerinstance_IOperationManager
      * @param array $parameter
      * @return tx_caretakerinstance_OperationResult
      */
-    public function executeOperation($operationKey, $parameter = array());
+    public function executeOperation($operationKey, $parameter = []);
 }

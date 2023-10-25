@@ -47,25 +47,12 @@
 class tx_caretakerinstance_OperationResult
 {
     /**
-     * @var bool
-     */
-    protected $status;
-
-    /**
-     * @var array|string
-     */
-    protected $value;
-
-    /**
      * Construct a new operation result
      *
      * @param bool $status
-     * @param mixed $value
      */
-    public function __construct($status, $value)
+    public function __construct(protected $status, protected mixed $value)
     {
-        $this->status = $status;
-        $this->value = $value;
     }
 
     /**
@@ -85,10 +72,10 @@ class tx_caretakerinstance_OperationResult
     }
 
     /**
-     * @return array The Operation Result as an array
+     * @return array{status: bool, value: string|mixed[]} The Operation Result as an array
      */
-    public function toArray()
+    public function toArray(): array
     {
-        return array('status' => $this->status, 'value' => $this->value);
+        return ['status' => $this->status, 'value' => $this->value];
     }
 }

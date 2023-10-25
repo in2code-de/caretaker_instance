@@ -23,6 +23,8 @@
  * This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\SingletonInterface;
 
 /**
@@ -55,9 +57,9 @@ class tx_caretakerinstance_Operation_MatchPredefinedVariable implements tx_caret
      * @param array $parameter key, match, usingRegexp, comparisonOperator
      * @return tx_caretakerinstance_OperationResult The current PHP version
      */
-    public function execute($parameter = array())
+    public function execute($parameter = []): \tx_caretakerinstance_OperationResult
     {
-        $keyPath = explode('|', $parameter['key']);
+        $keyPath = explode('|', (string)$parameter['key']);
         $value = $this->getValueForKeyPath($keyPath);
 
         $success = false;
@@ -96,7 +98,6 @@ class tx_caretakerinstance_Operation_MatchPredefinedVariable implements tx_caret
 
     /**
      *
-     * @param array $keyPath
      * @return bool
      */
     protected function getValueForKeyPath(array $keyPath)
@@ -108,17 +109,10 @@ class tx_caretakerinstance_Operation_MatchPredefinedVariable implements tx_caret
                 $value = $GLOBALS;
                 // decode TYPO3_CONF_VARS->EXT->extConf children if requested
                 if ($keyPath[0] == 'TYPO3_CONF_VARS' && $keyPath[1] == 'EXT' && $keyPath[2] == 'extConf' && $keyPath[3]) {
-                    $serializedValue = $GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf'][$keyPath[3]];
-                    $value = array(
-                        'TYPO3_CONF_VARS' => array(
-                            'EXT' => array(
-                                'extConf' => array(
-                                    $keyPath[3] => unserialize($serializedValue),
-                                ),
-                            ),
-                        ),
-                    );
+                    $serializedValue = GeneralUtility::makeInstance(ExtensionConfiguration::class)->get($keyPath[3]);
+                    $value = ['TYPO3_CONF_VARS' => ['EXT' => ['extConf' => [$keyPath[3] => unserialize($serializedValue)]]]];
                 }
+
                 break;
 
             case '_POST':
@@ -153,6 +147,7 @@ class tx_caretakerinstance_Operation_MatchPredefinedVariable implements tx_caret
                 $value = $_COOKIE;
                 break;
         }
+
         foreach ($keyPath as $key) {
             if (isset($value[$key])) {
                 $value = $value[$key];

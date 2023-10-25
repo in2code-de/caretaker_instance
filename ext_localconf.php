@@ -1,4 +1,7 @@
 <?php
+use Caretaker\CaretakerInstance\UpgradeWizards\GenerateKeysUpgradeWizard;
+use Caretaker\CaretakerInstance\Controller\EidController;
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 /***************************************************************
  * Copyright notice
  *
@@ -33,19 +36,19 @@
  *
  * $Id$
  */
-if (!defined('TYPO3_MODE')) {
+if (!defined('TYPO3')) {
     die('Access denied.');
 }
 
 // Register UpgradeWizard for generating keys
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/install']['update']['caretakerInstanceGenerateKeys']
-    = \Caretaker\CaretakerInstance\UpgradeWizards\GenerateKeysUpgradeWizard::class;
+    = GenerateKeysUpgradeWizard::class;
 
 // Add eID script for caretaker instance frontend service
-$GLOBALS['TYPO3_CONF_VARS']['FE']['eID_include']['tx_caretakerinstance'] = \Caretaker\CaretakerInstance\Controller\EidController::class . '::execute';
+$GLOBALS['TYPO3_CONF_VARS']['FE']['eID_include']['tx_caretakerinstance'] = EidController::class . '::execute';
 
 // Register default caretaker Operations
-$operations = array(
+$operations = [
     'GetPHPVersion',
     'GetTYPO3Version',
     'GetExtensionVersion',
@@ -56,10 +59,10 @@ $operations = array(
     'MatchPredefinedVariable',
     'CheckPathExists',
     'GetDiskSpace',
-);
+];
 foreach ($operations as $operationKey) {
     $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['caretaker_instance']['operations'][$operationKey] =
         'tx_caretakerinstance_Operation_' . $operationKey;
 }
 
-require(\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('caretaker_instance') . 'ext_conf_include.php');
+require(ExtensionManagementUtility::extPath('caretaker_instance') . 'ext_conf_include.php');

@@ -11,8 +11,10 @@ Client for caretaker observation system
 
 ### Composer
 
-Do `composer req caretaker/caretaker_instance` in your composer based TYPO3 root.
+Do `composer req caretaker/caretaker_instance` in your composer based TYPO3
+root.
 
 ### TYPO3 Extension Repository (TER)
 
-Download and install the extension from [TER](https://extensions.typo3.org/extension/caretaker_instance/).
+Download and install the extension
+from [TER](https://extensions.typo3.org/extension/caretaker_instance/).

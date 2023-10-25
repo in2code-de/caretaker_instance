@@ -9,16 +9,21 @@ class tx_caretakerinstance_BlacklistedRecordsTestService extends tx_caretakerins
     {
         $table = $this->getConfigValue('table');
         $field = $this->getConfigValue('field');
-        $blacklist = explode(chr(10), $this->getConfigValue('blacklist'));
+        $blacklist = explode(chr(10), (string)$this->getConfigValue('blacklist'));
 
-        $operations = array();
+        $operations = [];
         foreach ($blacklist as $value) {
             $value = trim($value);
-            if (strlen($value)) {
-                $operations[] = array(
+            if (strlen($value) !== 0) {
+                $operations[] = [
                     'GetRecord',
-                    array('table' => $table, 'field' => $field, 'value' => $value, 'checkEnableFields' => true),
-                );
+                    [
+                        'table' => $table,
+                        'field' => $field,
+                        'value' => $value,
+                        'checkEnableFields' => true,
+                    ],
+                ];
             }
         }
 
@@ -28,7 +33,7 @@ class tx_caretakerinstance_BlacklistedRecordsTestService extends tx_caretakerins
             return $this->getFailedCommandResultTestResult($commandResult);
         }
 
-        $values = array();
+        $values = [];
 
         $results = $commandResult->getOperationResults();
         foreach ($results as $operationResult) {
@@ -42,13 +47,14 @@ class tx_caretakerinstance_BlacklistedRecordsTestService extends tx_caretakerins
             }
         }
 
-        $blacklistedValuesFound = array();
+        $blacklistedValuesFound = [];
         foreach ($blacklist as $value) {
             if (in_array($value, $values)) {
                 $blacklistedValuesFound[] = $value;
             }
         }
-        if (count($blacklistedValuesFound) > 0) {
+
+        if ($blacklistedValuesFound !== []) {
             return tx_caretaker_TestResult::create(tx_caretaker_Constants::state_error, 0, 'Values [' . implode(',', $blacklistedValuesFound) . '] in ' . $table . '.' . $field . ' are blacklisted and should not be active.');
         }
 

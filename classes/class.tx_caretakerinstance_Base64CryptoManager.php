@@ -54,12 +54,11 @@ class tx_caretakerinstance_Base64CryptoManager implements tx_caretakerinstance_I
      * @param string $secret
      * @return string
      */
-    public function createSessionToken($data, $secret)
+    public function createSessionToken($data, $secret): string
     {
-        $salt = substr(md5(rand()), 0, 12);
-        $token = $data . ':' . $salt . md5($secret . ':' . $data . ':' . $salt);
+        $salt = substr(md5(random_int(0, mt_getrandmax())), 0, 12);
 
-        return $token;
+        return $data . ':' . $salt . md5($secret . ':' . $data . ':' . $salt);
     }
 
     /**
@@ -69,12 +68,13 @@ class tx_caretakerinstance_Base64CryptoManager implements tx_caretakerinstance_I
      */
     public function verifySessionToken($token, $secret)
     {
-        list($data, $hash) = explode(':', $token, 2);
+        [$data, $hash] = explode(':', $token, 2);
         $salt = substr($hash, 0, 12);
 
         if ($token == $data . ':' . $salt . md5($secret . ':' . $data . ':' . $salt)) {
             return $data;
         }
+
         return false;
     }
 
@@ -83,7 +83,7 @@ class tx_caretakerinstance_Base64CryptoManager implements tx_caretakerinstance_I
      * @param string $privateKey
      * @return string
      */
-    public function createSignature($data, $privateKey)
+    public function createSignature($data, $privateKey): string
     {
         return md5($data);
     }
@@ -94,7 +94,7 @@ class tx_caretakerinstance_Base64CryptoManager implements tx_caretakerinstance_I
      * @param string $publicKey
      * @return bool
      */
-    public function verifySignature($data, $signature, $publicKey)
+    public function verifySignature($data, $signature, $publicKey): bool
     {
         return md5($data) == $signature;
     }
@@ -104,7 +104,7 @@ class tx_caretakerinstance_Base64CryptoManager implements tx_caretakerinstance_I
      * @param $key
      * @return string
      */
-    public function encrypt($data, $key)
+    public function encrypt($data, $key): string
     {
         return base64_encode($data);
     }
@@ -114,7 +114,7 @@ class tx_caretakerinstance_Base64CryptoManager implements tx_caretakerinstance_I
      * @param $key
      * @return string
      */
-    public function decrypt($data, $key)
+    public function decrypt($data, $key): string
     {
         return base64_decode($data);
     }
@@ -122,8 +122,8 @@ class tx_caretakerinstance_Base64CryptoManager implements tx_caretakerinstance_I
     /**
      * @return array
      */
-    public function generateKeyPair()
+    public function generateKeyPair(): array
     {
-        return array('', '');
+        return ['', ''];
     }
 }

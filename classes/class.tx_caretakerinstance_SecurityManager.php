@@ -81,18 +81,10 @@ class tx_caretakerinstance_SecurityManager implements tx_caretakerinstance_ISecu
     protected $clientHostAddressRestriction;
 
     /**
-     * @var tx_caretakerinstance_OpenSSLCryptoManager
-     */
-    protected $cryptoManager;
-
-    /**
      * Constructor
-     *
-     * @param tx_caretakerinstance_ICryptoManager $cryptoManager
      */
-    public function __construct(tx_caretakerinstance_ICryptoManager $cryptoManager)
+    public function __construct(protected tx_caretakerinstance_ICryptoManager $cryptoManager)
     {
-        $this->cryptoManager = $cryptoManager;
     }
 
     /**
@@ -103,10 +95,10 @@ class tx_caretakerinstance_SecurityManager implements tx_caretakerinstance_ISecu
      * - Encrypted data signature
      *
      * @param tx_caretakerinstance_CommandRequest $commandRequest
-     * @throws tx_caretakerinstance_SecurityManagerException
      * @return bool
+     * @throws tx_caretakerinstance_SecurityManagerException
      */
-    public function validateRequest(tx_caretakerinstance_CommandRequest $commandRequest)
+    public function validateRequest(tx_caretakerinstance_CommandRequest $commandRequest): bool
     {
         $sessionToken = $commandRequest->getSessionToken();
         $timestamp = $this->cryptoManager->verifySessionToken($sessionToken, $this->privateKey);
@@ -115,16 +107,49 @@ class tx_caretakerinstance_SecurityManager implements tx_caretakerinstance_ISecu
         } elseif (!$this->isClientHostAddressValid($commandRequest->getClientHostAddress())) {
             throw new tx_caretakerinstance_ClientHostAddressRestrictionException('Client IP address is not allowed', 1500062384);
         } elseif (
-            !$this->cryptoManager->verifySignature(
+            $this->cryptoManager->verifySignature(
                 $commandRequest->getDataForSignature(),
                 $commandRequest->getSignature(),
                 $this->clientPublicKey
-            )
+            ) === '' || $this->cryptoManager->verifySignature(
+                $commandRequest->getDataForSignature(),
+                $commandRequest->getSignature(),
+                $this->clientPublicKey
+            ) === '0'
         ) {
-            throw new tx_caretakerinstance_SignaturValidationException('Signature didn\'t verify', 1500062398);
+            throw new tx_caretakerinstance_SignaturValidationException("Signature didn't verify", 1500062398);
         }
 
         return true;
+    }
+
+    /**
+     * @param string $clientHostAddress
+     * @return bool
+     */
+    private function isClientHostAddressValid($clientHostAddress): bool
+    {
+        if ((string)$this->clientHostAddressRestriction === '') {
+            return true;
+        }
+
+        $clientHostRestrictionAddresses = array_map('trim', explode(',', $this->clientHostAddressRestriction));
+        foreach ($clientHostRestrictionAddresses as $clientHostAddressRestriction) {
+            if (filter_var($clientHostAddressRestriction, FILTER_VALIDATE_IP)) {
+                if ($clientHostAddress == $clientHostAddressRestriction) {
+                    return true;
+                }
+            } else {
+                $hostAccessRestrictions = gethostbynamel($clientHostAddressRestriction . '.');
+                foreach ($hostAccessRestrictions as $hostAccessRestriction) {
+                    if ($clientHostAddress == $hostAccessRestriction) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -133,18 +158,19 @@ class tx_caretakerinstance_SecurityManager implements tx_caretakerinstance_ISecu
      * @param tx_caretakerinstance_CommandRequest $commandRequest
      * @return bool TRUE if the command request could be decrypted
      */
-    public function decodeRequest(tx_caretakerinstance_CommandRequest $commandRequest)
+    public function decodeRequest(tx_caretakerinstance_CommandRequest $commandRequest): bool
     {
-        $data = json_decode($commandRequest->getRawData(), true);
+        $data = json_decode($commandRequest->getRawData(), true, 512, JSON_THROW_ON_ERROR);
         $commandRequest->mergeData($data);
 
-        if (strlen($commandRequest->getData('encrypted'))) {
+        if (strlen((string)$commandRequest->getData('encrypted')) !== 0) {
             $raw = $this->cryptoManager->decrypt($commandRequest->getData('encrypted'), $this->privateKey);
-            if (!$raw) {
+            if ($raw === '' || $raw === '0') {
                 // Decryption failed
                 return false;
             }
-            $data = json_decode($raw, true);
+
+            $data = json_decode($raw, true, 512, JSON_THROW_ON_ERROR);
 
             // merge decrypted data into raw data
             $commandRequest->mergeData($data);
@@ -164,6 +190,7 @@ class tx_caretakerinstance_SecurityManager implements tx_caretakerinstance_ISecu
         if ($this->isClientHostAddressValid($clientHostAddress)) {
             return $this->cryptoManager->createSessionToken(time(), $this->privateKey);
         }
+
         return false;
     }
 
@@ -180,7 +207,7 @@ class tx_caretakerinstance_SecurityManager implements tx_caretakerinstance_ISecu
      * @param string $publicKey
      * @return void
      */
-    public function setPublicKey($publicKey)
+    public function setPublicKey($publicKey): void
     {
         $this->publicKey = $publicKey;
     }
@@ -199,7 +226,7 @@ class tx_caretakerinstance_SecurityManager implements tx_caretakerinstance_ISecu
      * @param string $privateKey
      * @return void
      */
-    public function setPrivateKey($privateKey)
+    public function setPrivateKey($privateKey): void
     {
         $this->privateKey = $privateKey;
     }
@@ -218,7 +245,7 @@ class tx_caretakerinstance_SecurityManager implements tx_caretakerinstance_ISecu
      * @param string $address
      * @return void
      */
-    public function setClientHostAddressRestriction($address)
+    public function setClientHostAddressRestriction($address): void
     {
         $this->clientHostAddressRestriction = $address;
     }
@@ -237,7 +264,7 @@ class tx_caretakerinstance_SecurityManager implements tx_caretakerinstance_ISecu
      * @param string $clientPublicKey
      * @return void
      */
-    public function setClientPublicKey($clientPublicKey)
+    public function setClientPublicKey($clientPublicKey): void
     {
         $this->clientPublicKey = $clientPublicKey;
     }
@@ -268,32 +295,5 @@ class tx_caretakerinstance_SecurityManager implements tx_caretakerinstance_ISecu
     public function decodeResult($encryptedData)
     {
         return $this->cryptoManager->decrypt($encryptedData, $this->privateKey);
-    }
-
-    /**
-     * @param string $clientHostAddress
-     * @return bool
-     */
-    private function isClientHostAddressValid($clientHostAddress)
-    {
-        if (!strlen($this->clientHostAddressRestriction)) {
-            return true;
-        }
-        $clientHostRestrictionAddresses = array_map('trim', explode(',', $this->clientHostAddressRestriction));
-        foreach ($clientHostRestrictionAddresses as $clientHostAddressRestriction) {
-            if (filter_var($clientHostAddressRestriction, FILTER_VALIDATE_IP)) {
-                if ($clientHostAddress == $clientHostAddressRestriction) {
-                    return true;
-                }
-            } else {
-                $hostAccessRestrictions = gethostbynamel($clientHostAddressRestriction . '.');
-                foreach ($hostAccessRestrictions as $hostAccessRestriction) {
-                    if ($clientHostAddress == $hostAccessRestriction) {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
     }
 }
