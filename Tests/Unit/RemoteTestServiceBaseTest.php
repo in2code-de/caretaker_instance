@@ -1,4 +1,5 @@
 <?php
+
 namespace Caretaker\CaretakerInstance\Tests\Unit;
 
 use Caretaker\CaretakerInstance\Tests\Unit\Stubs\RemoteTestServiceTestBaseImpl;
@@ -52,9 +53,9 @@ class RemoteTestServiceBaseTest extends UnitTestCase
 
     public function testCheckVersionRangeOk(): void
     {
-        $this->markTestSkipped('Accesses tx_caretaker classes, which cant be found');
+        self::markTestSkipped('Accesses tx_caretaker classes, which cant be found');
 
-        $this->assertTrue(
+        self::assertTrue(
             $this->rts->checkVersionRange(
                 '4.6.8', // Actual version
                 '4.6.0', // Minimal allowed version
@@ -65,9 +66,9 @@ class RemoteTestServiceBaseTest extends UnitTestCase
 
     public function testCheckVersionRangeOkExactMin(): void
     {
-        $this->markTestSkipped('Accesses tx_caretaker classes, which cant be found');
+        self::markTestSkipped('Accesses tx_caretaker classes, which cant be found');
 
-        $this->assertTrue(
+        self::assertTrue(
             $this->rts->checkVersionRange(
                 '4.6.8', // Actual version
                 '4.6.8', // Minimal allowed version
@@ -78,9 +79,9 @@ class RemoteTestServiceBaseTest extends UnitTestCase
 
     public function testCheckVersionRangeOkExactMax(): void
     {
-        $this->markTestSkipped('Accesses tx_caretaker classes, which cant be found');
+        self::markTestSkipped('Accesses tx_caretaker classes, which cant be found');
 
-        $this->assertTrue(
+        self::assertTrue(
             $this->rts->checkVersionRange(
                 '4.6.8', // Actual version
                 '4.6.0', // Minimal allowed version
@@ -91,9 +92,9 @@ class RemoteTestServiceBaseTest extends UnitTestCase
 
     public function testCheckVersionRangeMaxDoesNotMatch(): void
     {
-        $this->markTestSkipped('Accesses tx_caretaker classes, which cant be found');
+        self::markTestSkipped('Accesses tx_caretaker classes, which cant be found');
 
-        $this->assertFalse(
+        self::assertFalse(
             $this->rts->checkVersionRange(
                 '4.6.8', // Actual version
                 '4.6.0', // Minimal allowed version
@@ -104,9 +105,9 @@ class RemoteTestServiceBaseTest extends UnitTestCase
 
     public function testCheckVersionRangeMinDoesNotMatch(): void
     {
-        $this->markTestSkipped('Accesses tx_caretaker classes, which cant be found');
+        self::markTestSkipped('Accesses tx_caretaker classes, which cant be found');
 
-        $this->assertFalse(
+        self::assertFalse(
             $this->rts->checkVersionRange(
                 '4.6.8', // Actual version
                 '4.6.9', // Minimal allowed version
@@ -117,9 +118,9 @@ class RemoteTestServiceBaseTest extends UnitTestCase
 
     public function testCheckVersionRangeTypeAlpha(): void
     {
-        $this->markTestSkipped('Accesses tx_caretaker classes, which cant be found');
+        self::markTestSkipped('Accesses tx_caretaker classes, which cant be found');
 
-        $this->assertTrue(
+        self::assertTrue(
             $this->rts->checkVersionRange(
                 '4.6.0', // Actual version
                 '4.6.0alpha1', // Minimal allowed version
@@ -127,7 +128,7 @@ class RemoteTestServiceBaseTest extends UnitTestCase
             ),
             '.0 is higher than .0alpha1'
         );
-        $this->assertTrue(
+        self::assertTrue(
             $this->rts->checkVersionRange(
                 '4.6.0alpha1', // Actual version
                 '4.6.0alpha1', // Minimal allowed version
@@ -135,7 +136,7 @@ class RemoteTestServiceBaseTest extends UnitTestCase
             ),
             '.0alpha1 == .0alpha1'
         );
-        $this->assertFalse(
+        self::assertFalse(
             $this->rts->checkVersionRange(
                 '4.6.0alpha1', // Actual version
                 '4.6.0alpha2', // Minimal allowed version
@@ -143,7 +144,7 @@ class RemoteTestServiceBaseTest extends UnitTestCase
             ),
             '.0alpha1 < .0alpha2'
         );
-        $this->assertFalse(
+        self::assertFalse(
             $this->rts->checkVersionRange(
                 '4.6.0alpha1', // Actual version
                 '4.6.0', // Minimal allowed version
@@ -155,9 +156,9 @@ class RemoteTestServiceBaseTest extends UnitTestCase
 
     public function testCheckVersionRangeTypeAlphaBeta(): void
     {
-        $this->markTestSkipped('Accesses tx_caretaker classes, which cant be found');
+        self::markTestSkipped('Accesses tx_caretaker classes, which cant be found');
 
-        $this->assertFalse(
+        self::assertFalse(
             $this->rts->checkVersionRange(
                 '4.6.0alpha1', // Actual version
                 '4.6.0beta1', // Minimal allowed version
@@ -165,7 +166,7 @@ class RemoteTestServiceBaseTest extends UnitTestCase
             ),
             '.0alpha1 < .0beta1'
         );
-        $this->assertTrue(
+        self::assertTrue(
             $this->rts->checkVersionRange(
                 '4.6.0beta1', // Actual version
                 '4.6.0alpha1', // Minimal allowed version
@@ -177,9 +178,9 @@ class RemoteTestServiceBaseTest extends UnitTestCase
 
     public function testCheckVersionRangeTypeRc(): void
     {
-        $this->markTestSkipped('Accesses tx_caretaker classes, which cant be found');
+        self::markTestSkipped('Accesses tx_caretaker classes, which cant be found');
 
-        $this->assertTrue(
+        self::assertTrue(
             $this->rts->checkVersionRange(
                 '4.6.0rc1', // Actual version
                 '4.6.0beta1', // Minimal allowed version
@@ -187,7 +188,7 @@ class RemoteTestServiceBaseTest extends UnitTestCase
             ),
             '.0rc1 > .0beta1'
         );
-        $this->assertFalse(
+        self::assertFalse(
             $this->rts->checkVersionRange(
                 '4.6.0alpha1', // Actual version
                 '4.6.0rc1', // Minimal allowed version
@@ -195,7 +196,7 @@ class RemoteTestServiceBaseTest extends UnitTestCase
             ),
             '.0alpha1 < .0rc1'
         );
-        $this->assertTrue(
+        self::assertTrue(
             $this->rts->checkVersionRange(
                 '4.6.0', // Actual version
                 '4.6.0rc1', // Minimal allowed version

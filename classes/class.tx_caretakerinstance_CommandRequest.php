@@ -47,7 +47,6 @@
  * @author Thomas Hempel <thomas@work.de>
  * @author Christopher Hlubek <hlubek@networkteam.com>
  * @author Tobias Liebig <liebig@networkteam.com>
- *
  */
 class tx_caretakerinstance_CommandRequest
 {
@@ -149,7 +148,6 @@ class tx_caretakerinstance_CommandRequest
 
     /**
      * @param string $signature
-     * @return void
      */
     public function setSignature($signature): void
     {
@@ -173,7 +171,6 @@ class tx_caretakerinstance_CommandRequest
      * Merge data from another array onto the data
      *
      * @param array $array
-     * @return void
      */
     public function mergeData(&$array): void
     {

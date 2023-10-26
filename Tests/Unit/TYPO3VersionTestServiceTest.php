@@ -1,4 +1,5 @@
 <?php
+
 namespace Caretaker\CaretakerInstance\Tests\Unit;
 
 use Nimut\TestingFramework\TestCase\UnitTestCase;
@@ -41,7 +42,7 @@ class TYPO3VersionTestServiceTest extends UnitTestCase
 {
     public function testVersionWithAlphaIsHigherThanLowerVersions(): void
     {
-        $this->markTestSkipped('Accesses tx_caretaker classes, which cant be found');
+        self::markTestSkipped('Accesses tx_caretaker classes, which cant be found');
 
         $service = new \tx_caretakerinstance_TYPO3VersionTestService();
         $result = $service->checkVersionRange(
@@ -49,6 +50,6 @@ class TYPO3VersionTestServiceTest extends UnitTestCase
             '4.2.8', // Minimal allowed version
             '' // Maximal allowed version
         );
-        $this->assertTrue($result);
+        self::assertTrue($result);
     }
 }

@@ -45,7 +45,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  * @author Thomas Hempel <thomas@work.de>
  * @author Christopher Hlubek <hlubek@networkteam.com>
  * @author Tobias Liebig <liebig@networkteam.com>
- *
  */
 class tx_caretakerinstance_OperationManager implements tx_caretakerinstance_IOperationManager
 {
@@ -92,7 +91,9 @@ class tx_caretakerinstance_OperationManager implements tx_caretakerinstance_IOpe
     {
         if (is_string($this->operations[$operationKey])) {
             return GeneralUtility::makeInstance($this->operations[$operationKey]);
-        } elseif (is_object($this->operations[$operationKey])) {
+        }
+
+        if (is_object($this->operations[$operationKey])) {
             return $this->operations[$operationKey];
         }
 

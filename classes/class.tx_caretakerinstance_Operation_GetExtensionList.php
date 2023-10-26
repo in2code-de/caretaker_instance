@@ -46,7 +46,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  * @author Thomas Hempel <thomas@work.de>
  * @author Christopher Hlubek <hlubek@networkteam.com>
  * @author Tobias Liebig <liebig@networkteam.com>
- *
  */
 class tx_caretakerinstance_Operation_GetExtensionList implements tx_caretakerinstance_IOperation, SingletonInterface
 {
@@ -56,7 +55,6 @@ class tx_caretakerinstance_Operation_GetExtensionList implements tx_caretakerins
     protected $scopes = ['system', 'global', 'local'];
 
     /**
-     *
      * @param array $parameter Array of extension locations as string (system, global, local)
      * @return tx_caretakerinstance_OperationResult The extension list
      */

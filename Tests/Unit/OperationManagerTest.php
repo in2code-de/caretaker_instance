@@ -1,4 +1,5 @@
 <?php
+
 namespace Caretaker\CaretakerInstance\Tests\Unit;
 
 use Nimut\TestingFramework\TestCase\UnitTestCase;
@@ -54,7 +55,7 @@ class OperationManagerTest extends UnitTestCase
             'tx_caretakerinstance_Operation_GetPHPVersion'
         );
         $operation = $operationManager->getOperation('get_php_version');
-        $this->assertInstanceOf('\tx_caretakerinstance_Operation_GetPHPVersion', $operation);
+        self::assertInstanceOf('\tx_caretakerinstance_Operation_GetPHPVersion', $operation);
     }
 
     public function testRegisterOperationAsInstance(): void
@@ -65,22 +66,22 @@ class OperationManagerTest extends UnitTestCase
             new \tx_caretakerinstance_Operation_GetPHPVersion()
         );
         $operation = $operationManager->getOperation('get_php_version');
-        $this->assertInstanceOf('\tx_caretakerinstance_Operation_GetPHPVersion', $operation);
+        self::assertInstanceOf('\tx_caretakerinstance_Operation_GetPHPVersion', $operation);
     }
 
     public function testGetOperationForUnknownOperation(): void
     {
         $operationManager = new \tx_caretakerinstance_OperationManager();
         $operation = $operationManager->getOperation('me_no_operation');
-        $this->assertFalse($operation);
+        self::assertFalse($operation);
     }
 
     public function testExecuteUnknownOperation(): void
     {
         $operationManager = new \tx_caretakerinstance_OperationManager();
         $result = $operationManager->executeOperation('me_no_operation');
-        $this->assertFalse($result->isSuccessful());
-        $this->assertEquals('Operation [me_no_operation] unknown', $result->getValue());
+        self::assertFalse($result->isSuccessful());
+        self::assertEquals('Operation [me_no_operation] unknown', $result->getValue());
     }
 
     public function testExecuteOperation(): void
@@ -90,15 +91,15 @@ class OperationManagerTest extends UnitTestCase
         $operation = $this->getMockBuilder('tx_caretakerinstance_IOperation')
             ->setMethods(['execute'])
             ->getMock();
-        $operation->expects($this->once())
+        $operation->expects(self::once())
             ->method('execute')
-            ->with($this->equalTo(['foo' => 'bar']))
-            ->will($this->returnValue(new \tx_caretakerinstance_OperationResult(true, 'bar')));
+            ->with(self::equalTo(['foo' => 'bar']))
+            ->willReturn(new \tx_caretakerinstance_OperationResult(true, 'bar'));
 
         $operationManager->registerOperation('mock', $operation);
 
         $result = $operationManager->executeOperation('mock', ['foo' => 'bar']);
-        $this->assertTrue($result->isSuccessful());
-        $this->assertEquals('bar', $result->getValue());
+        self::assertTrue($result->isSuccessful());
+        self::assertEquals('bar', $result->getValue());
     }
 }

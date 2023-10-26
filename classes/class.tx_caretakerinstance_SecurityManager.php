@@ -41,7 +41,6 @@
  * @author Thomas Hempel <thomas@work.de>
  * @author Christopher Hlubek <hlubek@networkteam.com>
  * @author Tobias Liebig <liebig@networkteam.com>
- *
  */
 class tx_caretakerinstance_SecurityManager implements tx_caretakerinstance_ISecurityManager
 {
@@ -104,9 +103,13 @@ class tx_caretakerinstance_SecurityManager implements tx_caretakerinstance_ISecu
         $timestamp = $this->cryptoManager->verifySessionToken($sessionToken, $this->privateKey);
         if ((time() - $timestamp) > $this->sessionTokenExpiration) {
             throw new tx_caretakerinstance_SessionTokenException('Session token expired', 1500062206);
-        } elseif (!$this->isClientHostAddressValid($commandRequest->getClientHostAddress())) {
+        }
+
+        if (!$this->isClientHostAddressValid($commandRequest->getClientHostAddress())) {
             throw new tx_caretakerinstance_ClientHostAddressRestrictionException('Client IP address is not allowed', 1500062384);
-        } elseif (
+        }
+
+        if (
             $this->cryptoManager->verifySignature(
                 $commandRequest->getDataForSignature(),
                 $commandRequest->getSignature(),
@@ -195,7 +198,6 @@ class tx_caretakerinstance_SecurityManager implements tx_caretakerinstance_ISecu
     }
 
     /**
-     *
      * @return string
      */
     public function getPublicKey()
@@ -205,7 +207,6 @@ class tx_caretakerinstance_SecurityManager implements tx_caretakerinstance_ISecu
 
     /**
      * @param string $publicKey
-     * @return void
      */
     public function setPublicKey($publicKey): void
     {
@@ -213,7 +214,6 @@ class tx_caretakerinstance_SecurityManager implements tx_caretakerinstance_ISecu
     }
 
     /**
-     *
      * @return string
      */
     public function getPrivateKey()
@@ -222,9 +222,7 @@ class tx_caretakerinstance_SecurityManager implements tx_caretakerinstance_ISecu
     }
 
     /**
-     *
      * @param string $privateKey
-     * @return void
      */
     public function setPrivateKey($privateKey): void
     {
@@ -232,7 +230,6 @@ class tx_caretakerinstance_SecurityManager implements tx_caretakerinstance_ISecu
     }
 
     /**
-     *
      * @return string
      */
     public function getClientHostAddressRestriction()
@@ -241,9 +238,7 @@ class tx_caretakerinstance_SecurityManager implements tx_caretakerinstance_ISecu
     }
 
     /**
-     *
      * @param string $address
-     * @return void
      */
     public function setClientHostAddressRestriction($address): void
     {
@@ -251,7 +246,6 @@ class tx_caretakerinstance_SecurityManager implements tx_caretakerinstance_ISecu
     }
 
     /**
-     *
      * @return string
      */
     public function getClientPublicKey()
@@ -260,9 +254,7 @@ class tx_caretakerinstance_SecurityManager implements tx_caretakerinstance_ISecu
     }
 
     /**
-     *
      * @param string $clientPublicKey
-     * @return void
      */
     public function setClientPublicKey($clientPublicKey): void
     {
@@ -270,7 +262,6 @@ class tx_caretakerinstance_SecurityManager implements tx_caretakerinstance_ISecu
     }
 
     /**
-     *
      * @return int
      */
     public function getSessionTokenExpiration()
@@ -288,7 +279,6 @@ class tx_caretakerinstance_SecurityManager implements tx_caretakerinstance_ISecu
     }
 
     /**
-     *
      * @param string $encryptedData
      * @return string
      */

@@ -1,7 +1,9 @@
 <?php
-use Caretaker\CaretakerInstance\UpgradeWizards\GenerateKeysUpgradeWizard;
+
 use Caretaker\CaretakerInstance\Controller\EidController;
+use Caretaker\CaretakerInstance\UpgradeWizards\GenerateKeysUpgradeWizard;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
+
 /***************************************************************
  * Copyright notice
  *

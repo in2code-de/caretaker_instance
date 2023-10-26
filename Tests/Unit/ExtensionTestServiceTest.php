@@ -1,4 +1,5 @@
 <?php
+
 namespace Caretaker\CaretakerInstance\Tests\Unit;
 
 use Nimut\TestingFramework\TestCase\UnitTestCase;
@@ -41,7 +42,7 @@ class ExtensionTestServiceTest extends UnitTestCase
 {
     public function testExtensionMustNotBeInstalledForRequirementNone(): void
     {
-        $this->markTestSkipped();
+        self::markTestSkipped();
 
         $service = new \tx_caretakerinstance_ExtensionTestService();
         $result = $service->checkVersionForRequirementAndVersionRange(
@@ -50,12 +51,12 @@ class ExtensionTestServiceTest extends UnitTestCase
             '1.2', // Minimal allowed version
             '' // Maximal allowed version
         );
-        $this->assertTrue($result);
+        self::assertTrue($result);
     }
 
     public function testExtensionVersionHasToBeInVersionRangeIfVersionGiven(): void
     {
-        $this->markTestSkipped();
+        self::markTestSkipped();
 
         $service = new \tx_caretakerinstance_ExtensionTestService();
         $result = $service->checkVersionForRequirementAndVersionRange(
@@ -64,7 +65,7 @@ class ExtensionTestServiceTest extends UnitTestCase
             '1.2.0', // Minimal allowed version
             '' // Maximal allowed version
         );
-        $this->assertTrue($result);
+        self::assertTrue($result);
 
         $result = $service->checkVersionForRequirementAndVersionRange(
             '1.3.1', // Actual version
@@ -72,7 +73,7 @@ class ExtensionTestServiceTest extends UnitTestCase
             '1.2.0', // Minimal allowed version
             '1.5.3' // Maximal allowed version
         );
-        $this->assertTrue($result);
+        self::assertTrue($result);
 
         $result = $service->checkVersionForRequirementAndVersionRange(
             '2.0.1', // Actual version
@@ -80,7 +81,7 @@ class ExtensionTestServiceTest extends UnitTestCase
             '1.8.9', // Minimal allowed version
             '2.2.0' // Maximal allowed version
         );
-        $this->assertTrue($result);
+        self::assertTrue($result);
 
         $result = $service->checkVersionForRequirementAndVersionRange(
             '1.1.4', // Actual version
@@ -88,7 +89,7 @@ class ExtensionTestServiceTest extends UnitTestCase
             '1.2.5', // Minimal allowed version
             '' // Maximal allowed version
         );
-        $this->assertTrue(!$result);
+        self::assertTrue(!$result);
 
         $result = $service->checkVersionForRequirementAndVersionRange(
             '1.5.7', // Actual version
@@ -96,12 +97,12 @@ class ExtensionTestServiceTest extends UnitTestCase
             '1.2.8', // Minimal allowed version
             '1.4.18' // Maximal allowed version
         );
-        $this->assertTrue(!$result);
+        self::assertTrue(!$result);
     }
 
     public function testActualExtensionVersionSuffixIsIgnored(): void
     {
-        $this->markTestSkipped();
+        self::markTestSkipped();
 
         $service = new \tx_caretakerinstance_ExtensionTestService();
         $result = $service->checkVersionForRequirementAndVersionRange(
@@ -110,6 +111,6 @@ class ExtensionTestServiceTest extends UnitTestCase
             '1.5.8', // Minimal allowed version
             '1.6.0' // Maximal allowed version
         );
-        $this->assertTrue(!$result);
+        self::assertTrue(!$result);
     }
 }

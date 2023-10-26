@@ -1,4 +1,5 @@
 <?php
+
 namespace Caretaker\CaretakerInstance\Tests\Unit;
 
 use Nimut\TestingFramework\TestCase\UnitTestCase;
@@ -48,12 +49,15 @@ class CommandResultTest extends UnitTestCase
 {
     public function testCommandResultToJsonCreatesJson(): void
     {
-        $result = new \tx_caretakerinstance_CommandResult(true, [new \tx_caretakerinstance_OperationResult(true, 'foo'), new \tx_caretakerinstance_OperationResult(true, false), new \tx_caretakerinstance_OperationResult(true, ['foo', 'bar'])],
-            'Test message');
+        $result = new \tx_caretakerinstance_CommandResult(
+            true,
+            [new \tx_caretakerinstance_OperationResult(true, 'foo'), new \tx_caretakerinstance_OperationResult(true, false), new \tx_caretakerinstance_OperationResult(true, ['foo', 'bar'])],
+            'Test message'
+        );
 
         $json = $result->toJson();
 
-        $this->assertEquals(
+        self::assertEquals(
             '{"status":0,"results":[{"status":true,"value":"foo"},{"status":true,"value":false},{"status":true,"value":["foo","bar"]}],"message":"Test message"}',
             $json
         );
@@ -64,9 +68,9 @@ class CommandResultTest extends UnitTestCase
         $json = '{"status":0,"results":[{"status":true,"value":"foo"},{"status":true,"value":false},{"status":true,"value":["foo","bar"]}],"message":"Test message"}';
         $result = \tx_caretakerinstance_CommandResult::fromJson($json);
 
-        $this->assertInstanceOf('\tx_caretakerinstance_CommandResult', $result);
-        $this->assertEquals('Test message', $result->getMessage());
-        $this->assertTrue($result->isSuccessful());
-        $this->assertEquals([new \tx_caretakerinstance_OperationResult(true, 'foo'), new \tx_caretakerinstance_OperationResult(true, false), new \tx_caretakerinstance_OperationResult(true, ['foo', 'bar'])], $result->getOperationResults());
+        self::assertInstanceOf('\tx_caretakerinstance_CommandResult', $result);
+        self::assertEquals('Test message', $result->getMessage());
+        self::assertTrue($result->isSuccessful());
+        self::assertEquals([new \tx_caretakerinstance_OperationResult(true, 'foo'), new \tx_caretakerinstance_OperationResult(true, false), new \tx_caretakerinstance_OperationResult(true, ['foo', 'bar'])], $result->getOperationResults());
     }
 }

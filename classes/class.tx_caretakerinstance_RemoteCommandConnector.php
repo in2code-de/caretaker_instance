@@ -41,7 +41,6 @@
  * @author Thomas Hempel <thomas@work.de>
  * @author Christopher Hlubek <hlubek@networkteam.com>
  * @author Tobias Liebig <liebig@networkteam.com>
- *
  */
 class tx_caretakerinstance_RemoteCommandConnector
 {
@@ -156,7 +155,9 @@ class tx_caretakerinstance_RemoteCommandConnector
             && preg_match('/^(\d{10}:[a-z0-9].*)$/', (string)$httpRequestResult['response'], $matches)
         ) {
             return $matches[1];
-        } elseif ($httpRequestResult['info']['http_code'] === 0) {
+        }
+
+        if ($httpRequestResult['info']['http_code'] === 0) {
             throw new tx_caretakerinstance_RequestSessionTimeoutException('No Response/Timeout (Total-Time: ' . $httpRequestResult['info']['total_time'] . ')');
         }
 
@@ -255,7 +256,8 @@ class tx_caretakerinstance_RemoteCommandConnector
     protected function getDataFromOperations($operations): string
     {
         return json_encode(
-            ['operations' => $operations], JSON_THROW_ON_ERROR
+            ['operations' => $operations],
+            JSON_THROW_ON_ERROR
         );
     }
 
@@ -302,7 +304,9 @@ class tx_caretakerinstance_RemoteCommandConnector
                 }
 
                 return $this->getCommandResult(tx_caretakerinstance_CommandResult::status_undefined, null, 'Cant decode remote command result');
-            } elseif ($httpRequestResult['info']['http_code'] === 0) {
+            }
+
+            if ($httpRequestResult['info']['http_code'] === 0) {
                 // seems to be a timeout
                 return $this->getCommandResult(tx_caretakerinstance_CommandResult::status_undefined, null, 'No Response/Timeout (Total-Time: ' . $httpRequestResult['info']['total_time'] . ')');
             }
@@ -317,7 +321,6 @@ class tx_caretakerinstance_RemoteCommandConnector
      * Set the current instance
      *
      * @param tx_caretaker_InstanceNode $instance
-     * @return void
      */
     public function setInstance($instance): void
     {

@@ -45,7 +45,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  * @author Thomas Hempel <thomas@work.de>
  * @author Christopher Hlubek <hlubek@networkteam.com>
  * @author Tobias Liebig <liebig@networkteam.com>
- *
  */
 class tx_caretakerinstance_Operation_GetTYPO3Version implements tx_caretakerinstance_IOperation, SingletonInterface
 {

@@ -23,9 +23,9 @@
  * This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\SingletonInterface;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * This is a file of the caretaker project.
@@ -45,7 +45,6 @@ use TYPO3\CMS\Core\SingletonInterface;
  * @author Thomas Hempel <thomas@work.de>
  * @author Christopher Hlubek <hlubek@networkteam.com>
  * @author Tobias Liebig <liebig@networkteam.com>
- *
  */
 class tx_caretakerinstance_Operation_MatchPredefinedVariable implements tx_caretakerinstance_IOperation, SingletonInterface
 {
@@ -97,7 +96,6 @@ class tx_caretakerinstance_Operation_MatchPredefinedVariable implements tx_caret
     }
 
     /**
-     *
      * @return bool
      */
     protected function getValueForKeyPath(array $keyPath)

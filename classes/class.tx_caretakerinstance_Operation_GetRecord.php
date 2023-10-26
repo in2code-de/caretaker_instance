@@ -49,7 +49,6 @@ use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
  * @author Thomas Hempel <thomas@work.de>
  * @author Christopher Hlubek <hlubek@networkteam.com>
  * @author Tobias Liebig <liebig@networkteam.com>
- *
  */
 class tx_caretakerinstance_Operation_GetRecord implements tx_caretakerinstance_IOperation, SingletonInterface
 {
@@ -116,8 +115,6 @@ class tx_caretakerinstance_Operation_GetRecord implements tx_caretakerinstance_I
 
     /**
      * Include TCA to load table definitions
-     *
-     * @return void
      */
     protected function includeTCA()
     {

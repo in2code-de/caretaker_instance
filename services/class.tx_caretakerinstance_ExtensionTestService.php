@@ -41,7 +41,6 @@
  * @author Thomas Hempel <thomas@work.de>
  * @author Christopher Hlubek <hlubek@networkteam.com>
  * @author Tobias Liebig <liebig@networkteam.com>
- *
  */
 class tx_caretakerinstance_ExtensionTestService extends tx_caretakerinstance_RemoteTestServiceBase
 {
@@ -133,15 +132,21 @@ class tx_caretakerinstance_ExtensionTestService extends tx_caretakerinstance_Rem
             }
 
             return true;
-        } elseif ($requirement == 'required') {
+        }
+
+        if ($requirement == 'required') {
             if ($actualValue === '' || $actualValue === '0') {
                 return false;
             }
 
             return $this->checkVersionRange($actualValue, $minVersion, $maxVersion);
-        } elseif ($requirement == 'forbidden') {
+        }
+
+        if ($requirement == 'forbidden') {
             return !$actualValue;
-        } elseif ($requirement == 'evil') {
+        }
+
+        if ($requirement == 'evil') {
             // TODO implement check for installed but not loaded extension
             throw new \Exception('requirement "evil" not implemented');
         }

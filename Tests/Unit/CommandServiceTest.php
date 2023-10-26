@@ -1,4 +1,5 @@
 <?php
+
 namespace Caretaker\CaretakerInstance\Tests\Unit;
 
 use Nimut\TestingFramework\TestCase\UnitTestCase;
@@ -107,92 +108,92 @@ class CommandServiceTest extends UnitTestCase
 
         $data = $result->toJson();
 
-        $this->securityManager->expects($this->once())
+        $this->securityManager->expects(self::once())
             ->method('encodeResult')
-            ->with($this->equalTo($data))
-            ->will($this->returnValue('Encoded result data'));
+            ->with(self::equalTo($data))
+            ->willReturn('Encoded result data');
 
         $wrap = $this->commandService->wrapCommandResult($result);
 
-        $this->assertEquals('Encoded result data', $wrap);
+        self::assertEquals('Encoded result data', $wrap);
     }
 
     public function testExecuteCommandWithSecurity(): void
     {
-        $this->securityManager->expects($this->once())
+        $this->securityManager->expects(self::once())
             ->method('validateRequest')
-            ->with($this->equalTo($this->commandRequest))
-            ->will($this->returnValue(true));
+            ->with(self::equalTo($this->commandRequest))
+            ->willReturn(true);
 
-        $this->securityManager->expects($this->once())
+        $this->securityManager->expects(self::once())
             ->method('decodeRequest')
-            ->with($this->equalTo($this->commandRequest))
-            ->will($this->returnValue(true));
+            ->with(self::equalTo($this->commandRequest))
+            ->willReturn(true);
 
-        $this->operationManager->expects($this->exactly(2))
+        $this->operationManager->expects(self::exactly(2))
             ->method('executeOperation')
-            ->with($this->equalTo('mock'), $this->equalTo(['foo' => 'bar']))
-            ->will($this->returnValue(new \tx_caretakerinstance_OperationResult(true, 'bar')));
+            ->with(self::equalTo('mock'), self::equalTo(['foo' => 'bar']))
+            ->willReturn(new \tx_caretakerinstance_OperationResult(true, 'bar'));
 
         $result = $this->commandService->executeCommand($this->commandRequest);
 
-        $this->assertInstanceOf('\tx_caretakerinstance_CommandResult', $result);
+        self::assertInstanceOf('\tx_caretakerinstance_CommandResult', $result);
 
-        $this->assertTrue($result->isSuccessful());
+        self::assertTrue($result->isSuccessful());
 
         /** @var \tx_caretakerinstance_OperationResult $operationResult */
         foreach ($result->getOperationResults() as $operationResult) {
-            $this->assertInstanceOf('\tx_caretakerinstance_OperationResult', $operationResult);
-            $this->assertTrue($operationResult->isSuccessful());
-            $this->assertEquals('bar', $operationResult->getValue());
+            self::assertInstanceOf('\tx_caretakerinstance_OperationResult', $operationResult);
+            self::assertTrue($operationResult->isSuccessful());
+            self::assertEquals('bar', $operationResult->getValue());
         }
     }
 
     public function testExecuteCommandSecurityCheckFailed(): void
     {
-        $this->securityManager->expects($this->once())
+        $this->securityManager->expects(self::once())
             ->method('validateRequest')
-            ->with($this->equalTo($this->commandRequest))
-            ->will($this->returnValue(false));
+            ->with(self::equalTo($this->commandRequest))
+            ->willReturn(false);
 
-        $this->securityManager->expects($this->never())
+        $this->securityManager->expects(self::never())
             ->method('decodeRequest');
 
         $result = $this->commandService->executeCommand($this->commandRequest);
 
-        $this->assertFalse($result->isSuccessful());
+        self::assertFalse($result->isSuccessful());
 
-        $this->assertEquals('The request could not be verified', $result->getMessage());
+        self::assertEquals('The request could not be verified', $result->getMessage());
     }
 
     public function testExecuteCommandDecryptionFailed(): void
     {
-        $this->securityManager->expects($this->once())
+        $this->securityManager->expects(self::once())
             ->method('validateRequest')
-            ->with($this->equalTo($this->commandRequest))
-            ->will($this->returnValue(true));
+            ->with(self::equalTo($this->commandRequest))
+            ->willReturn(true);
 
-        $this->securityManager->expects($this->once())
+        $this->securityManager->expects(self::once())
             ->method('decodeRequest');
 
-        $this->operationManager->expects($this->never())
+        $this->operationManager->expects(self::never())
             ->method('executeOperation');
 
         $result = $this->commandService->executeCommand($this->commandRequest);
 
-        $this->assertFalse($result->isSuccessful());
+        self::assertFalse($result->isSuccessful());
 
-        $this->assertEquals('The request could not be decrypted', $result->getMessage());
+        self::assertEquals('The request could not be decrypted', $result->getMessage());
     }
 
     public function testRequestSessionToken(): void
     {
-        $this->securityManager->expects($this->once())
+        $this->securityManager->expects(self::once())
             ->method('createSessionToken')
-            ->with($this->equalTo('10.0.0.1'))
-            ->will($this->returnValue('me-is-token'));
+            ->with(self::equalTo('10.0.0.1'))
+            ->willReturn('me-is-token');
 
         $token = $this->commandService->requestSessionToken('10.0.0.1');
-        $this->assertEquals('me-is-token', $token);
+        self::assertEquals('me-is-token', $token);
     }
 }

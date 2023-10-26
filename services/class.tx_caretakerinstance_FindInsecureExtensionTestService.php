@@ -1,8 +1,8 @@
 <?php
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extensionmanager\Domain\Repository\ExtensionRepository;
 use TYPO3\CMS\Extensionmanager\Domain\Model\Extension;
+use TYPO3\CMS\Extensionmanager\Domain\Repository\ExtensionRepository;
 
 /***************************************************************
  * Copyright notice
@@ -45,7 +45,6 @@ use TYPO3\CMS\Extensionmanager\Domain\Model\Extension;
  * @author Thomas Hempel <thomas@work.de>
  * @author Christopher Hlubek <hlubek@networkteam.com>
  * @author Tobias Liebig <liebig@networkteam.com>
- *
  */
 class tx_caretakerinstance_FindInsecureExtensionTestService extends tx_caretakerinstance_RemoteTestServiceBase
 {
@@ -223,12 +222,12 @@ class tx_caretakerinstance_FindInsecureExtensionTestService extends tx_caretaker
                         $warnings[] = ['message' => $message, 'values' => $extension];
 
                         return;
-                    // Error
+                        // Error
                     case 2:
                         $errors[] = ['message' => $message, 'values' => $extension];
 
                         return;
-                    // Ignore
+                        // Ignore
                     default:
                         return;
                 }
@@ -242,12 +241,12 @@ class tx_caretakerinstance_FindInsecureExtensionTestService extends tx_caretaker
                         $warnings[] = ['message' => $message, 'values' => $extension];
 
                         return;
-                    // Error
+                        // Error
                     case 2:
                         $errors[] = ['message' => $message, 'values' => $extension];
 
                         return;
-                    // Ignore
+                        // Ignore
                     default:
                         return;
                 }
@@ -263,12 +262,12 @@ class tx_caretakerinstance_FindInsecureExtensionTestService extends tx_caretaker
                     $warnings[] = ['message' => $message, 'values' => $extension];
 
                     return;
-                // Error
+                    // Error
                 case 2:
                     $errors[] = ['message' => $message, 'values' => $extension];
 
                     return;
-                // Ignore
+                    // Ignore
                 default:
                     return;
             }

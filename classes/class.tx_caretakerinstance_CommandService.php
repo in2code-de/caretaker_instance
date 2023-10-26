@@ -46,7 +46,6 @@
  * @author Thomas Hempel <thomas@work.de>
  * @author Christopher Hlubek <hlubek@networkteam.com>
  * @author Tobias Liebig <liebig@networkteam.com>
- *
  */
 class tx_caretakerinstance_CommandService
 {
@@ -83,8 +82,11 @@ class tx_caretakerinstance_CommandService
                 return new tx_caretakerinstance_CommandResult(tx_caretakerinstance_CommandResult::status_error, null, 'The request could not be decrypted');
             }
         } catch (tx_caretakerinstance_SecurityManagerException $txcaretakerinstanceSecurityManagerException) {
-            return new tx_caretakerinstance_CommandResult(tx_caretakerinstance_CommandResult::status_error, null,
-                'The request could not be verified (' . $txcaretakerinstanceSecurityManagerException->getCode() . ': ' . $txcaretakerinstanceSecurityManagerException->getMessage() . ')');
+            return new tx_caretakerinstance_CommandResult(
+                tx_caretakerinstance_CommandResult::status_error,
+                null,
+                'The request could not be verified (' . $txcaretakerinstanceSecurityManagerException->getCode() . ': ' . $txcaretakerinstanceSecurityManagerException->getMessage() . ')'
+            );
         }
 
         return new tx_caretakerinstance_CommandResult(tx_caretakerinstance_CommandResult::status_error, null, 'The request could not be verified');

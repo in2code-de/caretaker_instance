@@ -43,7 +43,6 @@ use TYPO3\CMS\Core\SingletonInterface;
  * @author Thomas Hempel <thomas@work.de>
  * @author Christopher Hlubek <hlubek@networkteam.com>
  * @author Tobias Liebig <liebig@networkteam.com>
- *
  */
 class tx_caretakerinstance_Operation_GetPHPVersion implements tx_caretakerinstance_IOperation, SingletonInterface
 {

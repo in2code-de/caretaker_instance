@@ -40,7 +40,6 @@ use TYPO3\CMS\Core\SingletonInterface;
  * A Operation which returns the current TYPO3 version
  *
  * @author Tobias Liebig <tobias.liebig@typo3.org>
- *
  */
 class tx_caretakerinstance_Operation_GetDiskSpace implements tx_caretakerinstance_IOperation, SingletonInterface
 {

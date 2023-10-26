@@ -1,4 +1,5 @@
 <?php
+
 namespace Caretaker\CaretakerInstance\Tests\Unit;
 
 use Nimut\TestingFramework\TestCase\UnitTestCase;
@@ -75,7 +76,7 @@ class CryptoManagerTest extends UnitTestCase
 
         $token = $this->cryptoManager->createSessionToken($data, $this->privateKey);
 
-        $this->assertEquals($data, $this->cryptoManager->verifySessionToken($token, $this->privateKey));
+        self::assertEquals($data, $this->cryptoManager->verifySessionToken($token, $this->privateKey));
     }
 
     public function testSessionTokensWithSalt(): void
@@ -85,7 +86,7 @@ class CryptoManagerTest extends UnitTestCase
         $tokens = [];
         for ($i = 0; $i < 3; ++$i) {
             $token = $this->cryptoManager->createSessionToken($data, $this->privateKey);
-            $this->assertArrayNotHasKey($token, $tokens);
+            self::assertArrayNotHasKey($token, $tokens);
             $tokens[$token] = 1;
         }
     }
@@ -99,7 +100,7 @@ class CryptoManagerTest extends UnitTestCase
         // change data
         $timestamp += 100;
         $token = $timestamp . ':' . $hash;
-        $this->assertFalse($this->cryptoManager->verifySessionToken($token, $this->privateKey));
+        self::assertFalse($this->cryptoManager->verifySessionToken($token, $this->privateKey));
     }
 
     public function testSignAndVerifySignature(): void
@@ -108,7 +109,7 @@ class CryptoManagerTest extends UnitTestCase
 
         $data = 'this has to be signed';
         $signature = $this->cryptoManager->createSignature($data, $this->privateKey);
-        $this->assertTrue($this->cryptoManager->verifySignature($data, $signature, $this->publicKey));
+        self::assertTrue($this->cryptoManager->verifySignature($data, $signature, $this->publicKey));
     }
 
     public function testModifiedDocumentDoesntVerifySignature(): void
@@ -118,7 +119,7 @@ class CryptoManagerTest extends UnitTestCase
         $data = 'this has to be signed';
         $signature = $this->cryptoManager->createSignature($data, $this->privateKey);
         $data = 'this has been modified';
-        $this->assertFalse($this->cryptoManager->verifySignature($data, $signature, $this->publicKey));
+        self::assertFalse($this->cryptoManager->verifySignature($data, $signature, $this->publicKey));
     }
 
     public function testEncryptDecrypt(): void
@@ -128,19 +129,19 @@ class CryptoManagerTest extends UnitTestCase
         $data = 'top-secret';
         $crypt = $this->cryptoManager->encrypt($data, $this->publicKey);
         $decrypt = $this->cryptoManager->decrypt($crypt, $this->privateKey);
-        $this->assertEquals($data, $decrypt);
+        self::assertEquals($data, $decrypt);
     }
 
     public function testEncryptAJson(): void
     {
-        $this->markTestSkipped('Skip encryption test because open SSL salts the data and the result is always different.');
+        self::markTestSkipped('Skip encryption test because open SSL salts the data and the result is always different.');
 
         $crypt = $this->cryptoManager->encrypt(
             '{"operations":[["foo",{"bar":"fop"}],["lorem",{"ip":"sum"}]]}',
             $this->publicKey
         );
 
-        $this->assertEquals(
+        self::assertEquals(
             'e96A2TuIWwcexcK8f7Dnk6aPRnIQYDdbggXz6vj/JGq9pR2838ZHOb5blMKYSWKTYOmLyuYZ5Qsci0Wrl858hq07lCkF8B6XIHu7MoGWytUAdVZOM0EsF58x9WAMCpkd+/iTThO5G03O0CXMffLFCWCAY4/IVbKHZwfQg8pXIUE=:ZdjiFGXRxwHViSSIVSa0gsRJgWjYy3O+XLp11soRIu9MN0iXf+X7Rg4vYkPZtNpEPGX4oElOR2J1Pnidqw==',
             $crypt
         );
@@ -148,14 +149,14 @@ class CryptoManagerTest extends UnitTestCase
 
     public function testDecryptAString(): void
     {
-        $this->markTestSkipped('Skip encryption test because open SSL salts the data and the result is always different.');
+        self::markTestSkipped('Skip encryption test because open SSL salts the data and the result is always different.');
 
         $plain = $this->cryptoManager->decrypt(
             'e96A2TuIWwcexcK8f7Dnk6aPRnIQYDdbggXz6vj/JGq9pR2838ZHOb5blMKYSWKTYOmLyuYZ5Qsci0Wrl858hq07lCkF8B6XIHu7MoGWytUAdVZOM0EsF58x9WAMCpkd+/iTThO5G03O0CXMffLFCWCAY4/IVbKHZwfQg8pXIUE=:ZdjiFGXRxwHViSSIVSa0gsRJgWjYy3O+XLp11soRIu9MN0iXf+X7Rg4vYkPZtNpEPGX4oElOR2J1Pnidqw==',
             $this->privateKey
         );
 
-        $this->assertEquals(
+        self::assertEquals(
             '{"operations":[["foo",{"bar":"fop"}],["lorem",{"ip":"sum"}]]}',
             $plain
         );

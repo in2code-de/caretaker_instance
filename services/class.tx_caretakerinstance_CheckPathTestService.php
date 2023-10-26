@@ -38,7 +38,6 @@
  * Check for TYPO3 version
  *
  * @author Felix Oertel <oertel@networkteam.com>
- *
  */
 class tx_caretakerinstance_CheckPathTestService extends tx_caretakerinstance_RemoteTestServiceBase
 {

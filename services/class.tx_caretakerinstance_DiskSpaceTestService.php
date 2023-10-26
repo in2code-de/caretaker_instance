@@ -38,7 +38,6 @@
  * Check for TYPO3 version
  *
  * @author Tobias Liebig <tobias.liebig@typo3.org>
- *
  */
 class tx_caretakerinstance_DiskSpaceTestService extends tx_caretakerinstance_RemoteTestServiceBase
 {
@@ -74,9 +73,9 @@ class tx_caretakerinstance_DiskSpaceTestService extends tx_caretakerinstance_Rem
         $info = '(free: ' . $this->humanFilesize($diskSpace['free']) .
             ' ; total: ' . $this->humanFilesize($diskSpace['total']) .
             (
-            $minFreeAbsolute > 0 ? (
-                ' ; expected free: ' . $this->getConfigValue('min_free') . $this->getConfigValue('min_free_unit')
-            ) : ''
+                $minFreeAbsolute > 0 ? (
+                    ' ; expected free: ' . $this->getConfigValue('min_free') . $this->getConfigValue('min_free_unit')
+                ) : ''
             ) . ')';
 
         if ($minFreeAbsolute !== 0 && $diskSpace['free'] <= $minFreeAbsolute) {

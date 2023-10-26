@@ -23,8 +23,8 @@
  * This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\SingletonInterface;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * This is a file of the caretaker project.
@@ -41,7 +41,6 @@ use TYPO3\CMS\Core\SingletonInterface;
  * Checks wether the given path exists or not
  *
  * @author Felix Oertel <oertel@networkteam.com>
- *
  */
 class tx_caretakerinstance_Operation_CheckPathExists implements tx_caretakerinstance_IOperation, SingletonInterface
 {
@@ -62,7 +61,9 @@ class tx_caretakerinstance_Operation_CheckPathExists implements tx_caretakerinst
             $size = filesize($path);
 
             return new tx_caretakerinstance_OperationResult(true, ['type' => 'file', 'path' => $parameter, 'time' => $time, 'size' => $size]);
-        } elseif (is_dir($path)) {
+        }
+
+        if (is_dir($path)) {
             return new tx_caretakerinstance_OperationResult(true, ['type' => 'folder', 'path' => $parameter]);
         }
 

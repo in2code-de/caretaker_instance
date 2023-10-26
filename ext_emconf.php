@@ -1,4 +1,5 @@
 <?php
+
 $EM_CONF[$_EXTKEY] = [
     'title' => 'Caretaker Instance',
     'description' => 'Client for caretaker observation system',

@@ -1,4 +1,5 @@
 <?php
+
 namespace Caretaker\CaretakerInstance\Tests\Unit;
 
 use Caretaker\CaretakerInstance\Tests\Unit\Fixtures\DummyOperation;
@@ -55,13 +56,13 @@ class OperationsTest extends UnitTestCase
         $parameter = ['foo' => 'bar'];
         $operation = new DummyOperation();
         $result = $operation->execute($parameter);
-        $this->assertInstanceOf('\tx_caretakerinstance_OperationResult', $result);
+        self::assertInstanceOf('\tx_caretakerinstance_OperationResult', $result);
 
         $status = $result->isSuccessful();
-        $this->assertTrue($status);
+        self::assertTrue($status);
         $value = $result->getValue();
         // Value is always an string or array of strings or array of array of strings
-        $this->assertEquals('bar', $value);
+        self::assertEquals('bar', $value);
     }
 
     public function testOperation_GetFilesystemChecksumReturnsCorrectChecksumForFile(): void
@@ -70,12 +71,12 @@ class OperationsTest extends UnitTestCase
 
         $result = $operation->execute(['path' => 'EXT:caretaker_instance/Tests/Unit/Fixtures/Operation_GetFilesystemChecksum.txt']);
 
-        $this->assertTrue($result->isSuccessful());
+        self::assertTrue($result->isSuccessful());
         $value = $result->getValue();
-        $this->assertIsArray($value);
-        $this->assertEquals('0', is_countable($value['singleChecksums'] ?: []) ? count($value['singleChecksums'] ?: []) : 0);
-        $this->assertIsString($value['checksum']);
-        $this->assertEquals('23d35ef1a611fc75561b0d71d8b3234b', $value['checksum']);
+        self::assertIsArray($value);
+        self::assertEquals('0', is_countable($value['singleChecksums'] ?: []) ? count($value['singleChecksums'] ?: []) : 0);
+        self::assertIsString($value['checksum']);
+        self::assertEquals('23d35ef1a611fc75561b0d71d8b3234b', $value['checksum']);
     }
 
     public function testOperation_GetFilesystemChecksumReturnsExtendedResultForFolder(): void
@@ -84,13 +85,13 @@ class OperationsTest extends UnitTestCase
 
         $result = $operation->execute(['path' => 'EXT:caretaker_instance/Tests/Unit/Fixtures', 'getSingleChecksums' => true]);
 
-        $this->assertTrue($result->isSuccessful());
+        self::assertTrue($result->isSuccessful());
         $value = $result->getValue();
 
-        $this->assertIsArray($value);
-        $this->assertIsArray($value['singleChecksums']);
-        $this->assertIsString($value['checksum']);
-        $this->assertEquals(32, strlen((string)$value['checksum']));
+        self::assertIsArray($value);
+        self::assertIsArray($value['singleChecksums']);
+        self::assertIsString($value['checksum']);
+        self::assertEquals(32, strlen((string)$value['checksum']));
     }
 
     public function testOperation_GetFilesystemChecksumFailsIfPathIsNotAllowed(): void
@@ -99,7 +100,7 @@ class OperationsTest extends UnitTestCase
 
         $result = $operation->execute(['path' => Environment::getPublicPath() . '/../../']);
 
-        $this->assertFalse($result->isSuccessful());
+        self::assertFalse($result->isSuccessful());
     }
 
     public function testOperation_GetPHPVersion(): void
@@ -108,9 +109,9 @@ class OperationsTest extends UnitTestCase
 
         $result = $operation->execute();
 
-        $this->assertTrue($result->isSuccessful());
+        self::assertTrue($result->isSuccessful());
 
-        $this->assertEquals(phpversion(), $result->getValue());
+        self::assertEquals(phpversion(), $result->getValue());
     }
 
     public function testOperation_GetTYPO3Version(): void
@@ -119,12 +120,12 @@ class OperationsTest extends UnitTestCase
 
         $result = $operation->execute();
 
-        $this->assertTrue($result->isSuccessful());
+        self::assertTrue($result->isSuccessful());
 
         if (defined('TYPO3_version')) {
-            $this->assertEquals(GeneralUtility::makeInstance(Typo3Version::class)->getVersion(), $result->getValue());
+            self::assertEquals(GeneralUtility::makeInstance(Typo3Version::class)->getVersion(), $result->getValue());
         } else {
-            $this->assertEquals(GeneralUtility::makeInstance(Typo3Version::class)->getVersion(), $result->getValue());
+            self::assertEquals(GeneralUtility::makeInstance(Typo3Version::class)->getVersion(), $result->getValue());
         }
     }
 
@@ -134,10 +135,10 @@ class OperationsTest extends UnitTestCase
 
         $result = $operation->execute(['extensionKey' => 'caretaker_instance']);
 
-        $this->assertTrue($result->isSuccessful());
+        self::assertTrue($result->isSuccessful());
 
         // TODO This depends on the current caretaker_instance extension version! Better mock this up.
-        $this->assertEquals('3.0.3', $result->getValue());
+        self::assertEquals('3.0.3', $result->getValue());
     }
 
     public function testOperation_GetExtensionVersionReturnsFailureForNotLoadedExtension(): void
@@ -146,7 +147,7 @@ class OperationsTest extends UnitTestCase
 
         $result = $operation->execute(['extensionKey' => 'not_loaded_extension']);
 
-        $this->assertFalse($result->isSuccessful());
+        self::assertFalse($result->isSuccessful());
     }
 
     public function testOperation_GetExtensionListFailsIfNoLocationListIsGiven(): void
@@ -155,7 +156,7 @@ class OperationsTest extends UnitTestCase
 
         $result = $operation->execute();
 
-        $this->assertFalse($result->isSuccessful());
+        self::assertFalse($result->isSuccessful());
     }
 
     public function testOperation_GetExtensionListReturnsAnArrayOfExtensions(): void
@@ -164,13 +165,13 @@ class OperationsTest extends UnitTestCase
 
         $result = $operation->execute(['locations' => ['global', 'local', 'system']]);
 
-        $this->assertTrue($result->isSuccessful());
-        $this->assertGreaterThan(0, is_countable($result->getValue()) ? count($result->getValue()) : 0);
+        self::assertTrue($result->isSuccessful());
+        self::assertGreaterThan(0, is_countable($result->getValue()) ? count($result->getValue()) : 0);
     }
 
     public function testOperation_GetRecordFindsAndCleansARecord(): void
     {
-        $this->markTestSkipped('FIXME this test is tied to a specific record uid');
+        self::markTestSkipped('FIXME this test is tied to a specific record uid');
 
         $operation = new \tx_caretakerinstance_Operation_GetRecord();
 
@@ -180,11 +181,11 @@ class OperationsTest extends UnitTestCase
 
         $record = $result->getValue();
 
-        $this->assertTrue($result->isSuccessful());
+        self::assertTrue($result->isSuccessful());
 
-        $this->assertEquals($record['uid'], 1);
+        self::assertEquals($record['uid'], 1);
 
-        $this->assertTrue(!isset($record['password']));
+        self::assertTrue(!isset($record['password']));
     }
 
     public function testOperation_MatchPredefinedVariableReturnsTrueIfValueMatch(): void
@@ -196,7 +197,7 @@ class OperationsTest extends UnitTestCase
         $result = $operation->execute(
             ['key' => $key, 'match' => $GLOBALS['Foo']['bar']]
         );
-        $this->assertTrue($result->isSuccessful());
+        self::assertTrue($result->isSuccessful());
     }
 
     public function testOperation_MatchPredefinedVariableReturnsTrueIfValueMatchUsingRegexp(): void
@@ -209,7 +210,7 @@ class OperationsTest extends UnitTestCase
             ['key' => $key, 'match' => '/baz/', 'usingRegexp' => true]
         );
 
-        $this->assertTrue($result->isSuccessful());
+        self::assertTrue($result->isSuccessful());
     }
 
     public function testOperation_MatchPredefinedVariableReturnsFalseIfValueDoesNotMatch(): void
@@ -222,7 +223,7 @@ class OperationsTest extends UnitTestCase
             ['key' => $key, 'match' => 'an other value']
         );
 
-        $this->assertFalse($result->isSuccessful());
+        self::assertFalse($result->isSuccessful());
     }
 
     public function testOperation_CheckPathExistsReturnsTrueIfPathExists(): void
@@ -231,7 +232,7 @@ class OperationsTest extends UnitTestCase
 
         $result = $operation->execute('EXT:caretaker_instance/Tests/Unit/Fixtures/Operation_CheckPathExists.txt');
 
-        $this->assertTrue($result->isSuccessful());
+        self::assertTrue($result->isSuccessful());
     }
 
     public function testOperation_CheckPathExistsReturnsFalseIfPathNotExists(): void
@@ -240,6 +241,6 @@ class OperationsTest extends UnitTestCase
 
         $result = $operation->execute('EXT:caretaker_instance/Tests/Unit/Fixtures/Operation_CheckPathExists_notExisting.txt');
 
-        $this->assertFalse($result->isSuccessful());
+        self::assertFalse($result->isSuccessful());
     }
 }

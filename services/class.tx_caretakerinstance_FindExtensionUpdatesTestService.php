@@ -1,10 +1,10 @@
 <?php
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extensionmanager\Domain\Repository\ExtensionRepository;
 use TYPO3\CMS\Core\Utility\VersionNumberUtility;
-use TYPO3\CMS\Extensionmanager\Domain\Model\Extension;
 use TYPO3\CMS\Extensionmanager\Domain\Model\Dependency;
+use TYPO3\CMS\Extensionmanager\Domain\Model\Extension;
+use TYPO3\CMS\Extensionmanager\Domain\Repository\ExtensionRepository;
 
 /***************************************************************
  * Copyright notice
@@ -47,7 +47,6 @@ use TYPO3\CMS\Extensionmanager\Domain\Model\Dependency;
  * @author Thomas Hempel <thomas@work.de>
  * @author Christopher Hlubek <hlubek@networkteam.com>
  * @author Tobias Liebig <liebig@networkteam.com>
- *
  */
 class tx_caretakerinstance_FindExtensionUpdatesTestService extends tx_caretakerinstance_RemoteTestServiceBase
 {
@@ -254,12 +253,12 @@ class tx_caretakerinstance_FindExtensionUpdatesTestService extends tx_caretakeri
                     $warnings[] = ['message' => $message, 'values' => $value];
 
                     return;
-                // Error
+                    // Error
                 case 2:
                     $errors[] = ['message' => $message, 'values' => $value];
 
                     return;
-                // OK
+                    // OK
                 default:
                     $oks[] = ['message' => $message, 'values' => $value];
 

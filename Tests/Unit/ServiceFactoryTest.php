@@ -1,4 +1,5 @@
 <?php
+
 namespace Caretaker\CaretakerInstance\Tests\Unit;
 
 use Caretaker\CaretakerInstance\Tests\Unit\Fixtures\DummyOperation;
@@ -69,17 +70,17 @@ class ServiceFactoryTest extends UnitTestCase
         $factory = \tx_caretakerinstance_ServiceFactory::getInstance();
         $commandService = $factory->getCommandService();
 
-        $this->assertInstanceOf('\tx_caretakerinstance_CommandService', $commandService);
+        self::assertInstanceOf('\tx_caretakerinstance_CommandService', $commandService);
 
         $securityManager = $factory->getSecurityManager();
 
-        $this->assertInstanceOf('\tx_caretakerinstance_SecurityManager', $securityManager);
+        self::assertInstanceOf('\tx_caretakerinstance_SecurityManager', $securityManager);
 
         // Test that properties have been set from extConf
-        $this->assertEquals('FakePublicKey', $securityManager->getPublicKey());
-        $this->assertEquals('FakePrivateKey', $securityManager->getPrivateKey());
-        $this->assertEquals('FakeClientPublicKey', $securityManager->getClientPublicKey());
-        $this->assertEquals('10.0.0.1', $securityManager->getClientHostAddressRestriction());
+        self::assertEquals('FakePublicKey', $securityManager->getPublicKey());
+        self::assertEquals('FakePrivateKey', $securityManager->getPrivateKey());
+        self::assertEquals('FakeClientPublicKey', $securityManager->getClientPublicKey());
+        self::assertEquals('10.0.0.1', $securityManager->getClientHostAddressRestriction());
     }
 
     public function testOperationClassRegistrationByConfVars(): void
@@ -90,7 +91,7 @@ class ServiceFactoryTest extends UnitTestCase
 
         $result = $operationManager->executeOperation('dummy', ['foo' => 'bar']);
 
-        $this->assertEquals('bar', $result->getValue());
+        self::assertEquals('bar', $result->getValue());
     }
 
     public function testOperationInstanceRegistrationByConfVars(): void
@@ -101,7 +102,7 @@ class ServiceFactoryTest extends UnitTestCase
 
         $result = $operationManager->executeOperation('dummyInstance', ['foo' => 'bar']);
 
-        $this->assertEquals('bar', $result->getValue());
+        self::assertEquals('bar', $result->getValue());
     }
 
     public function testRemoteCommandConnector(): void
@@ -109,7 +110,7 @@ class ServiceFactoryTest extends UnitTestCase
         $factory = \tx_caretakerinstance_ServiceFactory::getInstance();
         $connector = $factory->getRemoteCommandConnector();
 
-        $this->assertInstanceOf('\tx_caretakerinstance_RemoteCommandConnector', $connector);
+        self::assertInstanceOf('\tx_caretakerinstance_RemoteCommandConnector', $connector);
     }
 
     public function tearDown(): void

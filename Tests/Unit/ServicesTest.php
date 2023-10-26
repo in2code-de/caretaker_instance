@@ -1,4 +1,5 @@
 <?php
+
 namespace Caretaker\CaretakerInstance\Tests\Unit;
 
 use Nimut\TestingFramework\TestCase\UnitTestCase;
@@ -47,49 +48,49 @@ class ServicesTest extends UnitTestCase
 {
     public function testFindInsecureExtensionCommand(): void
     {
-        $this->markTestSkipped('Accesses tx_caretaker classes, which cant be found');
+        self::markTestSkipped('Accesses tx_caretaker classes, which cant be found');
 
         $stub = $this->getMockBuilder('tx_caretakerinstance_FindInsecureExtensionTestService')
             ->setMethods(['getLocationList', 'executeRemoteOperations', 'checkExtension'])
             ->getMock();
 
-        $stub->expects($this->once())
+        $stub->expects(self::once())
             ->method('getLocationList')
             ->with()
-            ->will($this->returnValue(['local']));
+            ->willReturn(['local']);
 
-        $stub->expects($this->once())
+        $stub->expects(self::once())
             ->method('executeRemoteOperations')
-            ->with($this->equalTo([['GetExtensionList', ['locations' => ['local']]]]))
-            ->will(
-                $this->returnValue(
-                    new \tx_caretakerinstance_CommandResult(
-                        true,
-                        [
-                            new \tx_caretakerinstance_OperationResult(
-                                true,
-                                [
-                                    'tt_address' => [
-                                        'isInstalled' => true,
-                                        'version' => '2.1.4',
-                                        'location' => ['local'],
-                                    ],
-                                ]
-                            ),
-                        ]
-                    )
+            ->with(self::equalTo([['GetExtensionList', ['locations' => ['local']]]]))
+            ->willReturn(
+
+                new \tx_caretakerinstance_CommandResult(
+                    true,
+                    [
+                        new \tx_caretakerinstance_OperationResult(
+                            true,
+                            [
+                                'tt_address' => [
+                                    'isInstalled' => true,
+                                    'version' => '2.1.4',
+                                    'location' => ['local'],
+                                ],
+                            ]
+                        ),
+                    ]
                 )
+
             );
 
-        $stub->expects($this->once())
+        $stub->expects(self::once())
             ->method('checkExtension')
             ->with()
-            ->will($this->returnValue(true));
+            ->willReturn(true);
 
         $result = $stub->runTest();
 
-        $this->assertInstanceOf('\tx_caretaker_TestResult', $result);
-        $this->assertEquals(\tx_caretaker_Constants::state_ok, $result->getState());
+        self::assertInstanceOf('\tx_caretaker_TestResult', $result);
+        self::assertEquals(\tx_caretaker_Constants::state_ok, $result->getState());
     }
 
     public function providerFindInsecureExtensionGetLocationList(): array
@@ -108,17 +109,17 @@ class ServicesTest extends UnitTestCase
      */
     public function testFindInsecureExtensionGetLocationList(mixed $input, mixed $output): void
     {
-        $this->markTestSkipped('Accesses tx_caretaker classes, which cant be found');
+        self::markTestSkipped('Accesses tx_caretaker classes, which cant be found');
 
         $stub = $this->getMockBuilder('tx_caretakerinstance_FindInsecureExtensionTestService')
             ->setMethods(['getConfigValue'])
             ->getMock();
 
-        $stub->expects($this->once())
+        $stub->expects(self::once())
             ->method('getConfigValue')
             ->with()
-            ->will($this->returnValue($input));
+            ->willReturn($input);
 
-        $this->assertEquals($output, $stub->getLocationList());
+        self::assertEquals($output, $stub->getLocationList());
     }
 }
