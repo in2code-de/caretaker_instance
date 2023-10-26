@@ -94,13 +94,13 @@ class tx_caretakerinstance_CommandRequest
         $this->signature = $options['signature'];
 
         // If we have client infos, we are recieving a command
-        if (is_array($options['client_info'])) {
+        if (array_key_exists('client_info', $options) && is_array($options['client_info'])) {
             $this->clientKey = $options['client_info']['client_key'] ?? '';
             $this->clientHostAddress = $options['client_info']['host_address'] ?? '';
         }
 
         // If we have server infos, we are going to send this Request
-        if (is_array($options['server_info'])) {
+        if (array_key_exists('server_info', $options) && is_array($options['server_info'])) {
             $this->serverKey = $options['server_info']['server_key'] ?? '';
             $this->serverUrl = $options['server_info']['server_url'] ?? '';
         }
