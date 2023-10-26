@@ -71,7 +71,7 @@ class tx_caretakerinstance_OpenSSLCryptoManager extends tx_caretakerinstance_Abs
             throw new \Exception('Public key missing', 1423738632);
         }
 
-        $iv = openssl_random_pseudo_bytes(32);
+        $iv  = openssl_random_pseudo_bytes(openssl_cipher_iv_length('aes256'));
         openssl_seal($data, $cryptedData, $envelopeKeys, [$publicKey], $this->cipherAlgo, $iv);
 
         $envelopeKey = $envelopeKeys[0];
@@ -110,7 +110,7 @@ class tx_caretakerinstance_OpenSSLCryptoManager extends tx_caretakerinstance_Abs
         $envelopeKey = base64_decode($envelopeKey);
         $cryptedData = base64_decode($cryptedData);
 
-        $iv = openssl_random_pseudo_bytes(32);
+        $iv  = openssl_random_pseudo_bytes(openssl_cipher_iv_length('aes256'));
         openssl_open($cryptedData, $decrypted, $envelopeKey, $privateKey, $this->cipherAlgo, $iv);
 
         return $decrypted;
