@@ -33,8 +33,6 @@
  *
  * $Id$
  */
-if (!defined('TYPO3_MODE')) {
-    die('Access denied.');
-}
+defined('TYPO3') or die();
 
 require(\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('caretaker_instance') . 'ext_conf_include.php');

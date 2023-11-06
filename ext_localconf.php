@@ -33,9 +33,7 @@
  *
  * $Id$
  */
-if (!defined('TYPO3_MODE')) {
-    die('Access denied.');
-}
+defined('TYPO3') or die();
 
 // Register UpgradeWizard for generating keys
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/install']['update']['caretakerInstanceGenerateKeys']
