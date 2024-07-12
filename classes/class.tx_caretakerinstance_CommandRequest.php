@@ -89,7 +89,11 @@ class tx_caretakerinstance_CommandRequest
         $this->signature = $options['signature'];
 
         // If we have client infos, we are recieving a command
+<<<<<<< HEAD
         if (isset($options['client_info']) && is_array($options['client_info'])) {
+=======
+        if (is_array($options['client_info'])) {
+>>>>>>> feature/V12
             $this->clientKey = $options['client_info']['client_key'] ?? '';
             $this->clientHostAddress = $options['client_info']['host_address'] ?? '';
         }
