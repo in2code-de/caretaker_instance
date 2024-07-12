@@ -157,7 +157,7 @@ class tx_caretakerinstance_ServiceFactory
     public function getCryptoManager()
     {
         if ($this->cryptoManager == null) {
-            $this->cryptoManager = new tx_caretakerinstance_OpenSSLCryptoManager();
+            $this->cryptoManager = new tx_caretakerinstance_Base64CryptoManager();
         }
 
         return $this->cryptoManager;
