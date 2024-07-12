@@ -90,14 +90,13 @@ class tx_caretakerinstance_Operation_GetRecord implements tx_caretakerinstance_I
             $queryBuilder->getRestrictions()->removeAll();
         }
 
-        /** @var Statement $statement */
-        $statement = $queryBuilder->select('*')
-            ->from($table)
-            ->where($queryBuilder->expr()->eq($field, $queryBuilder->createNamedParameter($value)))
-            ->execute();
+        try {
+            $result = $queryBuilder->select('*')
+                ->from($table)
+                ->where($queryBuilder->expr()->eq($field, $queryBuilder->createNamedParameter($value)))
+                ->executeQuery();
 
-        if (!$statement->errorInfo() || $statement->errorCode() == '00000') {
-            $record = $statement->fetch();
+            $record = $result->fetchAssociative();
             if ($record !== false) {
                 if (isset($this->protectedFieldsByTable[$table])) {
                     $protectedFields = $this->protectedFieldsByTable[$table];
@@ -110,10 +109,12 @@ class tx_caretakerinstance_Operation_GetRecord implements tx_caretakerinstance_I
             }
             return new tx_caretakerinstance_OperationResult(true, false);
         }
-        return new tx_caretakerinstance_OperationResult(
-            false,
-            'Error when executing SQL: [' . $statement->errorInfo() . ']'
-        );
+        catch (\Doctrine\DBAL\DBALException $e) {
+            return new tx_caretakerinstance_OperationResult(
+                false,
+                'Error when executing SQL: [' . $e->getMessage() . ']'
+            );
+        }
     }
 
     /**
