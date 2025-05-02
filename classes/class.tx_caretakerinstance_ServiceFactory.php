@@ -76,6 +76,11 @@ class tx_caretakerinstance_ServiceFactory
     protected $remoteCommandConnector;
 
     /**
+     * @var array
+     */
+    protected $extConf;
+
+    /**
      * Constructor
      */
     public function __construct()

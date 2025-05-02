@@ -77,6 +77,21 @@ class tx_caretakerinstance_CommandRequest
     protected $data = array();
 
     /**
+     * @var string
+     */
+    protected $sessionToken;
+
+    /**
+     * @var string
+     */
+    protected $rawData;
+
+    /**
+     * @var string
+     */
+    protected $signature;
+
+    /**
      * Create a new Command Request
      *
      * @param array $options Options of the Command Request object
