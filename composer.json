@@ -5,7 +5,7 @@
   "homepage": "https://github.com/TYPO3-Caretaker/",
   "license": "GPL-2.0",
   "require": {
-    "typo3/cms-core": "^12.1",
+    "typo3/cms-core": "^13.4",
     "ext-json": "*",
     "ext-openssl": "*",
     "ext-curl": "*"
@@ -17,10 +17,10 @@
     "squizlabs/php_codesniffer": "^3.5",
     "phpmd/phpmd": "^2.8",
     "behat/behat": "^3.8",
-    "helhum/typo3-console": "^7.0",
-    "se/selenium-server-standalone": "^3.141",
+    "helhum/typo3-console": "^8.2",
     "symfony/config": "^5.3",
-    "nimut/testing-framework": "6.x-dev",
+    "typo3/testing-framework": "^9.2",
+    "se/selenium-server-standalone": "^3.141",
     "friends-of-behat/mink-extension": "^2.5",
     "behat/mink-selenium2-driver": "^1.5",
     "friends-of-behat/mink-browserkit-driver": "^1.5",
