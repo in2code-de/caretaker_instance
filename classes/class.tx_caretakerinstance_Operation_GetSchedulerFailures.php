@@ -42,8 +42,8 @@ class tx_caretakerinstance_Operation_GetSchedulerFailures implements tx_caretake
         $connection = GeneralUtility::makeInstance(ConnectionPool::class);
         $query = $connection->getQueryBuilderForTable('tx_scheduler_task');
         $query->select('*')->from('tx_scheduler_task');
-        $statement = $query->execute();
-        foreach ($statement as $row) {
+        $statement = $query->executeQuery();
+        foreach ($statement->iterateAssociative() as $row) {
             $taskUid = $row['uid'];
             if (empty($row['lastexecution_failure'])) {
                 continue;
